@@ -24,7 +24,7 @@ TheInput:AddKeyHandler(function(key, down)
     -- Handle normal skill casting
     if ThePlayer and ThePlayer:IsValid() and ThePlayer.replica and ThePlayer.replica.icey2_skiller then
         local name = ThePlayer.replica.icey2_skiller.keyhandler[key]
-        local node = name and GLOBAL.ICEY2_SKILL_DEFINES[name:upper()]
+        local node = name and ICEY2_SKILL_DEFINES[name]
 
         if node and ThePlayer.replica.icey2_skiller:IsLearned(name) then
             local x, y, z = TheInput:GetWorldPosition():Get()

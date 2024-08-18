@@ -1,4 +1,4 @@
-GLOBAL.ICEY2_SKILL_DEFINES = {
+ICEY2_SKILL_DEFINES = {
     PHANTOM_SWORD = {
         OnLearned = function(inst, is_onload)
 
@@ -21,3 +21,5 @@ GLOBAL.ICEY2_SKILL_DEFINES = {
         end,
     },
 }
+
+GLOBAL.ICEY2_SKILL_DEFINES = ICEY2_SKILL_DEFINES

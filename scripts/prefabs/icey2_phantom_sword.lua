@@ -293,8 +293,8 @@ local function OnUpdate(inst)
                 end
 
                 if inst.target:HasTag("flying") then
-                    height_min = height_min + 2
-                    height_max = height_max + 2
+                    height_min = height_min + 1.5
+                    height_max = height_max + 1.5
                 end
             end
 

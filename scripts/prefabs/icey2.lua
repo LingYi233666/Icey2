@@ -39,6 +39,8 @@ end
 local common_postinit = function(inst)
 	-- Minimap icon
 	inst.MiniMapEntity:SetIcon("icey2.tex")
+
+	inst:AddTag("icey2")
 end
 
 -- 这里的的函数只在主机执行  一般组件之类的都写在这里

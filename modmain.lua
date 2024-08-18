@@ -42,8 +42,14 @@ Assets = {
     Asset("IMAGE", "bigportraits/icey2_none.tex"), --人物大图（椭圆的那个）
     Asset("ATLAS", "bigportraits/icey2_none.xml"),
 
+    Asset("IMAGE", "images/ui/skill_slot/sample.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/sample.xml"),
+
     Asset("SOUNDPACKAGE", "sound/icey2_sfx.fev"),
     Asset("SOUND", "sound/icey2_sfx.fsb"),
+
+    Asset("ANIM", "anim/icey2_new_skill_circle.zip"),
+
 
     -- Asset("SOUNDPACKAGE", "sound/gale_bgm.fev"),
     -- Asset("SOUND", "sound/gale_bgm.fsb"),
@@ -62,7 +68,7 @@ Assets = {
 
 GLOBAL.setmetatable(env, { __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end })
 
-GLOBAL.PREFAB_SKINS["icey2"] = { --修复人物大图显示
+PREFAB_SKINS["icey2"] = { --修复人物大图显示
     "icey2_none",
 }
 
@@ -74,6 +80,7 @@ local modimport_filenames = {
     "icey2_skiller_cmp",
     "input",
     "stategraphs",
+    "hud",
 }
 
 for _, filename in pairs(modimport_filenames) do
