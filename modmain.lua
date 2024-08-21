@@ -51,8 +51,8 @@ Assets = {
     Asset("ANIM", "anim/icey2_new_skill_circle.zip"),
 
 
-    -- Asset("SOUNDPACKAGE", "sound/gale_bgm.fev"),
-    -- Asset("SOUND", "sound/gale_bgm.fsb"),
+    -- Asset("SOUNDPACKAGE", "sound/icey2_bgm.fev"),
+    -- Asset("SOUND", "sound/icey2_bgm.fsb"),
 
     --[[---注意事项
 1、目前官方自从熔炉之后人物的界面显示用的都是那个椭圆的图

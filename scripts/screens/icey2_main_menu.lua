@@ -70,13 +70,6 @@ function Icey2MainMenu:OnDestroy()
     Icey2MainMenu._base.OnDestroy(self)
 end
 
-function Icey2MainMenu:GoToMiddle()
-    self:SetHAnchor(ANCHOR_MIDDLE)
-    self:SetVAnchor(ANCHOR_MIDDLE)
-
-    self:SetPosition(0, 0)
-end
-
 function Icey2MainMenu:AddBGAndBars()
     local r, g, b = unpack(UICOLOURS.BROWN_DARK)
 

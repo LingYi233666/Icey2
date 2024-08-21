@@ -313,22 +313,6 @@ local function OnUpdate(inst)
 
     local towards = inst.target_pos - inst:GetPosition()
 
-    -- local polar_my = GaleCommon.Cart2Polar(inst.direction)
-    -- local polar_target = GaleCommon.Cart2Polar(towards:GetNormalized())
-    -- local polar_delta = polar_target - polar_my
-
-    -- local rotate_speed = 360 * DEGREES * FRAMES
-    -- if polar_delta:Length() < rotate_speed or inst.locked then
-    --     inst.locked = true
-    --     inst.direction = towards:GetNormalized()
-    -- else
-    --     local polar_delta_norm = polar_delta:GetNormalized()
-    --     local polar_next = polar_my + polar_delta_norm * rotate_speed
-
-    --     inst.direction = GaleCommon.Polar2Cart(polar_next)
-    --     inst.direction:Normalize()
-    -- end
-
     local delta_vec = towards:GetNormalized() - inst.direction
 
     local max_delta_length = 5 * FRAMES

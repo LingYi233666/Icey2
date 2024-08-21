@@ -5,17 +5,17 @@ local function onjson_data(self, data)
 end
 
 local Icey2Skiller = Class(function(self, inst)
-                               self.inst = inst
+    self.inst = inst
 
-                               self.learned_skill = {}
+    self.learned_skill = {}
 
-                               self.json_data = "{}"
+    -- self.json_data = "{}"
 
 
-                               self:UpdateJsonData()
-                           end, nil, {
-                               json_data = onjson_data,
-                           })
+    self:UpdateJsonData()
+end, nil, {
+    json_data = onjson_data,
+})
 
 function Icey2Skiller:Learn(name, is_onload)
     if self:IsLearned(name) then
