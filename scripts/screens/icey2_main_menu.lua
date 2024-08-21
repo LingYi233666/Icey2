@@ -10,29 +10,15 @@ local Text = require "widgets/text"
 local NineSlice = require "widgets/nineslice"
 local Image = require "widgets/image"
 local ImageButton = require "widgets/imagebutton"
-
+local Icey2SkillSlot = require "widgets/icey2_skill_slot"
+local Icey2SkillTab = require "widgets/icey2_skills_tab"
 
 local Icey2MainMenu = Class(Screen, function(self, owner)
     Screen._ctor(self, "Icey2MainMenu")
 
     self.owner = owner
 
-    -- local scr_w, scr_h = TheSim:GetScreenSize()
-
-    -- self.BG_WIDTH = scr_w * 0.72
-    -- self.BG_HEIGHT = scr_h * 0.7
-
-
-    -- self:AddBGAndBars()
-
-    -- self.tab_screens = {
-    --     skill_tree = self:AddChild(Icey2SkillGroup(self.owner)),
-    -- }
-
-    -- self.headertab_screener = Subscreener(self,
-    --                                       self._BuildHeaderTab, self.tab_screens
-    -- )
-    -- self.headertab_screener:OnMenuButtonSelected("skill_tree")
+    self.bg_width, self.bg_height = 800, 450
 
     self.black = self:AddChild(ImageButton("images/global.xml", "square.tex"))
     self.black.image:SetVRegPoint(ANCHOR_MIDDLE)
@@ -47,13 +33,31 @@ local Icey2MainMenu = Class(Screen, function(self, owner)
 
     self.root = self:AddChild(TEMPLATES.ScreenRoot("Icey2MainMenu"))
 
-    self.test_bg = self.root:AddChild(Image("images/bg_animated_portal.xml", "bg_plate.tex"))
-    self.test_bg:SetSize(900, 450)
+    self.bg = self.root:AddChild(TEMPLATES.RectangleWindow(self.bg_width, self.bg_height))
+    self.bg.top:Hide()
+    self.bg:SetPosition(0, -50)
 
-
-    -- self.close_button = self:AddChild(ImageButton("images/global_redux.xml", "close.tex"))
+    -- self.close_button = self.bg:AddChild(ImageButton("images/global_redux.xml", "close.tex"))
     -- self.close_button:SetOnClick(function() TheFrontEnd:PopScreen(self) end)
-    -- self.close_button:SetPosition(self.BG_WIDTH / 2, self.BG_HEIGHT / 2 + 27)
+    -- self.close_button:SetPosition(self.bg_width / 2 + 35, self.bg_height / 2 + 35)
+
+
+    self.tab_screens = {
+        skill_tab = self.bg:AddChild(Icey2SkillTab(self.owner, {
+            widget_width = 80,
+            widget_height = 80,
+            num_visible_rows = 5,
+            num_columns = 7,
+            bar_height = self.bg_height,
+        })),
+        key_configed = self.bg:AddChild(Widget("key_configed")),
+    }
+    self.tab_screens.skill_tab:SetPosition(-140, 0)
+
+    self.headertab_screener = Subscreener(self,
+                                          self._BuildHeaderTab, self.tab_screens
+    )
+    self.headertab_screener:OnMenuButtonSelected("skill_tab")
 
     -- You must push "icey2_skiller_ui_update" event to update this ui (after learn skill,skill tree change,key config,etc)
     -- self.inst:ListenForEvent("icey2_skiller_ui_update", function()
@@ -61,78 +65,39 @@ local Icey2MainMenu = Class(Screen, function(self, owner)
     --                          end, self.owner)
     -- self.inst:DoTaskInTime(0, function() self:OnUpdate() end)
 
+    ThePlayer.HUD.Icey2MainMenu = self
+
     SetAutopaused(true)
 end)
 
 function Icey2MainMenu:OnDestroy()
     SetAutopaused(false)
-
+    ThePlayer.HUD.Icey2MainMenu = nil
     Icey2MainMenu._base.OnDestroy(self)
-end
-
-function Icey2MainMenu:AddBGAndBars()
-    local r, g, b = unpack(UICOLOURS.BROWN_DARK)
-
-    self.rect = self:AddChild(Image("images/ui/bufftips/bg_white.xml", "bg_white.tex"))
-    self.rect:SetSize(self.BG_WIDTH, self.BG_HEIGHT)
-    self.rect:SetTint(r, g, b, 0.6)
-
-    self.bars = {}
-    for i = 1, 4 do
-        table.insert(self.bars, self:AddChild(Image("images/ui/bufftips/bar.xml", "bar.tex")))
-    end
-
-    self.corners = {}
-    for i = 1, 4 do
-        table.insert(self.corners, self:AddChild(Image("images/ui/bufftips/corner.xml", "corner.tex")))
-    end
-
-    local bg_w, bg_h = self.rect:GetSize()
-
-    self.corners[1]:SetPosition(-bg_w / 2, bg_h / 2)
-    self.corners[1]:SetRotation(-90)
-
-    self.corners[2]:SetPosition(-bg_w / 2, -bg_h / 2)
-    self.corners[2]:SetRotation(-180)
-
-    self.corners[3]:SetPosition(bg_w / 2, -bg_h / 2)
-    self.corners[3]:SetRotation(-270)
-
-    self.corners[4]:SetPosition(bg_w / 2, bg_h / 2)
-
-    local bar_width = 16
-    local bar_delta = 4
-    self.bars[1]:SetPosition(-bg_w / 2 - bar_width / 2 + bar_delta, 0)
-    self.bars[1]:SetSize(bar_width, bg_h)
-
-    self.bars[2]:SetPosition(0, -bg_h / 2 - bar_width / 2 + bar_delta / 2)
-    self.bars[2]:SetRotation(-90)
-    self.bars[2]:SetSize(bar_width, bg_w)
-
-    self.bars[3]:SetPosition(bg_w / 2 + bar_width / 2 - bar_delta, 0)
-    self.bars[3]:SetRotation(-180)
-    self.bars[3]:SetSize(bar_width, bg_h)
-
-    self.bars[4]:SetPosition(0, bg_h / 2 + bar_width / 2 - bar_delta / 2)
-    self.bars[4]:SetRotation(-270)
-    self.bars[4]:SetSize(bar_width, bg_w)
 end
 
 function Icey2MainMenu:_BuildHeaderTab(subscreener)
     local tabs = {
-        { key = "skill_tree",      text = STRINGS.GALE_UI.MENU_SUB_SKILL_TREE, },
-        { key = "keyconfig_check", text = STRINGS.GALE_UI.MENU_SUB_KEY_CONFIGED, },
-        { key = "flute_list",      text = STRINGS.GALE_UI.MENU_SUB_FLUTE_LIST, },
-        { key = "support_them",    text = STRINGS.GALE_UI.MENU_SUB_SUPPORT_THEM, },
-        -- { key = "key3", text = "KEY_3", },
+        { key = "skill_tab",    text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.SKILL_TAB, },
+        { key = "key_configed", text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.KEY_CONFIGED, },
     }
 
-    self.header_tabs = self.rect:AddChild(subscreener:MenuContainer(HeaderTabs, tabs))
-    self.header_tabs:SetPosition(0, self.BG_HEIGHT / 2 + 27)
+    self.header_tabs = self.bg:AddChild(subscreener:MenuContainer(HeaderTabs, tabs))
+    self.header_tabs:SetPosition(0, self.bg_height / 2 + 27)
     self.header_tabs:MoveToBack()
 
 
     return self.header_tabs.menu
+end
+
+function Icey2MainMenu:OnControl(control, down)
+    if Icey2MainMenu._base.OnControl(self, control, down) then return true end
+
+
+    if not down and (control == CONTROL_CANCEL) then
+        TheFrontEnd:PopScreen(self)
+        return true
+    end
 end
 
 function Icey2MainMenu:OnUpdate()

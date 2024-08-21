@@ -19,10 +19,10 @@ AddClassPostConstruct("widgets/controls", function(self)
                     TheFrontEnd:PushScreen(Icey2MainMenu(self.owner))
                 end,
                 STRINGS.ICEY2_UI.MAIN_MENU.CALLER_TEXT,
-                { 120, 60 }
+                { 140, 60 }
             )
         )
 
-        self.Icey2MenuCaller:SetPosition(60, 28)
+        self.Icey2MenuCaller:SetPosition(75, 28)
     end
 end)

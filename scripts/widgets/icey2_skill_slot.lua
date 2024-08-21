@@ -4,12 +4,26 @@ local Widget = require "widgets/widget"
 local UIAnim = require "widgets/uianim"
 local ImageButton = require "widgets/imagebutton"
 
-local Icey2SkillSlot = Class(ImageButton, function(self, skill_name, atlas, image)
+local Icey2SkillSlot = Class(ImageButton, function(self)
+    local atlas = "images/ui/skill_slot/sample.xml"
+    local image = "sample.tex"
+
+    ImageButton._ctor(self, atlas, image, image, image, image, image)
+
+    local default_scale = 0.5
+    self:SetNormalScale(default_scale)
+    self:SetFocusScale(default_scale)
+end)
+
+function Icey2SkillSlot:SetSkillName(skill_name)
     assert(skill_name ~= nil)
     assert(ICEY2_SKILL_DEFINES[skill_name] ~= nil)
 
-    atlas = atlas or "images/ui/skill_slot/sample.xml"
-    image = image or "sample.tex"
+    skill_name = skill_name:lower()
+    self.skill_name = skill_name
+
+    local atlas = "images/ui/skill_slot/" .. skill_name .. ".xml"
+    local image = skill_name .. ".tex"
 
     local search_result = softresolvefilepath(atlas)
 
@@ -20,11 +34,7 @@ local Icey2SkillSlot = Class(ImageButton, function(self, skill_name, atlas, imag
         image = "sample.tex"
     end
 
-    ImageButton._ctor(self, atlas, image, image, image, image, image)
-
-    -- self:SetNormalScale(0.55)
-    -- self:SetFocusScale(0.55)
-end)
-
+    self:SetTextures(atlas, image, image, image, image, image)
+end
 
 return Icey2SkillSlot
