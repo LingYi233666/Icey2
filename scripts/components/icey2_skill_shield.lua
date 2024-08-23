@@ -4,8 +4,10 @@ local Icey2Shield = Class(function(self, inst)
     self.current = 100
     self.max = 100
 
-    self.max_damage_absorb = 20
+    self.max_damage_absorb = 34
     self.effect_factor = 1
+
+    self.recover_rate = 1
 end)
 
 function Icey2Shield:SetVal(current)
@@ -40,6 +42,12 @@ function Icey2Shield:RedirectDamageToShield(amount, overtime, cause, ignore_invi
     --print(string.format("Trading %2.2f moisture for %2.2f life! Took %2.2f damage. Original damage was %2.2f.", absorbtion * rate, absorbtion, amount + absorbtion, amount))
 
     return amount + absorbtion
+end
+
+function Icey2Shield:OnUpdate(dt)
+    if self.current < self.max then
+        self:DoDelta(self.recover_rate * dt)
+    end
 end
 
 return Icey2Shield
