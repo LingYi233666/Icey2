@@ -26,5 +26,31 @@ STRINGS.ICEY2_UI.MAIN_MENU = {}
 STRINGS.ICEY2_UI.MAIN_MENU.CALLER_TEXT = "菜单"
 STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES = {
     SKILL_TAB = "技能组",
-    KEY_CONFIGED = "键位一览",
+    KEY_CONFIG = "键位一览",
+}
+
+STRINGS.ICEY2_UI.SKILL_TAB = {
+    SKILL_DESC = {
+        PHANTOM_SWORD = {
+            TITLE = "幻影剑",
+            DESC = "释放5枚电浆飞弹攻击鼠标指向的生物，每枚飞弹造成5~14位面伤害。飞弹一定会命中目标。\n如果鼠标指向处没有生物。则飞弹会自动寻找附近的敌人。",
+        },
+
+        UNKNWON = {
+            TITLE = "未知技能",
+            DESC = "有些东西需要靠你自己去发现。",
+        },
+    },
+
+    KEY_CONFIG = "设置键位",
+}
+
+STRINGS.ICEY2_UI.KEY_CONFIG_DIALOG = {
+    TITLE = "设置键位",
+    TEXT_BEFORE = "请按下对应的键位后再按确定来完成键位设置。",
+    TEXT_AFTER = "当前选的按键是：%s。您可以点击确定键完成键位设置，或者重新选择按键。",
+
+    DO_SET_SKILL_KEY = "确定",
+    CLEAR_SKILL_KEY = "清除按键",
+    SET_KEY_CANCEL = "取消",
 }

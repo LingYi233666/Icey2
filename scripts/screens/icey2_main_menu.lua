@@ -11,7 +11,7 @@ local NineSlice = require "widgets/nineslice"
 local Image = require "widgets/image"
 local ImageButton = require "widgets/imagebutton"
 local Icey2SkillSlot = require "widgets/icey2_skill_slot"
-local Icey2SkillTab = require "widgets/icey2_skills_tab"
+local Icey2SkillTab = require "widgets/icey2_skill_tab"
 
 local Icey2MainMenu = Class(Screen, function(self, owner)
     Screen._ctor(self, "Icey2MainMenu")
@@ -50,9 +50,8 @@ local Icey2MainMenu = Class(Screen, function(self, owner)
             num_columns = 7,
             bar_height = self.bg_height,
         })),
-        key_configed = self.bg:AddChild(Widget("key_configed")),
+        key_config = self.bg:AddChild(Widget("KEY_CONFIG")),
     }
-    self.tab_screens.skill_tab:SetPosition(-140, 0)
 
     self.headertab_screener = Subscreener(self,
                                           self._BuildHeaderTab, self.tab_screens
@@ -78,13 +77,16 @@ end
 
 function Icey2MainMenu:_BuildHeaderTab(subscreener)
     local tabs = {
-        { key = "skill_tab",    text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.SKILL_TAB, },
-        { key = "key_configed", text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.KEY_CONFIGED, },
+        { key = "skill_tab",  text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.SKILL_TAB, },
+        { key = "key_config", text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.KEY_CONFIG, },
     }
 
     self.header_tabs = self.bg:AddChild(subscreener:MenuContainer(HeaderTabs, tabs))
-    self.header_tabs:SetPosition(0, self.bg_height / 2 + 27)
+    -- self.header_tabs:SetPosition(0, self.bg_height / 2 + 27)
+    self.header_tabs:SetPosition(0, self.bg_height / 2 + 22)
     self.header_tabs:MoveToBack()
+    local s = 0.8
+    self.header_tabs:SetScale(s, s)
 
 
     return self.header_tabs.menu

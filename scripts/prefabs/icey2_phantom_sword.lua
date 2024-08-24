@@ -212,12 +212,12 @@ local function OnProjectileHit(inst, attacker, target)
             table.insert(ents, target)
         end
 
-        for k, v in pairs(ents) do
-            if attacker.components.combat:CanTarget(v) and not attacker.components.combat:IsAlly(v) then
-                -- targ, weapon, projectile, stimuli, instancemult, instrangeoverride, instpos
-                attacker.components.combat:DoAttack(v, inst, inst, nil, nil, 99999, inst:GetPosition())
-            end
-        end
+        -- for k, v in pairs(ents) do
+        --     if attacker.components.combat:CanTarget(v) and not attacker.components.combat:IsAlly(v) then
+        --         -- targ, weapon, projectile, stimuli, instancemult, instrangeoverride, instpos
+        --         attacker.components.combat:DoAttack(v, inst, inst, nil, nil, 99999, inst:GetPosition())
+        --     end
+        -- end
     end
 
     inst:Remove()

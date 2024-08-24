@@ -14,11 +14,11 @@ TheInput:AddKeyHandler(function(key, down)
     end
 
     -- DEBUG TEST
-    if key == KEY_R then
-        local x, y, z = TheInput:GetWorldPosition():Get()
-        local ent = TheInput:GetWorldEntityUnderMouse()
-        SendModRPCToServer(MOD_RPC["icey2_rpc"]["debug_test_phantom_sword"], x, y, z, ent)
-    end
+    -- if key == KEY_R then
+    --     local x, y, z = TheInput:GetWorldPosition():Get()
+    --     local ent = TheInput:GetWorldEntityUnderMouse()
+    --     SendModRPCToServer(MOD_RPC["icey2_rpc"]["debug_test_phantom_sword"], x, y, z, ent)
+    -- end
 
 
     -- Handle normal skill casting

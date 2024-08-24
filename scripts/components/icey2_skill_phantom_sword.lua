@@ -3,7 +3,7 @@ local Icey2SkillPhantomSword = Class(function(self, inst)
 
     self.num_swords = 5
 
-    self.cast_distance = 16
+    self.cast_distance = 25
 
     self.magic_cost = 5
 

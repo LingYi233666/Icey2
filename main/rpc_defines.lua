@@ -16,6 +16,6 @@ AddModRPCHandler("icey2_rpc", "cast_skill", function(inst, name, pressed, x, y, 
     end
 end)
 
-AddModRPCHandler("icey2_rpc", "debug_test_phantom_sword", function(inst, x, y, z, ent)
-    ICEY2_SKILL_DEFINES.PHANTOM_SWORD.OnPressed(inst, x, y, z, ent)
-end)
+-- AddModRPCHandler("icey2_rpc", "debug_test_phantom_sword", function(inst, x, y, z, ent)
+--     ICEY2_SKILL_DEFINES.PHANTOM_SWORD.OnPressed(inst, x, y, z, ent)
+-- end)

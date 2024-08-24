@@ -25,12 +25,14 @@ local Icey2Skiller = Class(function(self, inst)
         inst:ListenForEvent("icey2_skiller_json_data_dirty", function()
             if self.inst == ThePlayer then
                 self:UpdateByServer()
-                self:SaveToFile()
-                self:PrintKeyHandler()
             end
         end)
     end
 end)
+
+function Icey2Skiller:SetJsonData(val)
+    self.json_data:set(val)
+end
 
 function Icey2Skiller:LoadFromFile()
     TheSim:GetPersistentString("mod_config_data/icey2_skiller_keyhandler", function(success, encoded_data)
@@ -63,10 +65,6 @@ function Icey2Skiller:UpdateByServer()
     local tab = json.decode(self.json_data:value())
     self.learned_skill = tab.learned_skill or {}
 
-    for key, name in pairs(self.keyhandler) do
-        self:SetKeyHandler(key, name)
-    end
-
     -- update galke skill ui (in menu screen) here
     self.inst:PushEvent("icey2_skiller_ui_update")
 end
@@ -78,19 +76,12 @@ function Icey2Skiller:PrintKeyHandler()
     end
 end
 
-function Icey2Skiller:SetKeyHandler(key, name)
+function Icey2Skiller:SetKeyHandler(key, name, save_to_file)
     if name ~= nil and not self:IsLearned(name) then
         return
     end
 
-    for k, v in pairs(self.keyhandler) do
-        if v == name then
-            self.keyhandler[k] = nil
-            print(string.format("Icey2Skiller replica clean old setting:%s,%s", name,
-                STRINGS.UI.CONTROLSSCREEN.INPUTS[1][k]))
-            break
-        end
-    end
+    self:RemoveKeyHandler(name)
 
     self.keyhandler[key] = name
 
@@ -101,6 +92,25 @@ function Icey2Skiller:SetKeyHandler(key, name)
     end
 
     -- self.inst:PushEvent("icey2_skiller_ui_update")
+
+    if save_to_file then
+        self:SaveToFile()
+    end
+end
+
+function Icey2Skiller:RemoveKeyHandler(name, save_to_file)
+    for k, v in pairs(self.keyhandler) do
+        if v == name then
+            self.keyhandler[k] = nil
+            print(string.format("Icey2Skiller replica clean old setting:%s,%s", name,
+                                STRINGS.UI.CONTROLSSCREEN.INPUTS[1][k]))
+            break
+        end
+    end
+
+    if save_to_file then
+        self:SaveToFile()
+    end
 end
 
 function Icey2Skiller:IsLearned(name)

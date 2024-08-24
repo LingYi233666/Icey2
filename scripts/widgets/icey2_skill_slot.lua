@@ -19,22 +19,20 @@ function Icey2SkillSlot:SetSkillName(skill_name)
     assert(skill_name ~= nil)
     assert(ICEY2_SKILL_DEFINES[skill_name] ~= nil)
 
-    skill_name = skill_name:lower()
     self.skill_name = skill_name
 
-    local atlas = "images/ui/skill_slot/" .. skill_name .. ".xml"
-    local image = skill_name .. ".tex"
+    local imagename = skill_name:lower()
+
+    local atlas = "images/ui/skill_slot/" .. imagename .. ".xml"
+    local image = imagename .. ".tex"
 
     local search_result = softresolvefilepath(atlas)
 
     if search_result == nil then
         print("Icey2SkillSlot Can't find " .. atlas .. ",use default...")
-
-        atlas = "images/ui/skill_slot/sample.xml"
-        image = "sample.tex"
+    else
+        -- self:SetTextures(atlas, image, image, image, image, image)
     end
-
-    self:SetTextures(atlas, image, image, image, image, image)
 end
 
 return Icey2SkillSlot

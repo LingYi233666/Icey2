@@ -81,11 +81,17 @@ local modimport_filenames = {
     "input",
     "stategraphs",
     "hud",
+
+
+
+    "debug",
 }
 
 for _, filename in pairs(modimport_filenames) do
     modimport("main/" .. filename)
 end
+
+
 
 AddMinimapAtlas("images/map_icons/icey2.xml") --增加小地图图标
 

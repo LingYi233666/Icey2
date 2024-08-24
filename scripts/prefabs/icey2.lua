@@ -10,27 +10,9 @@ local prefabs = {}
 local start_inv = {
 	"spear", --自带一个长矛
 }
--- 当人物复活的时候
-local function onbecamehuman(inst)
-	-- 设置人物的移速（1表示1倍于wilson）
-	inst.components.locomotor:SetExternalSpeedMultiplier(inst, "icey2_speed_mod", 1)
-end
---当人物死亡的时候
-local function onbecameghost(inst)
-	-- 变成鬼魂的时候移除速度修正
-	inst.components.locomotor:RemoveExternalSpeedMultiplier(inst, "icey2_speed_mod")
-end
 
--- 重载游戏或者生成一个玩家的时候
-local function onload(inst)
-	inst:ListenForEvent("ms_respawnedfromghost", onbecamehuman)
-	inst:ListenForEvent("ms_becameghost", onbecameghost)
-
-	if inst:HasTag("playerghost") then
-		onbecameghost(inst)
-	else
-		onbecamehuman(inst)
-	end
+local function OnNewSpawn(inst)
+	inst.components.icey2_skiller:Learn("PHANTOM_SWORD")
 end
 
 
@@ -56,10 +38,11 @@ local master_postinit = function(inst)
 	inst.components.hunger:SetMax(TUNING.ICEY2_HUNGER)
 	inst.components.sanity:SetMax(TUNING.ICEY2_SANITY)
 
+	inst:AddComponent("icey2_skiller")
+
 	inst:AddComponent("icey2_skill_phantom_sword")
 
-	inst.OnLoad = onload
-	inst.OnNewSpawn = onload
+	inst.OnNewSpawn = OnNewSpawn
 end
 
 return MakePlayerCharacter("icey2", prefabs, assets, common_postinit, master_postinit, start_inv)
