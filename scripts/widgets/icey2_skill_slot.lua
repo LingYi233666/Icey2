@@ -10,6 +10,10 @@ local Icey2SkillSlot = Class(ImageButton, function(self)
 
     ImageButton._ctor(self, atlas, image, image, image, image, image)
 
+
+    self.icon = self:AddChild(Image())
+    self.icon:Hide()
+
     local default_scale = 0.5
     self:SetNormalScale(default_scale)
     self:SetFocusScale(default_scale)
@@ -29,9 +33,22 @@ function Icey2SkillSlot:SetSkillName(skill_name)
     local search_result = softresolvefilepath(atlas)
 
     if search_result == nil then
-        print("Icey2SkillSlot Can't find " .. atlas .. ",use default...")
+        -- print("Icey2SkillSlot Can't find " .. atlas .. ",use default...")
+        self.icon:Hide()
     else
-        -- self:SetTextures(atlas, image, image, image, image, image)
+        self.icon:SetTexture(atlas, image)
+        self.icon:SetSize(55, 55)
+        self.icon:Show()
+    end
+end
+
+function Icey2SkillSlot:EnableIcon(enable)
+    if enable then
+        self.icon:SetTint(1, 1, 1, 1)
+        self.image:SetTint(1, 1, 1, 1)
+    else
+        self.icon:SetTint(0, 0, 0, 1)
+        self.image:SetTint(0.6, 0.6, 0.6, 1)
     end
 end
 

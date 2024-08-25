@@ -42,8 +42,13 @@ Assets = {
     Asset("IMAGE", "bigportraits/icey2_none.tex"), --人物大图（椭圆的那个）
     Asset("ATLAS", "bigportraits/icey2_none.xml"),
 
+    --------------------------------------------------------------
+
     Asset("IMAGE", "images/ui/skill_slot/sample.tex"),
     Asset("ATLAS", "images/ui/skill_slot/sample.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/phantom_sword.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/phantom_sword.xml"),
 
     Asset("SOUNDPACKAGE", "sound/icey2_sfx.fev"),
     Asset("SOUND", "sound/icey2_sfx.fsb"),

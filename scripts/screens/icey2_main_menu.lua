@@ -12,6 +12,9 @@ local Image = require "widgets/image"
 local ImageButton = require "widgets/imagebutton"
 local Icey2SkillSlot = require "widgets/icey2_skill_slot"
 local Icey2SkillTab = require "widgets/icey2_skill_tab"
+local Icey2SkillLearnedFX = require "widgets/icey2_skill_learned_fx"
+
+local easing = require("easing")
 
 local Icey2MainMenu = Class(Screen, function(self, owner)
     Screen._ctor(self, "Icey2MainMenu")
@@ -64,14 +67,18 @@ local Icey2MainMenu = Class(Screen, function(self, owner)
     --                          end, self.owner)
     -- self.inst:DoTaskInTime(0, function() self:OnUpdate() end)
 
-    ThePlayer.HUD.Icey2MainMenu = self
+    ThePlayer.HUD.controls.Icey2MainMenu = self
 
     SetAutopaused(true)
 end)
 
 function Icey2MainMenu:OnDestroy()
     SetAutopaused(false)
-    ThePlayer.HUD.Icey2MainMenu = nil
+
+    if TheFrontEnd:GetSound():PlayingSound("icey2_skill_learned_music") then
+        TheFrontEnd:GetSound():KillSound("icey2_skill_learned_music")
+    end
+    ThePlayer.HUD.controls.Icey2MainMenu = nil
     Icey2MainMenu._base.OnDestroy(self)
 end
 
@@ -90,6 +97,54 @@ function Icey2MainMenu:_BuildHeaderTab(subscreener)
 
 
     return self.header_tabs.menu
+end
+
+local function MyMoveTo(widget, start_pos, end_pos, duration, endfn)
+    widget:SetPosition(start_pos.x, start_pos.y, start_pos.z)
+
+    widget.pos_t = 0
+    widget.last_update_time = GetStaticTime()
+    widget.task = widget.inst:DoPeriodicTask(0, function()
+        local valx = easing.inCubic(widget.pos_t, start_pos.x, end_pos.x - start_pos.x, duration)
+        local valy = easing.inCubic(widget.pos_t, start_pos.y, end_pos.y - start_pos.y, duration)
+        local valz = easing.inCubic(widget.pos_t, start_pos.z, end_pos.z - start_pos.z, duration)
+        widget:SetPosition(valx, valy, valz)
+
+        widget.pos_t = widget.pos_t + GetStaticTime() - widget.last_update_time
+        widget.last_update_time = GetStaticTime()
+
+        if widget.pos_t >= duration then
+            widget:SetPosition(end_pos.x, end_pos.y, end_pos.z)
+            if endfn then
+                endfn()
+            end
+
+            widget.task:Cancel()
+            widget.task = nil
+        end
+    end)
+end
+
+-- ThePlayer.HUD.Icey2MainMenu:PlaySkillLearnedAnim_Part1("PHANTOM_SWORD")
+function Icey2MainMenu:PlaySkillLearnedAnim_Part1(name, continue_to_part2)
+    print("PlaySkillLearnedAnim_Part1")
+    self.bg:SetClickable(false)
+    self.bg:Hide()
+
+    TheFrontEnd:GetSound():PlaySound("icey2_sfx/hud/new_skill_achieved", "icey2_skill_learned_music")
+
+    local new_guy = self.root:AddChild(Icey2SkillLearnedFX(name))
+    new_guy:MoveToFront()
+    MyMoveTo(new_guy, Vector3(0, 0), Vector3(0, 600), 3.7, function()
+        self.bg:Show()
+        self.bg:SetClickable(true)
+
+        if continue_to_part2 ~= false then
+            self.headertab_screener:OnMenuButtonSelected("skill_tab")
+            self.tab_screens.skill_tab:PlaySkillLearnedAnim_Part2(name)
+        end
+        new_guy:Kill()
+    end)
 end
 
 function Icey2MainMenu:OnControl(control, down)

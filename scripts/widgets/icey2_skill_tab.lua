@@ -6,6 +6,7 @@ local ImageButton = require "widgets/imagebutton"
 local TEMPLATES = require "widgets/redux/templates"
 local Icey2SkillSlot = require "widgets/icey2_skill_slot"
 local Icey2KeyConfigDialog = require "screens/icey2_key_config_dialog"
+local Icey2SkillLearnedFX = require "widgets/icey2_skill_learned_fx"
 
 local Icey2SkillTab = Class(Widget, function(self, owner, config)
     Widget._ctor(self, "Icey2SkillTab")
@@ -40,9 +41,13 @@ local Icey2SkillTab = Class(Widget, function(self, owner, config)
                 end
 
                 widget:SetSkillName(data.name)
+                widget:EnableIcon(self.owner.replica.icey2_skiller:IsLearned(data.name))
                 widget:SetOnClick(function()
                     self:OnSkillSlotClick(widget)
                 end)
+                if data.name == "PHANTOM_SWORD" then
+                    ThePlayer.HUD.debug_slot = widget
+                end
             end,
             scrollbar_offset        = 15,
             scrollbar_height_offset = 0,
@@ -87,6 +92,7 @@ function Icey2SkillTab:FreshData(new_data)
             local b_cast_value = IsCastByButton(b.name) and 1 or 0
 
             return a_cast_value > b_cast_value and a.name < b.name
+            -- return a.name > b.name
         end)
     else
         self.data = new_data
@@ -145,6 +151,83 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
         self.skill_title:Hide()
         self.skill_desc:Hide()
         self.skill_key_config_button:Hide()
+    end
+end
+
+-- Fly up wituout menu: 3.7s
+-- Fly to slot: 5.8s
+-- Static: 3.2s
+function Icey2SkillTab:PlaySkillLearnedAnim_Part2(name)
+    local target_data = nil
+    for k, v in pairs(self.data) do
+        if v.name == name then
+            target_data = v
+            break
+        end
+    end
+
+    local target_k = self.scroll_list:FindDataIndex(target_data)
+
+    if target_k and target_k > 0 then
+        -- local row = math.ceil(target_k / self.config.num_columns)
+        -- local col = target_k % self.config.num_columns
+        -- if col == 0 then
+        --     col = self.config.num_columns
+        -- end
+
+        -- print("target_k = ", target_k)
+        -- print("target row, col = ", row, col)
+
+        self.scroll_list:ScrollToDataIndex(target_k)
+
+        local index_in_view = nil
+        local target_slot = nil
+        for k, v in pairs(self.scroll_list.widgets_to_update) do
+            if v.skill_name == name then
+                index_in_view, target_slot = k, v
+                break
+            end
+        end
+
+        local row = math.ceil(index_in_view / self.config.num_columns)
+        local y_offset = row * 150
+
+        if target_slot then
+            self:SetClickable(false)
+            target_slot:EnableIcon(false)
+
+            local pos = target_slot:GetPosition()
+
+            local new_guy = self.scroll_list.list_root.grid:AddChild(Icey2SkillLearnedFX(name))
+            new_guy:SetPosition(pos.x, pos.y + y_offset)
+            new_guy:MoveToFront()
+            new_guy:MoveTo(Vector3(pos.x, pos.y + y_offset, 0), Vector3(pos.x, pos.y, 0), 5.6, function()
+                self.inst:DoTaskInTime(3.2, function()
+                    target_slot:EnableIcon(self.owner.replica.icey2_skiller:IsLearned(name))
+
+                    TheFrontEnd:GetSound():PlaySound("wilson_rework/ui/unlock_gatedskill")
+
+                    self:OnSkillSlotClick(target_slot)
+
+                    local unlockfx = self.scroll_list.list_root.grid:AddChild(UIAnim())
+                    unlockfx:GetAnimState():SetBank("skill_unlock")
+                    unlockfx:GetAnimState():SetBuild("skill_unlock")
+                    unlockfx:GetAnimState():PlayAnimation("idle")
+                    unlockfx:SetScale(1.3, 1.3)
+                    unlockfx:SetPosition(pos.x, pos.y)
+                    unlockfx.inst:ListenForEvent("animover", function()
+                        unlockfx:Kill()
+                    end)
+
+                    self:SetClickable(true)
+                    new_guy:Kill()
+                end)
+            end)
+        else
+            print("Target slot widget not found !")
+        end
+    else
+        print("Index not found !")
     end
 end
 
