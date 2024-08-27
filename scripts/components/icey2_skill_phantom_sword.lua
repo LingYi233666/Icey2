@@ -1,15 +1,18 @@
-local Icey2SkillPhantomSword = Class(function(self, inst)
-    self.inst = inst
+local Icey2SkillBase_Active = require("components/icey2_skill_base_active")
+
+local Icey2SkillPhantomSword = Class(Icey2SkillBase_Active, function(self, inst)
+    Icey2SkillBase_Active._ctor(self, inst)
+
+    ------------------------------------------
+    self.can_cast_while_busy = true
+    self.can_cast_while_riding = true
+    self.costs.hunger = 1
+    self.cooldown = 0.5
+
+    ------------------------------------------
 
     self.num_swords = 5
-
     self.cast_distance = 25
-
-    self.magic_cost = 5
-
-    self.cooldown = 0.25
-    self.cooldown_timer_name = "icey2_skill_phantom_sword"
-
     self.possibile_targets = {}
 end)
 
@@ -36,15 +39,10 @@ function Icey2SkillPhantomSword:IsValidTarget(target)
         and target:IsNear(self.inst, self.cast_distance)
 end
 
-function Icey2SkillPhantomSword:CanCast(target)
-    if self.inst.components.health:IsDead()
-        or self.inst:HasTag("playerghost")
-        or self.inst.sg:HasStateTag("dead") then
-        return false, "PLAYER_DEAD"
-    end
-
-    if self.inst.components.timer:TimerExists(self.cooldown_timer_name) then
-        return false, "COOLDOWN"
+function Icey2SkillPhantomSword:CanCast(x, y, z, target)
+    local success, reason = Icey2SkillBase_Active.CanCast(self, x, y, z, target)
+    if not success then
+        return false, reason
     end
 
     if target == nil and not self:SearchPossibleTargets() then
@@ -53,12 +51,12 @@ function Icey2SkillPhantomSword:CanCast(target)
         return false, "INVALID_TARGET"
     end
 
-    -- TODO: Not enough magic
-
     return true
 end
 
-function Icey2SkillPhantomSword:Cast(target)
+function Icey2SkillPhantomSword:Cast(x, y, z, target)
+    Icey2SkillBase_Active.Cast(self, x, y, z, target)
+
     if target ~= nil then
         self.possibile_targets = { target }
     end
@@ -66,12 +64,11 @@ function Icey2SkillPhantomSword:Cast(target)
     if #self.possibile_targets > 0 then
         for i = 1, self.num_swords do
             SpawnAt("icey2_phantom_sword", self.inst, nil, { 0, 0.6, 0 }):Launch(self.inst,
-                                                                                 GetRandomItem(self.possibile_targets))
+                GetRandomItem(self.possibile_targets))
         end
 
         -- self.inst.SoundEmitter:PlaySound("icey2_sfx/skill/phantom_sword/release")
         self.inst.SoundEmitter:PlaySound("dontstarve/common/lava_arena/fireball")
-        self.inst.components.timer:StartTimer(self.cooldown_timer_name, self.cooldown)
     end
 
     self.possibile_targets = {}

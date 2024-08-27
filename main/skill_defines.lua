@@ -2,10 +2,10 @@ local function CastSkillByComponent(cmp_name, inst, x, y, z, ent)
     local cmp = inst.components[cmp_name]
 
     if cmp then
-        local can_cast, reason = cmp:CanCast(ent)
+        local can_cast, reason = cmp:CanCast(x, y, z, ent)
 
         if can_cast then
-            cmp:Cast(ent)
+            cmp:Cast(x, y, z, ent)
         else
             print(cmp_name .. " cast failed, reason: " .. tostring(reason))
         end

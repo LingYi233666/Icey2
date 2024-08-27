@@ -1,32 +1,47 @@
-local Icey2Shield = Class(function(self, inst)
+local SourceModifierList = require("util/sourcemodifierlist")
+
+local Icey2SkillShield = Class(function(self, inst)
     self.inst = inst
 
     self.current = 100
     self.max = 100
 
-    self.max_damage_absorb = 34
+    self.max_damage_absorb = 200
     self.effect_factor = 1
 
-    self.recover_rate = 1
+    self.recover_rate = SourceModifierList(inst, 0, SourceModifierList.additive)
+    self.recover_rate:SetModifier(inst, 1, "base")
 end)
 
-function Icey2Shield:SetVal(current)
+function Icey2SkillShield:SetVal(current)
     self.current = math.clamp(current, 0, self.max)
 end
 
-function Icey2Shield:DoDelta(amount)
+function Icey2SkillShield:DoDelta(amount)
     local old = self.current
     self:SetVal(self.current + amount)
 
     self.inst:PushEvent("icey2_shield_delta", { old = old })
 end
 
-function Icey2Shield:GetPercent()
+function Icey2SkillShield:GetPercent()
     return self.current / self.max
 end
 
-function Icey2Shield:RedirectDamageToShield(amount, overtime, cause, ignore_invincible, afflicter, ignore_absorb)
+function Icey2SkillShield:IsWearingArmor()
+    for k, v in pairs(self.inst.components.inventory.equipslots) do
+        if v.components.armor ~= nil and not v:HasTag("ignore_icey2_unarmoured_defence_limit") then
+            return true
+        end
+    end
+end
+
+function Icey2SkillShield:RedirectDamageToShield(amount, overtime, cause, ignore_invincible, afflicter, ignore_absorb)
     if ignore_absorb or ignore_invincible or amount >= 0 or overtime or afflicter == nil then
+        return amount
+    end
+
+    if self:IsWearingArmor() then
         return amount
     end
 
@@ -39,15 +54,32 @@ function Icey2Shield:RedirectDamageToShield(amount, overtime, cause, ignore_invi
 
     --------------
 
-    --print(string.format("Trading %2.2f moisture for %2.2f life! Took %2.2f damage. Original damage was %2.2f.", absorbtion * rate, absorbtion, amount + absorbtion, amount))
-
     return amount + absorbtion
 end
 
-function Icey2Shield:OnUpdate(dt)
-    if self.current < self.max then
-        self:DoDelta(self.recover_rate * dt)
+function Icey2SkillShield:GetRecoverRate()
+    return self.recover_rate:Get()
+end
+
+function Icey2SkillShield:OnSave()
+    local data = {}
+    data.current = self.current
+
+    return data
+end
+
+function Icey2SkillShield:OnLoad(data)
+    if data ~= nil then
+        if data.current ~= nil then
+            self:SetVal(data.current)
+        end
     end
 end
 
-return Icey2Shield
+function Icey2SkillShield:OnUpdate(dt)
+    if self.current < self.max then
+        self:DoDelta(self:GetRecoverRate() * dt)
+    end
+end
+
+return Icey2SkillShield
