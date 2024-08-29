@@ -2,7 +2,7 @@ AddStategraphState("wilson",
     State
     {
         name = "icey2_dodge",
-        tags = { "busy", "evade", "dodge", "no_stun", "nopredict" },
+        tags = { "busy", "evade", "dodge", "no_stun", "nopredict", "nointerrupt" },
 
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation("atk_leap_pre")

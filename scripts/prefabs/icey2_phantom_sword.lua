@@ -206,11 +206,11 @@ local function OnProjectileHit(inst, attacker, target)
 
 
     if attacker and attacker:IsValid() then
-        local x, y, z = inst:GetPosition():Get()
-        local ents = TheSim:FindEntities(x, y, z, 1.5, { "_combat", "_health" }, { "INLIMBO" })
-        if target then
-            table.insert(ents, target)
-        end
+        -- local x, y, z = inst:GetPosition():Get()
+        -- local ents = TheSim:FindEntities(x, y, z, 1.5, { "_combat", "_health" }, { "INLIMBO" })
+        -- if target then
+        --     table.insert(ents, target)
+        -- end
 
         -- for k, v in pairs(ents) do
         --     if attacker.components.combat:CanTarget(v) and not attacker.components.combat:IsAlly(v) then
@@ -218,6 +218,9 @@ local function OnProjectileHit(inst, attacker, target)
         --         attacker.components.combat:DoAttack(v, inst, inst, nil, nil, 99999, inst:GetPosition())
         --     end
         -- end
+        if target then
+            attacker.components.combat:DoAttack(target, inst, inst, nil, nil, 99999, inst:GetPosition())
+        end
     end
 
     inst:Remove()

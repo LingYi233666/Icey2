@@ -45,6 +45,7 @@ local master_postinit = function(inst)
 	inst:AddComponent("icey2_skiller")
 
 	inst:AddComponent("icey2_skill_phantom_sword")
+	inst:AddComponent("icey2_skill_dodge")
 
 	inst.OnNewSpawn = OnNewSpawn
 end

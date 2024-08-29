@@ -39,7 +39,12 @@ function Icey2SkillDodge:SearchCreaturesAutoToAttack()
 end
 
 function Icey2SkillDodge:CounterBack(target)
-    print(self.inst, "CounterBack", target)
+    local shadow = SpawnPrefab("icey2_clone_dodge_counter_back")
+    local dmg, spdmg = self.inst.component.combat:CalcDamage(target, self.inst.component.combat:GetWeapon(), 2)
+
+    shadow.components.planardamage:SetBaseDamage(dmg + (spdmg.planar or 0))
+    shadow:SetSuitablePosition(target)
+    shadow:CounterBack(target)
 end
 
 function Icey2SkillDodge:IsWearingArmor()

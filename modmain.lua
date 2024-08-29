@@ -101,7 +101,7 @@ end
 AddMinimapAtlas("images/map_icons/icey2.xml") --增加小地图图标
 
 --增加人物到mod人物列表的里面 性别为女性（MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL）
-AddModCharacter("icey2", "FEMALE")
+AddModCharacter("icey2", "ROBOT")
 
 
 
