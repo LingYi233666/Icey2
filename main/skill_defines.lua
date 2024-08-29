@@ -31,6 +31,22 @@ ICEY2_SKILL_DEFINES = {
         end,
 
         OnPressed = CastSkillByComponentWrapper("icey2_skill_phantom_sword"),
+
+        Root = true,
+    },
+
+    DODGE = {
+        OnLearned = function(inst, is_onload)
+
+        end,
+
+        OnForget = function(inst)
+
+        end,
+
+        OnPressed = CastSkillByComponentWrapper("icey2_skill_dodge"),
+
+        Root = true,
     },
 }
 

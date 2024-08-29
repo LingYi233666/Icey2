@@ -12,7 +12,11 @@ local start_inv = {
 }
 
 local function OnNewSpawn(inst)
-	inst.components.icey2_skiller:Learn("PHANTOM_SWORD")
+	for name, v in pairs(ICEY2_SKILL_DEFINES) do
+		if v.Root then
+			inst.components.icey2_skiller:Learn(name)
+		end
+	end
 end
 
 

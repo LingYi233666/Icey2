@@ -6,7 +6,7 @@ local Icey2SkillShield = Class(function(self, inst)
     self.current = 100
     self.max = 100
 
-    self.max_damage_absorb = 200
+    self.max_damage_absorb = 99999
     self.effect_factor = 1
 
     self.recover_rate = SourceModifierList(inst, 0, SourceModifierList.additive)
@@ -15,6 +15,11 @@ end)
 
 function Icey2SkillShield:SetVal(current)
     self.current = math.clamp(current, 0, self.max)
+end
+
+function Icey2SkillShield:SetMaxShield(val)
+    self.max = val
+    self:DoDelta(0)
 end
 
 function Icey2SkillShield:DoDelta(amount)
@@ -51,7 +56,10 @@ function Icey2SkillShield:RedirectDamageToShield(amount, overtime, cause, ignore
     self:DoDelta(-absorbtion / self.effect_factor)
 
     ---- FX -----
-
+    -- name = "shadow_shield"..tostring(j + i),
+    -- bank = "stalker_shield",
+    -- build = "stalker_shield",
+    -- anim = "idle"..tostring(i),
     --------------
 
     return amount + absorbtion
