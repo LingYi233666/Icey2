@@ -79,6 +79,7 @@ PREFAB_SKINS["icey2"] = { --修复人物大图显示
 
 
 local modimport_filenames = {
+    "math_utils",
     "language_chs",
     "spdamage",
     "rpc_defines",
