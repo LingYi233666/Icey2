@@ -18,8 +18,42 @@ end)
 
 function Icey2SkillDodge:DoDeltaCharge(delta)
     self.dodge_charge = math.clamp(self.dodge_charge + delta, 0, self.max_dodge_charge)
-    if self.dodge_charge < self.max_dodge_charge then
-        -- TODO:Prepare to recharge
+end
+
+function Icey2SkillDodge:SetMaxCharge(c)
+    self.max_dodge_charge = c
+end
+
+function Icey2SkillDodge:RechageTask()
+    self:DoDeltaCharge(FRAMES)
+end
+
+function Icey2SkillDodge:StartRecharge(delay)
+    self:StopRecharge()
+
+    if delay and delay >= 0 then
+        self.delay_recharge_task = self.inst:DoTaskInTime(delay, function()
+            self:StartRecharge()
+        end)
+    else
+        self.recharge_task = self.inst:DoPeriodicTask(0, function()
+            self:RechageTask()
+            if self.dodge_charge >= self.max_dodge_charge then
+                self:StopRecharge()
+            end
+        end)
+    end
+end
+
+function Icey2SkillDodge:StopRecharge()
+    if self.delay_recharge_task then
+        self.delay_recharge_task:Cancel()
+        self.delay_recharge_task = nil
+    end
+
+    if self.recharge_task then
+        self.recharge_task:Cancel()
+        self.recharge_task = nil
     end
 end
 
@@ -40,11 +74,10 @@ end
 
 function Icey2SkillDodge:CounterBack(target)
     local shadow = SpawnPrefab("icey2_clone_dodge_counter_back")
-    local dmg, spdmg = self.inst.component.combat:CalcDamage(target, self.inst.component.combat:GetWeapon(), 2)
+    local dmg, spdmg = self.inst.component.combat:CalcDamage(target, self.inst.component.combat:GetWeapon())
 
-    shadow.components.planardamage:SetBaseDamage(dmg + (spdmg.planar or 0))
     shadow:SetSuitablePosition(target)
-    shadow:CounterBack(target)
+    shadow:CounterBack(self.inst, target, dmg, spdmg)
 end
 
 function Icey2SkillDodge:IsWearingArmor()
@@ -53,6 +86,11 @@ function Icey2SkillDodge:IsWearingArmor()
             return true
         end
     end
+end
+
+function Icey2SkillDodge:HasSuitableWeapon()
+    local weapon = self.inst.components.combat:GetWeapon()
+    return weapon and not weapon.components.weapon.projectile
 end
 
 function Icey2SkillDodge:OnDodgeStart(target_pos)
@@ -64,9 +102,11 @@ function Icey2SkillDodge:OnDodgeStart(target_pos)
     if not self:IsWearingArmor() then
         self.inst.components.health:SetInvincible(true)
 
-        local enemies = self:SearchCreaturesAutoToAttack()
-        if #enemies > 0 then
-            self:CounterBack(enemies[1])
+        if self:HasSuitableWeapon() then
+            local enemies = self:SearchCreaturesAutoToAttack()
+            if #enemies > 0 then
+                self:CounterBack(enemies[1])
+            end
         end
 
         self.inst.AnimState:SetMultColour(0.1, 0.1, 0.9, 0.5)
@@ -103,6 +143,10 @@ end
 function Icey2SkillDodge:Cast(x, y, z, target)
     Icey2SkillBase_Active.Cast(self, x, y, z, target)
 
+    self:DoDeltaCharge(-1)
+    if self.dodge_charge < self.max_dodge_charge then
+        self:StartRecharge(1)
+    end
     self.inst.sg:GoToState("icey2_dodge", { pos = Vector3(x, y, z) })
 end
 

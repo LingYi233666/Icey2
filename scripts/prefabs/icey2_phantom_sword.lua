@@ -395,8 +395,8 @@ local function projectilefn()
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(0)
 
-    inst:AddComponent("planardamage")
-    inst.components.planardamage:SetBaseDamage(math.random(10) + 4)
+    inst:AddComponent("icey2_spdamage_force")
+    inst.components.icey2_spdamage_force:SetBaseDamage(math.random(10) + 4)
 
     inst:AddComponent("complexprojectile")
     inst.components.complexprojectile:SetOnHit(OnProjectileHit)

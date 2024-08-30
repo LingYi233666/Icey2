@@ -70,12 +70,6 @@ local function DodgeCounterBackFn()
         return inst
     end
 
-    inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(0)
-
-    inst:AddComponent("planardamage")
-    inst.components.planardamage:SetBaseDamage(0)
-
     inst.SetSuitablePosition = function(inst, target)
         local radius = inst:GetPhysicsRadius(0.5)
         local offset = Vector3FromTheta(math.random() * PI2, radius)
@@ -83,7 +77,7 @@ local function DodgeCounterBackFn()
         inst.Transform:SetPosition(x, y, z)
     end
 
-    inst.CounterBack         = function(inst, owner, target)
+    inst.CounterBack         = function(inst, owner, target, dmg, spdmg)
         inst:Copy(owner)
 
         inst.Transform:SetEightFaced()
@@ -96,7 +90,7 @@ local function DodgeCounterBackFn()
 
         inst:DoTaskInTime(13 * FRAMES, function()
             if owner and owner:IsValid() then
-                owner.components.combat:DoAttack(target, inst, nil, nil, nil, 99999, inst:GetPosition())
+                target.components.combat:GetAttacked(owner, dmg, nil, nil, spdmg)
             end
             inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
         end)
