@@ -5,7 +5,7 @@ local Icey2Skiller = Class(function(self, inst)
 
     self.learned_skill = {}
 
-    self.keyhandler = {
+    self.input_handler = {
         -- [KEY_Z] = nil,
         -- [KEY_X] = nil,
         -- [KEY_C] = nil,
@@ -18,7 +18,7 @@ local Icey2Skiller = Class(function(self, inst)
         inst:DoTaskInTime(1, function()
             if self.inst == ThePlayer then
                 self:LoadFromFile()
-                self:PrintKeyHandler()
+                self:PrintInputHandler()
             end
         end)
 
@@ -35,18 +35,18 @@ function Icey2Skiller:SetJsonData(val)
 end
 
 function Icey2Skiller:LoadFromFile()
-    TheSim:GetPersistentString("mod_config_data/icey2_skiller_keyhandler", function(success, encoded_data)
+    TheSim:GetPersistentString("mod_config_data/icey2_skiller_input_handler", function(success, encoded_data)
         if success then
             local save_data = json.decode(encoded_data)
             for k, v in pairs(save_data) do
-                self:SetKeyHandler(v[1], v[2])
+                self:SetInputHandler(v[1], v[2])
             end
 
             self.inst:PushEvent("icey2_skiller_ui_update")
 
             print("Replica icey2_skiller load key config success !")
         else
-            print("Replica icey2_skiller keyhandler load failed !!!")
+            print("Replica icey2_skiller input_handler load failed !!!")
         end
     end)
 end
@@ -54,11 +54,11 @@ end
 function Icey2Skiller:SaveToFile()
     -- print("Current key settings:")
     local tab = {}
-    for k, v in pairs(self.keyhandler) do
+    for k, v in pairs(self.input_handler) do
         table.insert(tab, { k, v })
         -- print(string.format("%s:%s", STRINGS.UI.CONTROLSSCREEN.INPUTS[1][k], v))
     end
-    TheSim:SetPersistentString("mod_config_data/icey2_skiller_keyhandler", json.encode(tab), true)
+    TheSim:SetPersistentString("mod_config_data/icey2_skiller_input_handler", json.encode(tab), true)
 end
 
 function Icey2Skiller:UpdateByServer()
@@ -69,21 +69,21 @@ function Icey2Skiller:UpdateByServer()
     self.inst:PushEvent("icey2_skiller_ui_update")
 end
 
-function Icey2Skiller:PrintKeyHandler()
-    print("Icey2Skiller Current key handler is:")
-    for k, v in pairs(self.keyhandler) do
+function Icey2Skiller:PrintInputHandler()
+    print("Icey2Skiller Current input_handler is:")
+    for k, v in pairs(self.input_handler) do
         print(string.format("%s:%s", STRINGS.UI.CONTROLSSCREEN.INPUTS[1][k], v))
     end
 end
 
-function Icey2Skiller:SetKeyHandler(key, name, save_to_file)
+function Icey2Skiller:SetInputHandler(key, name, save_to_file)
     if name ~= nil and not self:IsLearned(name) then
         return
     end
 
-    self:RemoveKeyHandler(name)
+    self:RemoveInputHandler(name)
 
-    self.keyhandler[key] = name
+    self.input_handler[key] = name
 
     if name ~= nil then
         print(string.format("Icey2Skiller replica setting %s to %s", name, STRINGS.UI.CONTROLSSCREEN.INPUTS[1][key]))
@@ -98,12 +98,12 @@ function Icey2Skiller:SetKeyHandler(key, name, save_to_file)
     end
 end
 
-function Icey2Skiller:RemoveKeyHandler(name, save_to_file)
-    for k, v in pairs(self.keyhandler) do
+function Icey2Skiller:RemoveInputHandler(name, save_to_file)
+    for k, v in pairs(self.input_handler) do
         if v == name then
-            self.keyhandler[k] = nil
+            self.input_handler[k] = nil
             print(string.format("Icey2Skiller replica clean old setting:%s,%s", name,
-                                STRINGS.UI.CONTROLSSCREEN.INPUTS[1][k]))
+                STRINGS.UI.CONTROLSSCREEN.INPUTS[1][k]))
             break
         end
     end
