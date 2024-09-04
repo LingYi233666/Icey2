@@ -14,6 +14,14 @@ local Icey2SkillSlot = Class(ImageButton, function(self)
     self.icon = self:AddChild(Image())
     self.icon:Hide()
 
+    self.recharge = self:AddChild(UIAnim())
+    self.recharge:GetAnimState():SetBank("recharge_meter")
+    self.recharge:GetAnimState():SetBuild("recharge_meter")
+    self.recharge:GetAnimState():SetMultColour(1, 1, 1, 0.8)
+    local s = 0.93
+    self.recharge:SetScale(s, s, s)
+    self.recharge:Hide()
+
     local default_scale = 0.5
     self:SetNormalScale(default_scale)
     self:SetFocusScale(default_scale)
@@ -49,6 +57,29 @@ function Icey2SkillSlot:EnableIcon(enable)
     else
         self.icon:SetTint(0, 0, 0, 1)
         self.image:SetTint(0.6, 0.6, 0.6, 1)
+    end
+end
+
+function Icey2SkillSlot:EnableFlashing(enable)
+    if self.flashing_task then
+        self.flashing_task:Cancel()
+        self.flashing_task = nil
+    end
+    self.recharge:Hide()
+
+    if enable then
+        self.recharge:Show()
+        self.recharge:GetAnimState():SetPercent("frame_pst", 0.49)
+        -- self.recharge:GetAnimState():PlayAnimation("frame_pst", true)
+        -- self.recharge:GetAnimState():SetDeltaTimeMultiplier(5)
+
+        self.flashing_task = self.inst:DoPeriodicTask(FRAMES * 2, function()
+            if self.recharge.shown then
+                self.recharge:Hide()
+            else
+                self.recharge:Show()
+            end
+        end)
     end
 end
 

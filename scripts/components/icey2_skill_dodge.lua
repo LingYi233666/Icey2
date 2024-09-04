@@ -10,22 +10,23 @@ local Icey2SkillDodge = Class(Icey2SkillBase_Active, function(self, inst)
 
     ------------------------------------------
 
-    self.search_dist = 3
-    self.dodge_speed = 25
+    self.search_dist = 5
+    self.dodge_speed = 40
+
     self.max_dodge_charge = 1
     self.dodge_charge = 1
+    self.recharge_rate = 3
 end)
 
 function Icey2SkillDodge:DoDeltaCharge(delta)
-    self.dodge_charge = math.clamp(self.dodge_charge + delta, 0, self.max_dodge_charge)
+    self.dodge_charge = math.clamp(self.dodge_charge + delta, 0,
+                                   self.max_dodge_charge)
 end
 
-function Icey2SkillDodge:SetMaxCharge(c)
-    self.max_dodge_charge = c
-end
+function Icey2SkillDodge:SetMaxCharge(c) self.max_dodge_charge = c end
 
 function Icey2SkillDodge:RechageTask()
-    self:DoDeltaCharge(FRAMES)
+    self:DoDeltaCharge(FRAMES * self.recharge_rate)
 end
 
 function Icey2SkillDodge:StartRecharge(delay)
@@ -60,11 +61,12 @@ end
 function Icey2SkillDodge:SearchCreaturesAutoToAttack()
     local creatures = {}
     local x, y, z = self.inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, self.search_dist, { "_combat", "_health" }, { "INLIMBO" })
+    local ents = TheSim:FindEntities(x, y, z, self.search_dist,
+                                     {"_combat", "_health"}, {"INLIMBO"})
     for _, v in pairs(ents) do
-        if self.inst.components.combat:CanTarget(v)
-            and v.components.combat:TargetIs(self.inst)
-            and (v:HasTag("abouttoattack") or (v.sg and v.sg:HasStateTag("abouttoattack"))) then
+        if self.inst.components.combat:CanTarget(v) and
+            v.components.combat:TargetIs(self.inst) and
+            (v:HasTag("attack") or (v.sg and v.sg:HasStateTag("attack"))) then
             table.insert(creatures, v)
         end
     end
@@ -74,18 +76,18 @@ end
 
 function Icey2SkillDodge:CounterBack(target)
     local shadow = SpawnPrefab("icey2_clone_dodge_counter_back")
-    local dmg, spdmg = self.inst.component.combat:CalcDamage(target, self.inst.component.combat:GetWeapon())
+    local dmg, spdmg = self.inst.components.combat:CalcDamage(target, self.inst
+                                                                  .components
+                                                                  .combat:GetWeapon())
 
+    spdmg = spdmg or {}
+    spdmg.icey2_spdamage_force = (spdmg.icey2_spdamage_force or 0) + dmg
+    dmg = 0
+
+    shadow.AnimState:OverrideSymbol("swap_object", "swap_nightmaresword",
+                                    "swap_nightmaresword")
     shadow:SetSuitablePosition(target)
     shadow:CounterBack(self.inst, target, dmg, spdmg)
-end
-
-function Icey2SkillDodge:IsWearingArmor()
-    for k, v in pairs(self.inst.components.inventory.equipslots) do
-        if v.components.armor ~= nil and not v:HasTag("ignore_icey2_unarmoured_defence_limit") then
-            return true
-        end
-    end
 end
 
 function Icey2SkillDodge:HasSuitableWeapon()
@@ -99,20 +101,23 @@ function Icey2SkillDodge:OnDodgeStart(target_pos)
     self.inst:ForceFacePoint(target_pos)
     self.inst.Physics:SetMotorVelOverride(self.dodge_speed, 0, 0)
 
-    if not self:IsWearingArmor() then
+    if not Icey2Normal.IsWearingArmor(self.inst) then
         self.inst.components.health:SetInvincible(true)
 
         if self:HasSuitableWeapon() then
             local enemies = self:SearchCreaturesAutoToAttack()
-            if #enemies > 0 then
-                self:CounterBack(enemies[1])
-            end
+            if #enemies > 0 then self:CounterBack(enemies[1]) end
         end
 
-        self.inst.AnimState:SetMultColour(0.1, 0.1, 0.9, 0.5)
+        -- self.inst.AnimState:SetMultColour(0.1, 0.1, 0.9, 0.5)
+        self.inst.AnimState:SetMultColour(0 / 255, 229 / 255, 232 / 255, 0.3)
+
+        -- icey_speedrun
+        local fx1 = self.inst:SpawnChild("icey2_dodge_vfx")
+        self.dodge_fx = {fx1}
     end
 
-    self.inst.SoundEmitter:PlaySound("")
+    self.inst.SoundEmitter:PlaySound("icey2_sfx/skill/dodge/dodge")
 end
 
 function Icey2SkillDodge:OnDodging()
@@ -125,17 +130,18 @@ function Icey2SkillDodge:OnDodgeStop()
     self.inst.components.health:SetInvincible(false)
 
     self.inst.AnimState:SetMultColour(1, 1, 1, 1)
+
+    if self.dodge_fx then
+        for _, v in pairs(self.dodge_fx) do v:Remove() end
+        self.dodge_fx = nil
+    end
 end
 
 function Icey2SkillDodge:CanCast(x, y, z, target)
     local success, reason = Icey2SkillBase_Active.CanCast(self, x, y, z, target)
-    if not success then
-        return false, reason
-    end
+    if not success then return false, reason end
 
-    if self.dodge_charge < 1 then
-        return false, "NOT_ENOUGH_DODGE_CHARGE"
-    end
+    if self.dodge_charge < 1 then return false, "NOT_ENOUGH_DODGE_CHARGE" end
 
     return true
 end
@@ -144,10 +150,8 @@ function Icey2SkillDodge:Cast(x, y, z, target)
     Icey2SkillBase_Active.Cast(self, x, y, z, target)
 
     self:DoDeltaCharge(-1)
-    if self.dodge_charge < self.max_dodge_charge then
-        self:StartRecharge(1)
-    end
-    self.inst.sg:GoToState("icey2_dodge", { pos = Vector3(x, y, z) })
+    if self.dodge_charge < self.max_dodge_charge then self:StartRecharge(0.5) end
+    self.inst.sg:GoToState("icey2_dodge", {pos = Vector3(x, y, z)})
 end
 
 return Icey2SkillDodge

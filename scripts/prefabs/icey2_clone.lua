@@ -20,6 +20,10 @@ local function CommonFn()
     inst.AnimState:SetBuild("icey2")
     inst.AnimState:PlayAnimation("idle")
 
+
+    inst.AnimState:Show("HEAD")
+    inst.AnimState:Hide("HEAD_HAT")
+
     inst.AnimState:OverrideSymbol("fx_wipe", "wilson_fx", "fx_wipe")
 
     -- inst.AnimState:SetMultColour(0, 0, 0, .5)
@@ -64,7 +68,11 @@ end
 local function DodgeCounterBackFn()
     local inst = CommonFn()
 
-    inst.AnimState:SetAddColour(0, 0, 0.8, 1)
+
+    inst.AnimState:Show("ARM_carry")
+    inst.AnimState:Hide("ARM_normal")
+
+    inst.AnimState:SetAddColour(96 / 255, 249 / 255, 255 / 255, 1)
 
     if not TheWorld.ismastersim then
         return inst
@@ -87,6 +95,8 @@ local function DodgeCounterBackFn()
 
         inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
         -- inst.SoundEmitter:PlaySound("dontstarve/common/deathpoof")
+        inst.SoundEmitter:PlaySound("dontstarve/common/lava_arena/fireball")
+
 
         inst:DoTaskInTime(13 * FRAMES, function()
             if owner and owner:IsValid() then
@@ -99,6 +109,8 @@ local function DodgeCounterBackFn()
             inst:Remove()
         end)
     end
+
+    return inst
 end
 
 return Prefab("icey2_clone", NormalCloneFn, assets),

@@ -8,6 +8,8 @@ local Icey2SkillSlot = require "widgets/icey2_skill_slot"
 local Icey2KeyConfigDialog = require "screens/icey2_key_config_dialog"
 local Icey2SkillLearnedFX = require "widgets/icey2_skill_learned_fx"
 
+local easing = require("easing")
+
 local Icey2SkillTab = Class(Widget, function(self, owner, config)
     Widget._ctor(self, "Icey2SkillTab")
 
@@ -81,6 +83,15 @@ local function IsCastByButton(name)
     return data and (data.OnPressed or data.OnReleased or data.OnPressed_client or data.OnReleased_client)
 end
 
+function Icey2SkillTab:ModifySlideBar()
+    self.scroll_list.up_button:Hide()
+    self.scroll_list.down_button:Hide()
+    self.scroll_list.scroll_bar_container:Show()
+    self.scroll_list.scroll_bar_line:Show()
+    self.scroll_list.scroll_bar_line:ScaleToSize(11, self.config.bar_height)
+    self.scroll_list.position_marker:Hide()
+end
+
 function Icey2SkillTab:FreshData(new_data)
     if new_data == nil then
         self.data = {}
@@ -91,7 +102,7 @@ function Icey2SkillTab:FreshData(new_data)
             local a_cast_value = IsCastByButton(a.name) and 1 or 0
             local b_cast_value = IsCastByButton(b.name) and 1 or 0
 
-            return a_cast_value > b_cast_value and a.name < b.name
+            return a_cast_value > b_cast_value or a.name < b.name
             -- return a.name > b.name
         end)
     else
@@ -99,12 +110,7 @@ function Icey2SkillTab:FreshData(new_data)
     end
 
     self.scroll_list:SetItemsData(self.data)
-    self.scroll_list.up_button:Hide()
-    self.scroll_list.down_button:Hide()
-    self.scroll_list.scroll_bar_container:Show()
-    self.scroll_list.scroll_bar_line:Show()
-    self.scroll_list.scroll_bar_line:ScaleToSize(11, self.config.bar_height)
-    self.scroll_list.position_marker:Hide()
+    self:ModifySlideBar()
 end
 
 function Icey2SkillTab:UpdateSkillDescPos(x, y)
@@ -154,6 +160,32 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
     end
 end
 
+local function MyMoveTo(widget, start_pos, end_pos, duration, endfn)
+    widget:SetPosition(start_pos.x, start_pos.y, start_pos.z)
+
+    widget.pos_t = 0
+    widget.last_update_time = GetStaticTime()
+    widget.task = widget.inst:DoPeriodicTask(0, function()
+        local valx = easing.linear(widget.pos_t, start_pos.x, end_pos.x - start_pos.x, duration)
+        local valy = easing.linear(widget.pos_t, start_pos.y, end_pos.y - start_pos.y, duration)
+        local valz = easing.linear(widget.pos_t, start_pos.z, end_pos.z - start_pos.z, duration)
+        widget:SetPosition(valx, valy, valz)
+
+        widget.pos_t = widget.pos_t + GetStaticTime() - widget.last_update_time
+        widget.last_update_time = GetStaticTime()
+
+        if widget.pos_t >= duration then
+            widget:SetPosition(end_pos.x, end_pos.y, end_pos.z)
+            if endfn then
+                endfn()
+            end
+
+            widget.task:Cancel()
+            widget.task = nil
+        end
+    end)
+end
+
 -- Fly up wituout menu: 3.7s
 -- Fly to slot: 5.8s
 -- Static: 3.2s
@@ -179,6 +211,7 @@ function Icey2SkillTab:PlaySkillLearnedAnim_Part2(name)
         -- print("target row, col = ", row, col)
 
         self.scroll_list:ScrollToDataIndex(target_k)
+        self:ModifySlideBar()
 
         local index_in_view = nil
         local target_slot = nil
@@ -190,7 +223,7 @@ function Icey2SkillTab:PlaySkillLearnedAnim_Part2(name)
         end
 
         local row = math.ceil(index_in_view / self.config.num_columns)
-        local y_offset = row * 150
+        local y_offset = 190 + self.config.widget_height * row
 
         if target_slot then
             self:SetClickable(false)
@@ -201,11 +234,10 @@ function Icey2SkillTab:PlaySkillLearnedAnim_Part2(name)
             local new_guy = self.scroll_list.list_root.grid:AddChild(Icey2SkillLearnedFX(name))
             new_guy:SetPosition(pos.x, pos.y + y_offset)
             new_guy:MoveToFront()
-            new_guy:MoveTo(Vector3(pos.x, pos.y + y_offset, 0), Vector3(pos.x, pos.y, 0), 5.6, function()
-                self.inst:DoTaskInTime(3.2, function()
+            MyMoveTo(new_guy, Vector3(pos.x, pos.y + y_offset, 0), Vector3(pos.x, pos.y, 0), 5, function()
+                self.inst:DoTaskInTime(0.6, function()
                     target_slot:EnableIcon(self.owner.replica.icey2_skiller:IsLearned(name))
-
-                    TheFrontEnd:GetSound():PlaySound("wilson_rework/ui/unlock_gatedskill")
+                    target_slot:EnableFlashing(true)
 
                     self:OnSkillSlotClick(target_slot)
 
@@ -219,7 +251,13 @@ function Icey2SkillTab:PlaySkillLearnedAnim_Part2(name)
                         unlockfx:Kill()
                     end)
 
-                    self:SetClickable(true)
+                    self.inst:DoTaskInTime(2.9, function()
+                        target_slot:EnableFlashing(false)
+                        self:SetClickable(true)
+                    end)
+
+                    TheFrontEnd:GetSound():PlaySound("wilson_rework/ui/unlock_gatedskill")
+
                     new_guy:Kill()
                 end)
             end)

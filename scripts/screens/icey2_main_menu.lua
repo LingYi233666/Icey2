@@ -53,7 +53,7 @@ local Icey2MainMenu = Class(Screen, function(self, owner)
             num_columns = 7,
             bar_height = self.bg_height,
         })),
-        key_config = self.bg:AddChild(Widget("KEY_CONFIG")),
+        -- key_config = self.bg:AddChild(Widget("KEY_CONFIG")),
     }
 
     self.headertab_screener = Subscreener(self,
@@ -84,8 +84,8 @@ end
 
 function Icey2MainMenu:_BuildHeaderTab(subscreener)
     local tabs = {
-        { key = "skill_tab",  text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.SKILL_TAB, },
-        { key = "key_config", text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.KEY_CONFIG, },
+        { key = "skill_tab", text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.SKILL_TAB, },
+        -- { key = "key_config", text = STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES.KEY_CONFIG, },
     }
 
     self.header_tabs = self.bg:AddChild(subscreener:MenuContainer(HeaderTabs, tabs))
@@ -131,19 +131,24 @@ function Icey2MainMenu:PlaySkillLearnedAnim_Part1(name, continue_to_part2)
     self.bg:SetClickable(false)
     self.bg:Hide()
 
+    self.black.image:SetTint(0, 0, 0, 0.6)
+
     TheFrontEnd:GetSound():PlaySound("icey2_sfx/hud/new_skill_achieved", "icey2_skill_learned_music")
 
     local new_guy = self.root:AddChild(Icey2SkillLearnedFX(name))
     new_guy:MoveToFront()
-    MyMoveTo(new_guy, Vector3(0, 0), Vector3(0, 600), 3.7, function()
-        self.bg:Show()
-        self.bg:SetClickable(true)
 
-        if continue_to_part2 ~= false then
-            self.headertab_screener:OnMenuButtonSelected("skill_tab")
-            self.tab_screens.skill_tab:PlaySkillLearnedAnim_Part2(name)
-        end
-        new_guy:Kill()
+    self.inst:DoTaskInTime(1, function()
+        MyMoveTo(new_guy, Vector3(0, 0), Vector3(0, 600), 3, function()
+            self.bg:Show()
+            self.bg:SetClickable(true)
+
+            if continue_to_part2 ~= false then
+                self.headertab_screener:OnMenuButtonSelected("skill_tab")
+                self.tab_screens.skill_tab:PlaySkillLearnedAnim_Part2(name)
+            end
+            new_guy:Kill()
+        end)
     end)
 end
 
