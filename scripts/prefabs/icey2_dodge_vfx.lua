@@ -49,11 +49,11 @@ local function emit_sparkle_fn(effect, sphere_emitter, offset)
     local ang_vel = (UnitRand() - 1) * 5
 
     effect:AddRotatingParticleUV(0,
-                                 lifetime,                                    -- lifetime
-                                 px + offset.x, py + offset.y, pz + offset.z, -- position
-                                 vx, vy, vz,                                  -- velocity
-                                 angle, ang_vel,                              -- angle, angular_velocity
-                                 uv_offset, 0                                 -- uv offset
+        lifetime,                                    -- lifetime
+        px + offset.x, py + offset.y, pz + offset.z, -- position
+        vx, vy, vz,                                  -- velocity
+        angle, ang_vel,                              -- angle, angular_velocity
+        uv_offset, 0                                 -- uv offset
     )
 end
 
@@ -68,6 +68,9 @@ local function fn()
     inst.entity:SetPristine()
 
     inst.persists = false
+
+    inst._offset2_y = net_float(inst.GUID, "inst._offset2_y")
+    inst._offset2_y:set(0)
 
     -- Dedicated server does not need to spawn local particle fx
     if TheNet:IsDedicated() then
@@ -123,7 +126,7 @@ local function fn()
         num_to_emit = num_to_emit + per_tick * math.random() * 3
         while num_to_emit > 1 do
             for _, offset in pairs(offsets) do
-                emit_sparkle_fn(effect, sphere_emitter, offset)
+                emit_sparkle_fn(effect, sphere_emitter, offset + Vector3(0, inst._offset2_y:value(), 0))
             end
             num_to_emit = num_to_emit - 1
         end

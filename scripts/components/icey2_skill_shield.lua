@@ -20,8 +20,8 @@ function Icey2SkillShield:Enable()
         function(inst, amount, overtime, cause, ignore_invincible, afflicter,
                  ignore_absorb)
             return self:RedirectDamageToShield(amount, overtime, cause,
-                                               ignore_invincible, afflicter,
-                                               ignore_absorb)
+                ignore_invincible, afflicter,
+                ignore_absorb)
         end
 end
 
@@ -44,7 +44,7 @@ function Icey2SkillShield:DoDelta(amount)
     local old = self.current
     self:SetVal(self.current + amount)
 
-    self.inst:PushEvent("icey2_shield_delta", {old = old})
+    self.inst:PushEvent("icey2_shield_delta", { old = old })
 end
 
 function Icey2SkillShield:GetPercent() return self.current / self.max end
@@ -53,13 +53,15 @@ function Icey2SkillShield:RedirectDamageToShield(amount, overtime, cause,
                                                  ignore_invincible, afflicter,
                                                  ignore_absorb)
     if ignore_absorb or ignore_invincible or amount >= 0 or overtime or
-        afflicter == nil then return amount end
+        afflicter == nil then
+        return amount
+    end
 
-    if Icey2Normal.IsWearingArmor(self.inst) then return amount end
+    if Icey2Basic.IsWearingArmor(self.inst) then return amount end
 
     local absorbtion = math.min(math.min(self.max_damage_absorb,
-                                         self.current * self.effect_factor),
-                                -amount)
+            self.current * self.effect_factor),
+        -amount)
     absorbtion = math.max(0, absorbtion)
 
     self:DoDelta(-absorbtion / self.effect_factor)

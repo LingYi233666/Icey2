@@ -1,6 +1,6 @@
-Icey2Normal = {}
+Icey2Basic = {}
 
-function Icey2Normal.IsWearingArmor(inst)
+function Icey2Basic.IsWearingArmor(inst)
     for k, v in pairs(inst.components.inventory.equipslots) do
         if v.components.armor ~= nil and
             not v:HasTag("ignore_icey2_unarmoured_defence_limit") then
@@ -11,4 +11,4 @@ function Icey2Normal.IsWearingArmor(inst)
     return false
 end
 
-GLOBAL.Icey2Normal = Icey2Normal
+GLOBAL.Icey2Basic = Icey2Basic

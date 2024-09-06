@@ -227,8 +227,10 @@ local function OnProjectileHit(inst, attacker, target)
 end
 
 local function OnProjectileLaunch(inst, attacker, target_pos)
-    inst.direction = Vector3FromTheta(math.random() * 2 * PI)
-    inst.direction.y = GetRandomMinMax(3, 6)
+    if inst.direction == nil then
+        inst.direction = Vector3FromTheta(math.random() * 2 * PI)
+        inst.direction.y = GetRandomMinMax(3, 6)
+    end
     inst.direction:Normalize()
 
     inst.offset = nil
@@ -242,6 +244,7 @@ local function CutAngle(v1, v2)
 end
 
 local offset_presets = {
+    -- rad_min, rad_max, height_min, height_max
     deerclops = { nil, 2, nil, 8 },
     bearger = { nil, 2, nil, 8 },
     moose = { nil, 2, nil, 8 },

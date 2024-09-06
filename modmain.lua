@@ -1,5 +1,5 @@
 PrefabFiles = {
-    "icey2", -- 人物代码文件
+    "icey2",      -- 人物代码文件
     "icey2_none", -- 人物皮肤
     "icey2_clone", "icey2_phantom_sword", "icey2_phantom_sword_hitfx",
 
@@ -80,7 +80,7 @@ PREFAB_SKINS["icey2"] = { -- 修复人物大图显示
 }
 
 local modimport_filenames = {
-    "normal_utils", "math_utils", "language_chs", "spdamage", "rpc_defines",
+    "basic_utils", "math_utils", "language_chs", "spdamage", "rpc_defines",
     "skill_defines", "components", "input", "stategraphs_server",
     "stategraphs_client", "hud", "debug"
 }
@@ -98,7 +98,7 @@ TUNING.ICEY2_HUNGER = 150
 TUNING.ICEY2_SANITY = 150
 
 -- 选人界面初始物品显示
-TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.ICEY2 = {"spear"}
+TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.ICEY2 = { "spear" }
 
 --[[如果你的初始物品是mod物品需要定义mod物品的图片路径 比如物品是 abc
 
