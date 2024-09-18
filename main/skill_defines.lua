@@ -22,34 +22,43 @@ end
 
 ICEY2_SKILL_DEFINES = {
     PHANTOM_SWORD = {
-        OnLearned = function(inst, is_onload)
+        OnLearned = function(inst, is_onload) end,
 
-        end,
-
-        OnForget = function(inst)
-
-        end,
+        OnForget = function(inst) end,
 
         OnPressed = CastSkillByComponentWrapper("icey2_skill_phantom_sword"),
 
         Root = true,
+
     },
 
     DODGE = {
-        OnLearned = function(inst, is_onload)
+        OnLearned = function(inst, is_onload) end,
 
-        end,
-
-        OnForget = function(inst)
-
-        end,
+        OnForget = function(inst) end,
 
         OnPressed = CastSkillByComponentWrapper("icey2_skill_dodge"),
 
         Root = true,
     },
+
+    SUMMON_PACT_WEAPON = {
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        OnPressed_Client = function(inst)
+            inst.replica.icey2_skill_summon_pact_weapon:ShowPactWeaponsWheel()
+        end,
+
+        DescFn = function(inst)
+            return STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.DESC ..
+                "\n\n" .. STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.DESC_TIP_MORE_WEAPON
+        end,
+
+
+        Root = true,
+    }
 }
-
-
 
 GLOBAL.ICEY2_SKILL_DEFINES = ICEY2_SKILL_DEFINES

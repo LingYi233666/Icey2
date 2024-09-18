@@ -139,6 +139,16 @@ local function vfxfn()
 
     inst.persists = false
 
+    inst._vx = net_float(inst.GUID, "inst._vx")
+    inst._vy = net_float(inst.GUID, "inst._vy")
+    inst._vz = net_float(inst.GUID, "inst._vz")
+
+    inst.SetEmitVelocity = function(inst, x, y, z)
+        inst._vx:set(x)
+        inst._vy:set(y)
+        inst._vz:set(z)
+    end
+
     --Dedicated server does not need to spawn local particle fx
     if TheNet:IsDedicated() then
         return inst
@@ -181,7 +191,10 @@ local function vfxfn()
         local parent = inst.entity:GetParent()
 
         if parent and parent.Physics then
-            local velocity = Vector3(parent.Physics:GetVelocity())
+            -- local velocity = Vector3(parent.Physics:GetVelocity())
+            -- local velocity = Vector3(parent.Physics:GetMotorVel())
+            local velocity = Vector3(inst._vx:value(), inst._vy:value(), inst._vz:value())
+
             if velocity:Length() > 0 then
                 effect:ClearAllParticles(0)
                 emit_sword_fn(effect, velocity:GetNormalized() * 0.1)
@@ -251,6 +264,20 @@ local offset_presets = {
     dragonfly = { nil, 2, 4, 8 },
 }
 
+local function SetVel(inst, vx, vy, vz)
+    -- local x, y, z = inst.Transform:GetWorldPosition()
+    -- local px, py, pz = x + vx, y + vy, z + vz
+
+    -- inst:ForceFacePoint(px, py, pz)
+
+    -- local vx1, vy1, vz1 = inst.entity:WorldToLocalSpace(px, py, pz)
+
+    -- inst.Physics:SetMotorVel(vx1, vy1, vz1)
+
+    inst.vfx:SetEmitVelocity(vx, vy, vz)
+    inst.Physics:SetVel(vx, vy, vz)
+end
+
 local function OnUpdate(inst)
     if inst.target and inst.target:IsValid() then
         if inst.offset == nil then
@@ -313,7 +340,10 @@ local function OnUpdate(inst)
     if GetTime() - inst.start_launch_time < 0.2 then
         local speed = inst.components.complexprojectile.horizontalSpeed
 
-        inst.Physics:SetVel((inst.direction * speed):Get())
+        local vx, vy, vz = (inst.direction * speed):Get()
+        -- inst.vfx:SetEmitVelocity(vx, vy, vz)
+        -- inst.Physics:SetVel(vx, vy, vz)
+        SetVel(inst, vx, vy, vz)
         return true
     end
 
@@ -335,7 +365,11 @@ local function OnUpdate(inst)
 
     local speed = inst.components.complexprojectile.horizontalSpeed
 
-    inst.Physics:SetVel((inst.direction * speed):Get())
+
+    local vx, vy, vz = (inst.direction * speed):Get()
+    -- inst.vfx:SetEmitVelocity(vx, vy, vz)
+    -- inst.Physics:SetVel(vx, vy, vz)
+    SetVel(inst, vx, vy, vz)
 
     if is_inverse_moving then
         speed = speed - FRAMES * 10

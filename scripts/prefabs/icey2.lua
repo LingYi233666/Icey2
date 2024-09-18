@@ -1,6 +1,6 @@
 local MakePlayerCharacter = require "prefabs/player_common"
 
-local assets = {Asset("SCRIPT", "scripts/prefabs/player_common.lua")}
+local assets = { Asset("SCRIPT", "scripts/prefabs/player_common.lua") }
 local prefabs = {}
 
 -- 初始物品
@@ -34,7 +34,7 @@ local master_postinit = function(inst)
 
     -- 最喜欢的食物  名字 倍率（1.2）
     inst.components.foodaffinity:AddPrefabAffinity("baconeggs",
-                                                   TUNING.AFFINITY_15_CALORIES_HUGE)
+        TUNING.AFFINITY_15_CALORIES_HUGE)
 
     -- 三维	
     inst.components.health:SetMaxHealth(TUNING.ICEY2_HEALTH)
@@ -44,12 +44,18 @@ local master_postinit = function(inst)
     inst:AddComponent("icey2_skiller")
 
     inst:AddComponent("icey2_skill_phantom_sword")
+
     inst:AddComponent("icey2_skill_dodge")
+
     inst:AddComponent("icey2_skill_unarmoured_movement")
+    -- ThePlayer.components.icey2_skill_unarmoured_movement:Enable()
+
     inst:AddComponent("icey2_skill_shield")
+
+    inst:AddComponent("icey2_skill_summon_pact_weapon")
 
     inst.OnNewSpawn = OnNewSpawn
 end
 
 return MakePlayerCharacter("icey2", prefabs, assets, common_postinit,
-                           master_postinit, start_inv)
+    master_postinit, start_inv)

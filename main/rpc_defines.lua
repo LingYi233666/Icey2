@@ -18,6 +18,21 @@ AddModRPCHandler("icey2_rpc", "cast_skill", function(inst, name, pressed, x, y, 
     end
 end)
 
+AddModRPCHandler("icey2_rpc", "summon_pact_weapon", function(inst, prefabname)
+    if inst.components.icey2_skill_summon_pact_weapon then
+        inst.components.icey2_skill_summon_pact_weapon:SummonWeapon(prefabname)
+    end
+end)
+
+
+AddModRPCHandler("icey2_rpc", "remove_pact_weapon", function(inst)
+    if inst.components.icey2_skill_summon_pact_weapon then
+        inst.components.icey2_skill_summon_pact_weapon:UnlinkWeapon(true)
+    end
+end)
+
+
+
 AddClientModRPCHandler("icey2_rpc", "play_skill_learned_anim", function(name)
     local screen = Icey2MainMenu(ThePlayer)
     TheFrontEnd:PushScreen(screen)

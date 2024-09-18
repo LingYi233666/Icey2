@@ -3,7 +3,8 @@ PrefabFiles = {
     "icey2_none", -- 人物皮肤
     "icey2_clone", "icey2_phantom_sword", "icey2_phantom_sword_hitfx",
 
-    "icey2_dodge_vfx"
+    "icey2_dodge_vfx",
+    "icey2_slash_fx",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的

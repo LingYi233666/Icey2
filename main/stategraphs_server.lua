@@ -1,6 +1,6 @@
 AddStategraphState("wilson", State {
     name = "icey2_dodge",
-    tags = {"busy", "evade", "dodge", "no_stun", "nopredict", "nointerrupt"},
+    tags = { "busy", "evade", "dodge", "no_stun", "nopredict", "nointerrupt" },
 
     onenter = function(inst, data)
         -- inst.AnimState:PlayAnimation("atk_leap_pre")
@@ -42,7 +42,9 @@ AddStategraphPostInit("wilson", function(sg)
     local old_locomote = sg.events["locomote"].fn
     sg.events["locomote"].fn = function(inst, data)
         if inst.sg:HasStateTag("busy") or
-            inst.sg:HasStateTag("overridelocomote") then return end
+            inst.sg:HasStateTag("overridelocomote") then
+            return
+        end
 
         local is_moving = inst.sg:HasStateTag("moving")
         local should_move = inst.components.locomotor:WantsToMoveForward()
@@ -90,30 +92,6 @@ AddStategraphPostInit("wilson", function(sg)
     end
 end)
 
-local function GetUnarmouredMovementAnim(inst, state)
-    local hands = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~=
-                      nil
-    if state == "pre" then
-        if hands then
-            return "icey2_speedrun_withitem_pre"
-        else
-            return "icey2_speedrun_pre"
-        end
-    elseif state == "loop" then
-        if hands then
-            return "icey2_speedrun_withitem_loop"
-        else
-            return "icey2_speedrun_loop"
-        end
-    elseif state == "pst" then
-        if hands then
-            return "icey2_speedrun_withitem_pst"
-        else
-            return "icey2_speedrun_pst"
-        end
-    end
-end
-
 local function DoEquipmentFoleySounds(inst)
     for k, v in pairs(inst.components.inventory.equipslots) do
         if v.foleysound ~= nil then
@@ -148,16 +126,18 @@ end
 
 AddStategraphState("wilson", State {
     name = "icey2_skill_unarmoured_movement_start",
-    tags = {"moving", "running", "canrotate", "autopredict"},
+    tags = { "moving", "running", "canrotate", "autopredict" },
 
     onenter = function(inst)
         if not inst:HasTag("icey2_skill_unarmoured_movement") then
-            inst:GoToState("run_start")
+            inst.sg:GoToState("run_start")
             return
         end
 
         inst.components.locomotor:RunForward()
-        inst.AnimState:PlayAnimation(GetUnarmouredMovementAnim(inst, "pre"))
+        inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pre"))
+
+        inst.sg.mem.footsteps = 0
     end,
 
     onupdate = function(inst) inst.components.locomotor:RunForward() end,
@@ -180,12 +160,12 @@ AddStategraphState("wilson", State {
 
 AddStategraphState("wilson", State {
     name = "icey2_skill_unarmoured_movement",
-    tags = {"moving", "running", "canrotate", "autopredict"},
+    tags = { "moving", "running", "canrotate", "autopredict" },
 
     onenter = function(inst)
         inst.components.locomotor:RunForward()
 
-        local anim = GetUnarmouredMovementAnim(inst, "loop")
+        local anim = Icey2Basic.GetUnarmouredMovementAnim(inst, "loop")
         if not inst.AnimState:IsCurrentAnimation(anim) then
             inst.AnimState:PlayAnimation(anim, true)
         end
@@ -195,7 +175,7 @@ AddStategraphState("wilson", State {
 
     onupdate = function(inst)
         if not inst:HasTag("icey2_skill_unarmoured_movement") then
-            inst:GoToState("run_start")
+            inst.sg:GoToState("run_start")
             return
         end
         inst.components.locomotor:RunForward()
@@ -205,13 +185,20 @@ AddStategraphState("wilson", State {
         TimeEvent(5 * FRAMES, function(inst)
             DoRunSounds(inst)
             DoFoleySounds(inst)
-        end), TimeEvent(9 * FRAMES, function(inst)
+        end),
+        TimeEvent(9 * FRAMES, function(inst)
             DoRunSounds(inst)
             DoFoleySounds(inst)
-        end), TimeEvent(13 * FRAMES, function(inst)
+        end),
+        TimeEvent(13 * FRAMES, function(inst)
             DoRunSounds(inst)
             DoFoleySounds(inst)
-        end), TimeEvent(17 * FRAMES, function(inst)
+        end),
+        TimeEvent(14 * FRAMES, function(inst)
+            DoRunSounds(inst)
+            DoFoleySounds(inst)
+        end),
+        TimeEvent(17 * FRAMES, function(inst)
             DoRunSounds(inst)
             DoFoleySounds(inst)
         end)
@@ -268,11 +255,11 @@ AddStategraphState("wilson", State {
 
 AddStategraphState("wilson", State {
     name = "icey2_skill_unarmoured_movement_stop",
-    tags = {"canrotate", "idle", "autopredict"},
+    tags = { "canrotate", "idle", "autopredict" },
 
     onenter = function(inst)
         inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation(GetUnarmouredMovementAnim(inst, "pst"))
+        inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pst"))
     end,
 
     timeline = {},

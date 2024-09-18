@@ -18,43 +18,40 @@ local Icey2SkillTab = Class(Widget, function(self, owner, config)
     self.data = {}
     self.config = config
 
+    self.scroll_list = self:AddChild(TEMPLATES.ScrollingGrid(self.data, {
+        context = {},
+        widget_width = self.config.widget_width,
+        widget_height = self.config.widget_height,
+        num_visible_rows = self.config.num_visible_rows,
+        num_columns = self.config.num_columns,
+        peek_percent = 0.3,
+        item_ctor_fn = function(context, i)
+            local widget = Icey2SkillSlot()
+            return widget
+        end,
+        apply_fn = function(context, widget, data, index)
+            if widget == nil then
+                return
+            elseif data == nil then
+                widget:Hide()
+                return
+            else
+                widget:Show()
+            end
 
-    self.scroll_list = self:AddChild(TEMPLATES.ScrollingGrid(
-        self.data,
-        {
-            context                 = {},
-            widget_width            = self.config.widget_width,
-            widget_height           = self.config.widget_height,
-            num_visible_rows        = self.config.num_visible_rows,
-            num_columns             = self.config.num_columns,
-            peek_percent            = 0.3,
-            item_ctor_fn            = function(context, i)
-                local widget = Icey2SkillSlot()
-                return widget
-            end,
-            apply_fn                = function(context, widget, data, index)
-                if widget == nil then
-                    return
-                elseif data == nil then
-                    widget:Hide()
-                    return
-                else
-                    widget:Show()
-                end
-
-                widget:SetSkillName(data.name)
-                widget:EnableIcon(self.owner.replica.icey2_skiller:IsLearned(data.name))
-                widget:SetOnClick(function()
-                    self:OnSkillSlotClick(widget)
-                end)
-                if data.name == "PHANTOM_SWORD" then
-                    ThePlayer.HUD.debug_slot = widget
-                end
-            end,
-            scrollbar_offset        = 15,
-            scrollbar_height_offset = 0,
-        }
-    ))
+            widget:SetSkillName(data.name)
+            widget:EnableIcon(self.owner.replica.icey2_skiller:IsLearned(
+                data.name))
+            widget:SetOnClick(function()
+                self:OnSkillSlotClick(widget)
+            end)
+            if data.name == "PHANTOM_SWORD" then
+                ThePlayer.HUD.debug_slot = widget
+            end
+        end,
+        scrollbar_offset = 15,
+        scrollbar_height_offset = 0
+    }))
     self.scroll_list:SetPosition(-140, 0)
 
     -- self.skill_title = self:AddChild(TEMPLATES.ScreenTitle(""))
@@ -69,9 +66,12 @@ local Icey2SkillTab = Class(Widget, function(self, owner, config)
     self.skill_desc:SetHAlign(ANCHOR_LEFT)
     self.skill_desc:Hide()
 
-    self.skill_key_config_button = self:AddChild(TEMPLATES.StandardButton(nil,
-                                                                          STRINGS.ICEY2_UI.SKILL_TAB.KEY_CONFIG,
-                                                                          { 140, 50 }))
+    self.skill_key_config_button = self:AddChild(
+        TEMPLATES.StandardButton(nil,
+            STRINGS.ICEY2_UI
+            .SKILL_TAB
+            .KEY_CONFIG,
+            { 140, 50 }))
     self.skill_key_config_button:Hide()
     self.skill_key_config_button:SetPosition(295, -180)
 
@@ -80,7 +80,9 @@ end)
 
 local function IsCastByButton(name)
     local data = ICEY2_SKILL_DEFINES[name]
-    return data and (data.OnPressed or data.OnReleased or data.OnPressed_client or data.OnReleased_client)
+    return data and
+        (data.OnPressed or data.OnReleased or data.OnPressed_Client or
+            data.OnReleased_Client)
 end
 
 function Icey2SkillTab:ModifySlideBar()
@@ -96,7 +98,7 @@ function Icey2SkillTab:FreshData(new_data)
     if new_data == nil then
         self.data = {}
         for name, v in pairs(ICEY2_SKILL_DEFINES) do
-            table.insert(self.data, { name = name, })
+            table.insert(self.data, { name = name })
         end
         table.sort(self.data, function(a, b)
             local a_cast_value = IsCastByButton(a.name) and 1 or 0
@@ -139,7 +141,14 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
 
         self.skill_desc:Show()
         if is_learned then
-            self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name].DESC)
+            local desc = ""
+            if ICEY2_SKILL_DEFINES[widget.skill_name].DescFn then
+                desc = ICEY2_SKILL_DEFINES[widget.skill_name].DescFn(self.owner)
+            else
+                desc = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name].DESC
+            end
+
+            self:UpdateSkillDesc(desc)
         else
             self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNWON.DESC)
         end
@@ -166,9 +175,12 @@ local function MyMoveTo(widget, start_pos, end_pos, duration, endfn)
     widget.pos_t = 0
     widget.last_update_time = GetStaticTime()
     widget.task = widget.inst:DoPeriodicTask(0, function()
-        local valx = easing.linear(widget.pos_t, start_pos.x, end_pos.x - start_pos.x, duration)
-        local valy = easing.linear(widget.pos_t, start_pos.y, end_pos.y - start_pos.y, duration)
-        local valz = easing.linear(widget.pos_t, start_pos.z, end_pos.z - start_pos.z, duration)
+        local valx = easing.linear(widget.pos_t, start_pos.x,
+            end_pos.x - start_pos.x, duration)
+        local valy = easing.linear(widget.pos_t, start_pos.y,
+            end_pos.y - start_pos.y, duration)
+        local valz = easing.linear(widget.pos_t, start_pos.z,
+            end_pos.z - start_pos.z, duration)
         widget:SetPosition(valx, valy, valz)
 
         widget.pos_t = widget.pos_t + GetStaticTime() - widget.last_update_time
@@ -176,9 +188,7 @@ local function MyMoveTo(widget, start_pos, end_pos, duration, endfn)
 
         if widget.pos_t >= duration then
             widget:SetPosition(end_pos.x, end_pos.y, end_pos.z)
-            if endfn then
-                endfn()
-            end
+            if endfn then endfn() end
 
             widget.task:Cancel()
             widget.task = nil
@@ -231,36 +241,42 @@ function Icey2SkillTab:PlaySkillLearnedAnim_Part2(name)
 
             local pos = target_slot:GetPosition()
 
-            local new_guy = self.scroll_list.list_root.grid:AddChild(Icey2SkillLearnedFX(name))
+            local new_guy = self.scroll_list.list_root.grid:AddChild(
+                Icey2SkillLearnedFX(name))
             new_guy:SetPosition(pos.x, pos.y + y_offset)
             new_guy:MoveToFront()
-            MyMoveTo(new_guy, Vector3(pos.x, pos.y + y_offset, 0), Vector3(pos.x, pos.y, 0), 5, function()
-                self.inst:DoTaskInTime(0.6, function()
-                    target_slot:EnableIcon(self.owner.replica.icey2_skiller:IsLearned(name))
-                    target_slot:EnableFlashing(true)
+            MyMoveTo(new_guy, Vector3(pos.x, pos.y + y_offset, 0),
+                Vector3(pos.x, pos.y, 0), 5, function()
+                    self.inst:DoTaskInTime(0.6, function()
+                        target_slot:EnableIcon(
+                            self.owner.replica.icey2_skiller:IsLearned(name))
+                        target_slot:EnableFlashing(true)
 
-                    self:OnSkillSlotClick(target_slot)
+                        self:OnSkillSlotClick(target_slot)
 
-                    local unlockfx = self.scroll_list.list_root.grid:AddChild(UIAnim())
-                    unlockfx:GetAnimState():SetBank("skill_unlock")
-                    unlockfx:GetAnimState():SetBuild("skill_unlock")
-                    unlockfx:GetAnimState():PlayAnimation("idle")
-                    unlockfx:SetScale(1.3, 1.3)
-                    unlockfx:SetPosition(pos.x, pos.y)
-                    unlockfx.inst:ListenForEvent("animover", function()
-                        unlockfx:Kill()
+                        local unlockfx = self.scroll_list.list_root.grid:AddChild(
+                            UIAnim())
+                        unlockfx:GetAnimState():SetBank("skill_unlock")
+                        unlockfx:GetAnimState():SetBuild("skill_unlock")
+                        unlockfx:GetAnimState():PlayAnimation("idle")
+                        unlockfx:SetScale(1.3, 1.3)
+                        unlockfx:SetPosition(pos.x, pos.y)
+                        unlockfx.inst:ListenForEvent("animover",
+                            function()
+                                unlockfx:Kill()
+                            end)
+
+                        self.inst:DoTaskInTime(2.9, function()
+                            target_slot:EnableFlashing(false)
+                            self:SetClickable(true)
+                        end)
+
+                        TheFrontEnd:GetSound():PlaySound(
+                            "wilson_rework/ui/unlock_gatedskill")
+
+                        new_guy:Kill()
                     end)
-
-                    self.inst:DoTaskInTime(2.9, function()
-                        target_slot:EnableFlashing(false)
-                        self:SetClickable(true)
-                    end)
-
-                    TheFrontEnd:GetSound():PlaySound("wilson_rework/ui/unlock_gatedskill")
-
-                    new_guy:Kill()
                 end)
-            end)
         else
             print("Target slot widget not found !")
         end

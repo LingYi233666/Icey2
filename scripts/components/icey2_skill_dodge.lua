@@ -108,7 +108,7 @@ function Icey2SkillDodge:OnDodgeStart(target_pos)
     -- icey_speedrun
     local fx1 = self.inst:SpawnChild("icey2_dodge_vfx")
     local equip = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-    if equip then
+    if equip == nil then
         fx1._offset2_y:set(0.5)
     end
     self.dodge_fx = { fx1 }
