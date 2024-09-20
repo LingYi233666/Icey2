@@ -404,3 +404,56 @@ AddStategraphState("wilson", State {
         inst.components.health:SetInvincible(false)
     end,
 })
+
+AddStategraphState("wilson", State {
+    name = "icey2_aoeweapon_flurry_lunge_final",
+    tags = { "attack", "abouttoattack", "busy", "nopredict" },
+
+    onenter = function(inst, data)
+        inst.sg.statemem.weapon = data.weapon
+
+        if not data.weapon then
+            inst.sg:GoToState("idle")
+            return
+        end
+
+        inst.Transform:SetEightFaced()
+        inst.AnimState:PlayAnimation("atk_leap")
+        -- inst.SoundEmitter:PlaySound()
+
+        -- inst:ForceFacePoint(inst.sg.statemem.targetpos)
+    end,
+
+    timeline = {
+        TimeEvent(13 * FRAMES, function(inst)
+            -- inst.SoundEmitter:PlaySound()
+
+            if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
+                inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:FinalBlow(inst)
+            end
+        end),
+
+        TimeEvent(18 * FRAMES, function(inst)
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst.sg:GoToState("idle", true)
+        end),
+    },
+
+    events = {
+        EventHandler("equip", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+        EventHandler("unequip", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+        EventHandler("animover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        inst.Transform:SetFourFaced()
+    end,
+})
