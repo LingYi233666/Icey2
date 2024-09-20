@@ -272,3 +272,135 @@ AddStategraphState("wilson", State {
         end)
     }
 })
+
+
+AddStategraphState("wilson", State {
+    name = "icey2_aoeweapon_flurry_lunge_pre",
+    tags = { "aoe", "doing", "busy", "nopredict" },
+
+    onenter = function(inst)
+        inst.components.locomotor:Stop()
+        inst.AnimState:PlayAnimation("lunge_pre")
+    end,
+
+    timeline =
+    {
+        TimeEvent(4 * FRAMES, function(inst)
+            inst.SoundEmitter:PlaySound("dontstarve/common/twirl")
+        end),
+    },
+
+    events =
+    {
+        EventHandler("icey2_aoeweapon_flurry_lunge_trigger", function(inst, data)
+            local weapon = data.weapon
+            local search_success = weapon.components.icey2_aoeweapon_flurry_lunge:SearchPossibleTargets(inst,
+                data.target_pos)
+
+            if not search_success then
+                inst.sg:GoToState("idle")
+                return
+            end
+
+            local target = weapon.components.icey2_aoeweapon_flurry_lunge:PopTarget(inst)
+
+            if target then
+                inst.sg:GoToState("icey2_aoeweapon_flurry_lunge", {
+                    middle_pos = data.target_pos,
+                    weapon = weapon,
+                    target = target,
+                })
+            else
+                inst.sg:GoToState("idle")
+            end
+        end),
+        EventHandler("animover", function(inst)
+            if inst.AnimState:AnimDone() then
+                if inst.AnimState:IsCurrentAnimation("lunge_pre") then
+                    inst.AnimState:PlayAnimation("lunge_lag")
+                    inst:PerformBufferedAction()
+                else
+                    inst.sg:GoToState("idle")
+                end
+            end
+        end),
+        EventHandler("equip", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+        EventHandler("unequip", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+    },
+})
+
+
+AddStategraphState("wilson", State {
+    name = "icey2_aoeweapon_flurry_lunge",
+    tags = { "aoe", "doing", "busy", "nopredict", },
+
+    onenter = function(inst, data)
+        local weapon = data.weapon
+        local target = data.target
+        local failed = true
+        if weapon and target and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) == weapon then
+            inst.AnimState:PlayAnimation("lunge_pst")
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
+
+
+            inst.components.health:SetInvincible(true)
+            weapon.components.icey2_aoeweapon_flurry_lunge:TeleportNearTarget(inst, target)
+
+            inst.sg.statemem.weapon = weapon
+            inst.sg.statemem.middle_pos = data.middle_pos
+            inst.sg.statemem.target = target
+
+            inst.sg:SetTimeout(8 * FRAMES)
+
+            failed = false
+        end
+
+        if failed then
+            inst.sg:GoToState("idle")
+        end
+    end,
+
+    ontimeout = function(inst)
+        local weapon = inst.sg.statemem.weapon
+        local target = weapon:PopTarget(inst)
+        if target then
+            inst.sg:GoToState("icey2_aoeweapon_flurry_lunge", {
+                middle_pos = inst.sg.statemem.middle_pos,
+                weapon = weapon,
+                target = target,
+            })
+        else
+            if inst.sg.statemem.middle_pos then
+                inst.sg:GoToState("idle", true)
+            else
+                inst.sg:GoToState("idle", true)
+            end
+        end
+    end,
+
+    timeline =
+    {
+        TimeEvent(3 * FRAMES, function(inst)
+            inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:Attack(inst, inst.sg.statemem.target)
+        end),
+    },
+
+    events = {
+        EventHandler("equip", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+        EventHandler("unequip", function(inst)
+            inst.sg:GoToState("idle")
+        end),
+    },
+
+    onexit = function(inst)
+        -- inst.components.bloomer:PopBloom("lunge")
+        -- inst.components.colouradder:PopColour("lunge")
+        inst.components.health:SetInvincible(false)
+    end,
+})
