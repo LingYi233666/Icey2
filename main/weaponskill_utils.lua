@@ -58,8 +58,8 @@ function Icey2WeaponSkill.AddAoetargetingClient(inst, aoetype, tags, range, extr
 
     inst:AddComponent("aoetargeting")
     inst.components.aoetargeting.range = range
-    inst.components.aoetargeting.reticule.validcolour = { 1, .75, 0, 1 }
-    inst.components.aoetargeting.reticule.invalidcolour = { .5, 0, 0, 1 }
+    inst.components.aoetargeting.reticule.validcolour = { 73 / 255, 240 / 255, 235 / 255, 1 }
+    inst.components.aoetargeting.reticule.invalidcolour = { 178 / 255, 100 / 255, 50 / 255, 1 }
     inst.components.aoetargeting.reticule.ease = true
     inst.components.aoetargeting.reticule.mouseenabled = true
 

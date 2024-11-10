@@ -1,43 +1,3 @@
-AddStategraphState("wilson", State {
-    name = "icey2_dodge",
-    tags = { "busy", "evade", "dodge", "no_stun", "nopredict", "nointerrupt" },
-
-    onenter = function(inst, data)
-        -- inst.AnimState:PlayAnimation("atk_leap_pre")
-
-        local equip =
-            inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-
-        if equip then
-            inst.AnimState:PlayAnimation("atk_leap_lag")
-        else
-            inst.AnimState:PlayAnimation("icey2_speedrun_pre")
-            inst.AnimState:PushAnimation("icey2_speedrun_loop", true)
-        end
-
-        inst.sg.statemem.equip = equip
-
-        inst.components.icey2_skill_dodge:OnDodgeStart(data.pos)
-
-        inst.sg:SetTimeout(0.2)
-    end,
-
-    onupdate = function(inst) inst.components.icey2_skill_dodge:OnDodging() end,
-
-    timeline = {},
-
-    ontimeout = function(inst)
-        if inst.sg.statemem.equip then
-            inst.AnimState:PlayAnimation("pickup_pst")
-        else
-            inst.AnimState:PlayAnimation("icey2_speedrun_pst")
-        end
-        inst.sg:GoToState("idle", true)
-    end,
-
-    onexit = function(inst) inst.components.icey2_skill_dodge:OnDodgeStop() end
-})
-
 AddStategraphPostInit("wilson", function(sg)
     local old_locomote = sg.events["locomote"].fn
     sg.events["locomote"].fn = function(inst, data)
@@ -91,6 +51,74 @@ AddStategraphPostInit("wilson", function(sg)
         end
     end
 end)
+
+-- Aoe weapon
+AddStategraphPostInit("wilson", function(sg)
+    local old_CASTAOE = sg.actionhandlers[ACTIONS.CASTAOE].deststate
+    sg.actionhandlers[ACTIONS.CASTAOE].deststate = function(inst, action)
+        local weapon = action.invobject
+        if weapon and weapon:HasTag("icey2_aoeweapon") then
+            local can_cast = weapon.components.aoetargeting:IsEnabled() and
+                (weapon.components.rechargeable == nil or
+                    weapon.components.rechargeable:IsCharged())
+
+            if can_cast then
+                if weapon.prefab == "icey2_pact_weapon_rapier" then
+                    return "icey2_aoeweapon_flurry_lunge_pre"
+                end
+            else
+                return
+            end
+        end
+        return old_CASTAOE(inst, action)
+    end
+end)
+
+AddStategraphState("wilson", State {
+    name = "icey2_dodge",
+    tags = { "busy", "evade", "dodge", "no_stun", "nopredict", "nointerrupt" },
+
+    onenter = function(inst, data)
+        -- inst.AnimState:PlayAnimation("atk_leap_pre")
+
+        local equip =
+            inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+        if equip then
+            inst.AnimState:PlayAnimation("atk_leap_lag")
+        else
+            inst.AnimState:PlayAnimation("icey2_speedrun_pre")
+            inst.AnimState:PushAnimation("icey2_speedrun_loop", true)
+        end
+
+        inst.sg.statemem.equip = equip
+
+        inst.components.icey2_skill_dodge:OnDodgeStart(data.pos)
+
+        inst.sg:SetTimeout(0.2)
+    end,
+
+    onupdate = function(inst)
+        inst.components.icey2_skill_dodge:OnDodging()
+    end,
+
+    timeline = {},
+
+    ontimeout = function(inst)
+        if inst.sg.statemem.equip then
+            inst.AnimState:PlayAnimation("pickup_pst")
+        else
+            inst.AnimState:PlayAnimation("icey2_speedrun_pst")
+        end
+        inst.sg:GoToState("idle", true)
+    end,
+
+    onexit = function(inst)
+        inst.components.icey2_skill_dodge:OnDodgeStop()
+    end
+})
+
+
 
 local function DoEquipmentFoleySounds(inst)
     for k, v in pairs(inst.components.inventory.equipslots) do
@@ -274,6 +302,9 @@ AddStategraphState("wilson", State {
 })
 
 
+
+
+
 AddStategraphState("wilson", State {
     name = "icey2_aoeweapon_flurry_lunge_pre",
     tags = { "aoe", "doing", "busy", "nopredict" },
@@ -366,7 +397,7 @@ AddStategraphState("wilson", State {
 
     ontimeout = function(inst)
         local weapon = inst.sg.statemem.weapon
-        local target = weapon:PopTarget(inst)
+        local target = weapon.components.icey2_aoeweapon_flurry_lunge:PopTarget(inst)
         if target then
             inst.sg:GoToState("icey2_aoeweapon_flurry_lunge", {
                 middle_pos = inst.sg.statemem.middle_pos,
@@ -375,7 +406,8 @@ AddStategraphState("wilson", State {
             })
         else
             if inst.sg.statemem.middle_pos then
-                inst.sg:GoToState("idle", true)
+                inst.Transform:SetPosition(inst.sg.statemem.middle_pos:Get())
+                inst.sg:GoToState("icey2_aoeweapon_flurry_lunge_final", { weapon = weapon })
             else
                 inst.sg:GoToState("idle", true)
             end
@@ -419,14 +451,37 @@ AddStategraphState("wilson", State {
 
         inst.Transform:SetEightFaced()
         inst.AnimState:PlayAnimation("atk_leap")
-        -- inst.SoundEmitter:PlaySound()
+
+        -- inst.AnimState:PlayAnimation("superjump_land")
+        -- inst.AnimState:SetTime(FRAMES * 4)
+        -- inst.SoundEmitter:PlaySound("dontstarve/common/deathpoof")
 
         -- inst:ForceFacePoint(inst.sg.statemem.targetpos)
+
+        local r, g, b = 96 / 255, 249 / 255, 255 / 255
+        inst.sg.statemem.rgb = Vector3(r, g, b)
+        inst.components.colouradder:PushColour("superjump", r, g, b, 0)
+
+        -- inst.AnimState:SetDeltaTimeMultiplier(0.3)
+    end,
+
+    onupdate = function(inst)
+        if inst.sg.statemem.flash and inst.sg.statemem.flash > 0 then
+            inst.sg.statemem.flash = math.max(0, inst.sg.statemem.flash - .1)
+
+            local r, g, b = (inst.sg.statemem.rgb * inst.sg.statemem.flash):Get()
+            inst.components.colouradder:PushColour("superjump", r, g, b, 0)
+        end
     end,
 
     timeline = {
+        TimeEvent(5 * FRAMES, function(inst)
+            inst.sg.statemem.flash = 1
+        end),
+
         TimeEvent(13 * FRAMES, function(inst)
-            -- inst.SoundEmitter:PlaySound()
+            inst.SoundEmitter:PlaySound("dontstarve/common/destroy_smoke")
+            ShakeAllCameras(CAMERASHAKE.VERTICAL, .7, .015, .8, inst, 20)
 
             if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
                 inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:FinalBlow(inst)
@@ -437,6 +492,22 @@ AddStategraphState("wilson", State {
             inst.sg:RemoveStateTag("abouttoattack")
             inst.sg:GoToState("idle", true)
         end),
+
+        -- TimeEvent(3 * FRAMES, function(inst)
+        --     inst.SoundEmitter:PlaySound("dontstarve/common/destroy_smoke")
+        --     ShakeAllCameras(CAMERASHAKE.VERTICAL, .7, .015, .8, inst, 20)
+
+        --     if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
+        --         inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:FinalBlow(inst)
+        --     end
+
+        --     inst.AnimState:SetDeltaTimeMultiplier(1)
+        -- end),
+
+        -- TimeEvent(15 * FRAMES, function(inst)
+        --     inst.sg:RemoveStateTag("abouttoattack")
+        --     inst.sg:GoToState("idle", true)
+        -- end),
     },
 
     events = {
@@ -455,5 +526,7 @@ AddStategraphState("wilson", State {
 
     onexit = function(inst)
         inst.Transform:SetFourFaced()
+        inst.AnimState:SetDeltaTimeMultiplier(1)
+        inst.components.colouradder:PopColour("superjump")
     end,
 })

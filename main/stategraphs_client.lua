@@ -1,3 +1,75 @@
+AddStategraphPostInit("wilson_client", function(sg)
+    local old_locomote = sg.events["locomote"].fn
+    sg.events["locomote"].fn = function(inst, data)
+        --#HACK for hopping prediction: ignore busy when boathopping... (?_?)
+        if (inst.sg:HasStateTag("busy") or inst:HasTag("busy")) and
+            not (inst.sg:HasStateTag("boathopping") or inst:HasTag("boathopping")) then
+            return
+        elseif inst.sg:HasStateTag("overridelocomote") then
+            return
+        end
+
+        local is_moving = inst.sg:HasStateTag("moving")
+        local should_move = inst.components.locomotor:WantsToMoveForward()
+
+        local handle_by_old = true
+
+
+        if inst:HasTag("ingym") then
+
+        elseif inst:HasTag("sleeping") then
+
+        elseif not inst.entity:CanPredictMovement() then
+
+        elseif is_moving and not should_move then
+            if inst:HasTag("icey2_skill_unarmoured_movement") then
+                handle_by_old = false
+                inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
+            else
+
+            end
+        elseif not is_moving and should_move then
+            --V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
+            if data and data.dir then
+                if inst.components.locomotor then
+                    inst.components.locomotor:SetMoveDir(data.dir)
+                else
+                    inst.Transform:SetRotation(data.dir)
+                end
+            end
+            handle_by_old = false
+            inst.sg:GoToState("icey2_skill_unarmoured_movement_start")
+        end
+
+
+        if handle_by_old then
+            return old_locomote(inst, data)
+        else
+
+        end
+    end
+end)
+
+AddStategraphPostInit("wilson_client", function(sg)
+    local old_CASTAOE = sg.actionhandlers[ACTIONS.CASTAOE].deststate
+    sg.actionhandlers[ACTIONS.CASTAOE].deststate = function(inst, action)
+        local weapon = action.invobject
+        if weapon and weapon:HasTag("icey2_aoeweapon") then
+            local can_cast = weapon.components.aoetargeting:IsEnabled()
+
+            if can_cast then
+                if weapon.prefab == "icey2_pact_weapon_rapier" then
+                    inst:PerformPreviewBufferedAction()
+                    return
+                end
+            else
+                return
+            end
+        end
+        return old_CASTAOE(inst, action)
+    end
+end)
+
 local function DoEquipmentFoleySounds(inst)
     local inventory = inst.replica.inventory
     if inventory ~= nil then
@@ -54,57 +126,7 @@ end
 
 
 
-AddStategraphPostInit("wilson_client", function(sg)
-    local old_locomote = sg.events["locomote"].fn
-    sg.events["locomote"].fn = function(inst, data)
-        --#HACK for hopping prediction: ignore busy when boathopping... (?_?)
-        if (inst.sg:HasStateTag("busy") or inst:HasTag("busy")) and
-            not (inst.sg:HasStateTag("boathopping") or inst:HasTag("boathopping")) then
-            return
-        elseif inst.sg:HasStateTag("overridelocomote") then
-            return
-        end
 
-        local is_moving = inst.sg:HasStateTag("moving")
-        local should_move = inst.components.locomotor:WantsToMoveForward()
-
-        local handle_by_old = true
-
-
-        if inst:HasTag("ingym") then
-
-        elseif inst:HasTag("sleeping") then
-
-        elseif not inst.entity:CanPredictMovement() then
-
-        elseif is_moving and not should_move then
-            if inst:HasTag("icey2_skill_unarmoured_movement") then
-                handle_by_old = false
-                inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
-            else
-
-            end
-        elseif not is_moving and should_move then
-            --V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
-            if data and data.dir then
-                if inst.components.locomotor then
-                    inst.components.locomotor:SetMoveDir(data.dir)
-                else
-                    inst.Transform:SetRotation(data.dir)
-                end
-            end
-            handle_by_old = false
-            inst.sg:GoToState("icey2_skill_unarmoured_movement_start")
-        end
-
-
-        if handle_by_old then
-            return old_locomote(inst, data)
-        else
-
-        end
-    end
-end)
 
 AddStategraphState("wilson_client",
     State {

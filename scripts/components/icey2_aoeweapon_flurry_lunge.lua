@@ -3,16 +3,16 @@ local AOEWeapon_Base = require("components/aoeweapon_base")
 local Icey2AOEWeapon_FlurryLunge = Class(AOEWeapon_Base, function(self, inst)
     AOEWeapon_Base._ctor(self, inst)
 
-    self.search_distance = 10
+    self.search_distance = 6
     self.search_distance_final = 2
     self.possibile_targets = {}
     self.max_lunge_count = 5
+    self.is_final_blow = false
 
     self:SetTags("_combat")
     self:SetWorkActions()
 
-    --V2C: Recommended to explicitly add tag to prefab pristine state
-    inst:AddTag("icey2_aoeweapon_flurry_lunge")
+    inst:AddTag("icey2_aoeweapon")
 end)
 
 function Icey2AOEWeapon_FlurryLunge:GetMaxLungeCount()
@@ -34,9 +34,10 @@ function Icey2AOEWeapon_FlurryLunge:SearchPossibleTargets(attacker, target_pos, 
 
     for _, v in pairs(ents) do
         if self:IsValidTarget(attacker, v) then
-            if v:HasTag("hostile") or v:HasTag("monster") or v.components.combat:TargetIs(self.inst) then
-                table.insert(self.possibile_targets, v)
-            end
+            -- if v:HasTag("hostile") or v:HasTag("monster") or v.components.combat:TargetIs(self.inst) then
+            --     table.insert(self.possibile_targets, v)
+            -- end
+            table.insert(self.possibile_targets, v)
         end
     end
 
@@ -62,8 +63,11 @@ function Icey2AOEWeapon_FlurryLunge:PopTarget(attacker)
 end
 
 function Icey2AOEWeapon_FlurryLunge:FindPosNearTarget(attacker, target)
-    local radius = math.clamp(attacker:GetPhysicsRadius(0) + target:GetPhysicsRadius(0), 0.5,
-        attacker.components.combat:GetHitRange() - 0.1)
+    -- local radius = math.clamp(attacker:GetPhysicsRadius(0) + target:GetPhysicsRadius(0), 0.5,
+    --     attacker.components.combat:GetHitRange() - 0.1)
+
+    local hitrange = attacker.components.combat:GetHitRange()
+    local radius = math.clamp(hitrange - target:GetPhysicsRadius(0), 1, hitrange - 0.1)
     local offset = Vector3FromTheta(math.random() * PI2, radius)
     return target:GetPosition() + offset
 end
@@ -85,12 +89,16 @@ function Icey2AOEWeapon_FlurryLunge:Attack(attacker, target)
 end
 
 function Icey2AOEWeapon_FlurryLunge:FinalBlow(attacker)
+    self.is_final_blow = true
+
     self:SearchPossibleTargets(attacker, attacker:GetPosition(), self.search_distance_final, 99999)
     for _, v in pairs(self.possibile_targets) do
         self:OnHit(attacker, v)
     end
 
     self.possibile_targets = {}
+
+    self.is_final_blow = false
 end
 
 return Icey2AOEWeapon_FlurryLunge

@@ -127,7 +127,7 @@ local function vfxfn()
     effect:SetMaxNumParticles(0, 16)
     effect:SetMaxLifetime(0, MAX_LIFETIME_WHITE)
     effect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_WHITE)
-    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_MID)
+    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_SMALL)
     effect:SetBlendMode(0, BLENDMODE.AlphaAdditive)
     effect:EnableBloomPass(0, true)
     effect:SetSortOrder(0, 2)
@@ -140,7 +140,7 @@ local function vfxfn()
     effect:SetMaxNumParticles(1, 16)
     effect:SetMaxLifetime(1, MAX_LIFETIME_BLUE)
     effect:SetColourEnvelope(1, COLOUR_ENVELOPE_NAME_BLUE)
-    effect:SetScaleEnvelope(1, SCALE_ENVELOPE_NAME_BIG)
+    effect:SetScaleEnvelope(1, SCALE_ENVELOPE_NAME_MID)
     effect:SetBlendMode(1, BLENDMODE.AlphaAdditive)
     effect:EnableBloomPass(1, true)
     effect:SetSortOrder(1, 1)
@@ -155,7 +155,7 @@ local function vfxfn()
     local white_emitted_time = nil
 
 
-    local num_to_emit = 4
+    local num_to_emit = 3
 
     EmitterManager:AddEmitter(inst, nil, function()
         -- if not blue_emitted_time then
@@ -171,7 +171,9 @@ local function vfxfn()
         --     white_emitted_time = GetTime()
         -- end
         if num_to_emit > 0 then
-            local angle = math.random() * 360
+            -- local angle = math.random() * 360
+            local angle = math.random(45, 135)
+
             local px, py, pz = sphere_emitter()
             py = py + inst._height:value()
 
@@ -201,11 +203,15 @@ local function fxfn()
         return inst
     end
 
+    inst.persists = false
+
     inst.vfx = inst:SpawnChild("icey2_slash_vfx")
 
     inst.SetHeight = function(inst, h)
         inst.vfx._height:set(h)
     end
+
+    inst.remove_task = inst:DoTaskInTime(10 * FRAMES, inst.Remove)
 
     return inst
 end

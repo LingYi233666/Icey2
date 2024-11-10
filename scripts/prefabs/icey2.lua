@@ -1,6 +1,10 @@
 local MakePlayerCharacter = require "prefabs/player_common"
 
-local assets = { Asset("SCRIPT", "scripts/prefabs/player_common.lua") }
+local assets = {
+    Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
+    Asset("ANIM", "anim/hibiki.zip"),
+}
+-- ThePlayer.AnimState:OverrideSymbol("hairpigtails", "hibiki", "hairpigtails")
 local prefabs = {}
 
 -- 初始物品

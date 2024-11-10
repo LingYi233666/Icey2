@@ -14,6 +14,8 @@ local Icey2SkillSummonPactWeapon = Class(Icey2SkillBase_Active, function(self, i
         -- "icey2_greatsword",
         -- "icey2_greatsickle",
 
+        "icey2_pact_weapon_rapier",
+
         "spear",
         "hambat",
         "tentaclespike",
