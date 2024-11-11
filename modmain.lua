@@ -11,6 +11,9 @@ PrefabFiles = {
     "icey2_pact_weapon_rapier",
 
     "test_laser_beam",
+
+    "icey2_superjump_land_fx",
+    "icey2_shiny_explode_fx",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的
