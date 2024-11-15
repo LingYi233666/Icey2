@@ -47,7 +47,9 @@ function Icey2SkillShield:DoDelta(amount)
     self.inst:PushEvent("icey2_shield_delta", { old = old })
 end
 
-function Icey2SkillShield:GetPercent() return self.current / self.max end
+function Icey2SkillShield:GetPercent()
+    return self.current / self.max
+end
 
 function Icey2SkillShield:RedirectDamageToShield(amount, overtime, cause,
                                                  ignore_invincible, afflicter,
@@ -76,7 +78,9 @@ function Icey2SkillShield:RedirectDamageToShield(amount, overtime, cause,
     return amount + absorbtion
 end
 
-function Icey2SkillShield:GetRecoverRate() return self.recover_rate:Get() end
+function Icey2SkillShield:GetRecoverRate()
+    return self.recover_rate:Get()
+end
 
 function Icey2SkillShield:OnSave()
     local data = {}
@@ -87,12 +91,16 @@ end
 
 function Icey2SkillShield:OnLoad(data)
     if data ~= nil then
-        if data.current ~= nil then self:SetVal(data.current) end
+        if data.current ~= nil then
+            self:SetVal(data.current)
+        end
     end
 end
 
 function Icey2SkillShield:OnUpdate(dt)
-    if self.current < self.max then self:DoDelta(self:GetRecoverRate() * dt) end
+    if self.current < self.max then
+        self:DoDelta(self:GetRecoverRate() * dt)
+    end
 end
 
 return Icey2SkillShield

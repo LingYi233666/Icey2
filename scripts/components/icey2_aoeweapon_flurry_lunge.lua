@@ -88,6 +88,22 @@ function Icey2AOEWeapon_FlurryLunge:Attack(attacker, target)
     self.inst.components.icey2_spdamage_force:RemoveBonus(self.inst, "Icey2AOEWeapon_FlurryLunge")
 end
 
+function Icey2AOEWeapon_FlurryLunge:StartFinalBlow(attacker)
+    self.fx = attacker:SpawnChild("icey2_pact_weapon_rapier_greatsword_fx")
+    self.fx.entity:AddFollower()
+    self.fx.Follower:FollowSymbol(attacker.GUID, "swap_object", nil, nil, nil, true)
+end
+
+function Icey2AOEWeapon_FlurryLunge:StopFinalBlow(attacker, emit_disappear_fx)
+    if self.fx and self.fx:IsValid() then
+        self.fx:Remove()
+        if emit_disappear_fx then
+
+        end
+    end
+    self.fx = nil
+end
+
 function Icey2AOEWeapon_FlurryLunge:FinalBlow(attacker)
     self.is_final_blow = true
 

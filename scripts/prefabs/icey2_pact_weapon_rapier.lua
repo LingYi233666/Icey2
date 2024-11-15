@@ -3,6 +3,8 @@ local assets =
     Asset("ANIM", "anim/icey2_pact_weapon_rapier.zip"),
     Asset("ANIM", "anim/swap_icey2_pact_weapon_rapier.zip"),
 
+    -- Asset("ANIM", "anim/icey2_pact_weapon_great_sword.zip"),
+
     Asset("IMAGE", "images/inventoryimages/icey2_pact_weapon_rapier.tex"),
     Asset("ATLAS", "images/inventoryimages/icey2_pact_weapon_rapier.xml"),
 }
@@ -99,4 +101,29 @@ local function fn()
     return inst
 end
 
-return Prefab("icey2_pact_weapon_rapier", fn, assets)
+local function greatsword_fxfn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
+
+    inst.AnimState:SetBank("icey2_pact_weapon_rapier")
+    inst.AnimState:SetBuild("icey2_pact_weapon_rapier")
+    inst.AnimState:PlayAnimation("greatsword", true)
+
+    inst:AddTag("FX")
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.persists = false
+
+    return inst
+end
+
+return Prefab("icey2_pact_weapon_rapier", fn, assets),
+    Prefab("icey2_pact_weapon_rapier_greatsword_fx", greatsword_fxfn, assets)

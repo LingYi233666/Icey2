@@ -188,6 +188,36 @@ local function vfxfn()
     return inst
 end
 
+-- local function hitfxfn()
+--     local inst = CreateEntity()
+
+--     inst.entity:AddTransform()
+--     inst.entity:AddAnimState()
+--     inst.entity:AddSoundEmitter()
+--     inst.entity:AddNetwork()
+
+--     inst.AnimState:SetBank("deer_ice_charge")
+--     inst.AnimState:SetBuild("deer_ice_charge")
+--     inst.AnimState:PlayAnimation("blast")
+--     inst.AnimState:SetLightOverride(1)
+--     inst.AnimState:SetFinalOffset(3)
+
+
+--     inst:AddTag("FX")
+
+--     inst.entity:SetPristine()
+--     if not TheWorld.ismastersim then
+--         return inst
+--     end
+
+--     inst.persists = false
+--     inst.AnimState:HideSymbol("line")
+
+--     inst:ListenForEvent("animover", inst.Remove)
+
+--     return inst
+-- end
+
 local function fxfn()
     local inst = CreateEntity()
 

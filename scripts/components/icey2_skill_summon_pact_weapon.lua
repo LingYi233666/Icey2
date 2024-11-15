@@ -21,9 +21,9 @@ local Icey2SkillSummonPactWeapon = Class(Icey2SkillBase_Active, function(self, i
         "tentaclespike",
     }
 
-    self.pact_weapon_savedatas = {
+    self.pact_weapon_can_use = {}
 
-    }
+    self.pact_weapon_savedatas = {}
 
 
     self.linked_weapon = nil
@@ -53,8 +53,49 @@ end)
 
 
 function Icey2SkillSummonPactWeapon:UpdateJsonData()
-    local pact_weapon_options_json = json.encode(self.pact_weapon_options)
-    self.inst.replica.icey2_skill_summon_pact_weapon:SetWeaponOptionsJson(pact_weapon_options_json)
+    local options_clone = shallowcopy(self.pact_weapon_options)
+
+    for prefab, enable in pairs(self.pact_weapon_can_use) do
+        if enable == false then
+            table.removearrayvalue(options_clone, prefab)
+        end
+    end
+
+    local js_value = json.encode(options_clone)
+    self.inst.replica.icey2_skill_summon_pact_weapon:SetWeaponOptionsJson(js_value)
+end
+
+function Icey2SkillSummonPactWeapon:AddWeaponPrefab(prefab)
+    if table.contains(self.pact_weapon_options, prefab) then
+        print(prefab .. " is already exists in pact weapon options")
+        return
+    end
+
+    table.insert(self.pact_weapon_options, prefab)
+    table.sort(self.pact_weapon_options)
+
+    self:UpdateJsonData()
+end
+
+function Icey2SkillSummonPactWeapon:RemoveWeaponPrefab(prefab)
+    if not table.contains(self.pact_weapon_options, prefab) then
+        print(prefab .. " not exist in pact weapon options")
+        return
+    end
+
+    table.removearrayvalue(self.pact_weapon_options, prefab)
+
+    self:UpdateJsonData()
+end
+
+-- For scythe
+function Icey2SkillSummonPactWeapon:SetWeaponCanUse(prefab, enable)
+    if enable then
+        self.pact_weapon_can_use[prefab] = nil
+    else
+        self.pact_weapon_can_use[prefab] = false
+    end
+    self:UpdateJsonData()
 end
 
 function Icey2SkillSummonPactWeapon:LinkWeapon(weapon)

@@ -465,10 +465,13 @@ AddStategraphState("wilson", State {
         end
 
         inst.Transform:SetEightFaced()
-        -- inst.AnimState:PlayAnimation("atk_leap")
 
-        inst.AnimState:PlayAnimation("superjump_land")
-        inst.AnimState:SetTime(FRAMES * 4)
+
+        inst.AnimState:PlayAnimation("atk_leap")
+
+        -- inst.AnimState:PlayAnimation("superjump_land")
+        -- inst.AnimState:SetTime(FRAMES * 4)
+
         inst.SoundEmitter:PlaySound("dontstarve/common/deathpoof")
 
         -- inst:ForceFacePoint(inst.sg.statemem.targetpos)
@@ -479,7 +482,11 @@ AddStategraphState("wilson", State {
 
         -- inst.AnimState:SetDeltaTimeMultiplier(0.5)
 
-        inst.sg.statemem.vfx = inst:SpawnChild("icey2_superjump_land_vfx")
+        -- inst.sg.statemem.vfx = inst:SpawnChild("icey2_superjump_land_vfx")
+
+        if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
+            inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:StartFinalBlow(inst)
+        end
     end,
 
     onupdate = function(inst)
@@ -492,57 +499,63 @@ AddStategraphState("wilson", State {
     end,
 
     timeline = {
-        -- TimeEvent(10 * FRAMES, function(inst)
-        --     inst.sg.statemem.flash = 1
-        -- end),
-
-        -- TimeEvent(13 * FRAMES, function(inst)
-        --     inst.SoundEmitter:PlaySound("dontstarve/common/destroy_smoke")
-        --     ShakeAllCameras(CAMERASHAKE.VERTICAL, .7, .015, .8, inst, 20)
-
-        --     if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
-        --         inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:FinalBlow(inst)
-        --     end
-        -- end),
-
-        -- TimeEvent(18 * FRAMES, function(inst)
-        --     inst.sg:RemoveStateTag("abouttoattack")
-        --     inst.sg:GoToState("idle", true)
-        -- end),
-
-        TimeEvent(0 * FRAMES, function(inst)
+        TimeEvent(10 * FRAMES, function(inst)
             inst.sg.statemem.flash = 1
-            inst.SoundEmitter:PlaySound("dontstarve/common/destroy_smoke")
         end),
 
-        TimeEvent(1 * FRAMES, function(inst)
-            inst.sg.statemem.flash = 1
+        TimeEvent(13 * FRAMES, function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/common/destroy_smoke")
-
-            local fx = SpawnAt("icey2_shiny_explode_fx", inst)
-            fx.AnimState:SetDeltaTimeMultiplier(1.5)
-        end),
-
-        TimeEvent(4 * FRAMES, function(inst)
             ShakeAllCameras(CAMERASHAKE.VERTICAL, .7, .015, .8, inst, 20)
 
             if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
                 inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:FinalBlow(inst)
             end
-
-            inst.AnimState:SetDeltaTimeMultiplier(1)
         end),
 
-        TimeEvent(6 * FRAMES, function(inst)
-            if inst.sg.statemem.vfx and inst.sg.statemem.vfx:IsValid() then
-                inst.sg.statemem.vfx:Remove()
-            end
-        end),
-
-        TimeEvent(15 * FRAMES, function(inst)
+        TimeEvent(18 * FRAMES, function(inst)
             inst.sg:RemoveStateTag("abouttoattack")
+
+            if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
+                inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:StopFinalBlow(inst)
+                inst.sg.statemem.run_stop_fn = true
+            end
+
             inst.sg:GoToState("idle", true)
         end),
+
+        -- TimeEvent(0 * FRAMES, function(inst)
+        --     inst.sg.statemem.flash = 1
+        --     inst.SoundEmitter:PlaySound("dontstarve/common/destroy_smoke")
+        -- end),
+
+        -- TimeEvent(1 * FRAMES, function(inst)
+        --     inst.sg.statemem.flash = 1
+        --     inst.SoundEmitter:PlaySound("dontstarve/common/destroy_smoke")
+
+        --     local fx = SpawnAt("icey2_shiny_explode_fx", inst)
+        --     fx.AnimState:SetDeltaTimeMultiplier(1.5)
+        -- end),
+
+        -- TimeEvent(4 * FRAMES, function(inst)
+        --     ShakeAllCameras(CAMERASHAKE.VERTICAL, .7, .015, .8, inst, 20)
+
+        --     if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
+        --         inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:FinalBlow(inst)
+        --     end
+
+        --     inst.AnimState:SetDeltaTimeMultiplier(1)
+        -- end),
+
+        -- TimeEvent(6 * FRAMES, function(inst)
+        --     if inst.sg.statemem.vfx and inst.sg.statemem.vfx:IsValid() then
+        --         inst.sg.statemem.vfx:Remove()
+        --     end
+        -- end),
+
+        -- TimeEvent(15 * FRAMES, function(inst)
+        --     inst.sg:RemoveStateTag("abouttoattack")
+        --     inst.sg:GoToState("idle", true)
+        -- end),
     },
 
     events = {
@@ -566,6 +579,12 @@ AddStategraphState("wilson", State {
 
         if inst.sg.statemem.vfx and inst.sg.statemem.vfx:IsValid() then
             inst.sg.statemem.vfx:Remove()
+        end
+
+        if inst.sg.statemem.weapon
+            and inst.sg.statemem.weapon:IsValid()
+            and not inst.sg.statemem.run_stop_fn then
+            inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:StopFinalBlow(inst, false)
         end
     end,
 })
