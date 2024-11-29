@@ -22,8 +22,8 @@ local Icey2SkillSummonPactWeapon = Class(Icey2SkillBase_Active, function(self, i
     }
 
     self.pact_weapon_can_use = {}
-
     self.pact_weapon_savedatas = {}
+    self.pact_weapon_last_remove_time = {}
 
 
     self.linked_weapon = nil
@@ -113,23 +113,22 @@ function Icey2SkillSummonPactWeapon:LinkWeapon(weapon)
         end
 
         if data.item == weapon then
-            if data.item == weapon then
-                print("Drop weapon:", data.item)
-            end
+            print("Drop pact weapon:", data.item)
 
             if self._regive_weapon_task then
                 return
             end
 
-            if not self:ReturnWeaponToOwner(weapon) then
-                self:StartRegiveTask()
-            end
+            -- if not self:ReturnWeaponToOwner(weapon) then
+            --     self:StartRegiveTask()
+            -- end
+            self:StartRegiveTask()
         end
     end
 
     self._on_linked_weapon_pickup_fn = function(_, data)
         if data.item == weapon then
-            print("Pickup weapon:", data.item)
+            print("Pickup my pact weapon:", data.item)
 
             self:StopRegiveTask()
         end
@@ -182,6 +181,7 @@ function Icey2SkillSummonPactWeapon:UnlinkWeapon(remove_weapon)
 
         if remove_weapon and weapon:IsValid() then
             self.pact_weapon_savedatas[weapon.prefab] = self:WeaponToData(weapon)
+            self.pact_weapon_last_remove_time[weapon.prefab] = GetTime()
             weapon:Remove()
         end
     end
@@ -264,6 +264,18 @@ function Icey2SkillSummonPactWeapon:SummonWeapon(prefab)
     local weapon
     if self.pact_weapon_savedatas[prefab] ~= nil then
         weapon = self:DataToWeapon(self.pact_weapon_savedatas[prefab])
+        if weapon == nil then
+            return
+        end
+
+        if weapon.components.rechargeable
+            and not weapon.components.rechargeable:IsCharged()
+            and self.pact_weapon_last_remove_time[prefab] ~= nil then
+            -- When weapon is not summoned, its skill cd is not calculated,
+            -- so I add this, apply duration to skill cd.
+            local duration = math.max(0, GetTime() - self.pact_weapon_last_remove_time[prefab])
+            weapon.components.rechargeable:SetCharge(weapon.components.rechargeable:GetCharge() + duration)
+        end
     else
         weapon = SpawnAt(prefab, self.inst)
     end
@@ -290,6 +302,10 @@ function Icey2SkillSummonPactWeapon:OnSave()
         self.pact_weapon_savedatas[self.linked_weapon.prefab] = self:WeaponToData(self.linked_weapon)
     end
     data.pact_weapon_savedatas = self.pact_weapon_savedatas
+    data.pact_weapon_time_since_remove = {}
+    for prefab, last_remove_time in pairs(self.pact_weapon_last_remove_time) do
+        data.pact_weapon_time_since_remove[prefab] = GetTime() - last_remove_time
+    end
 
     print("Icey2SkillSummonPactWeapon:OnSave() pact_weapon_savedatas = ")
     dumptable(self.pact_weapon_savedatas)
@@ -303,6 +319,11 @@ function Icey2SkillSummonPactWeapon:OnLoad(data)
     if data ~= nil then
         if data.pact_weapon_savedatas ~= nil then
             self.pact_weapon_savedatas = data.pact_weapon_savedatas
+        end
+        if data.pact_weapon_time_since_remove ~= nil then
+            for prefab, time_since_remove in pairs(self.pact_weapon_time_since_remove) do
+                data.pact_weapon_last_remove_time[prefab] = GetTime() - time_since_remove
+            end
         end
         if data.linked_weapon_prefab ~= nil then
             self:SummonWeapon(data.linked_weapon_prefab)

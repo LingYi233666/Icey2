@@ -22,6 +22,46 @@ local function onunequip(inst, owner)
     owner.AnimState:SetSymbolLightOverride("swap_object", 0)
 end
 
+local function HarvestPickable(inst, ent, doer)
+    if ent.components.pickable.picksound ~= nil then
+        doer.SoundEmitter:PlaySound(ent.components.pickable.picksound)
+    end
+
+    local success, loot = ent.components.pickable:Pick(TheWorld)
+
+    if loot ~= nil then
+        for i, item in ipairs(loot) do
+            Launch(item, doer, 1.5)
+        end
+    end
+end
+
+local function IsEntityInFront(inst, entity, doer_rotation, doer_pos)
+    local facing = Vector3(math.cos(-doer_rotation / RADIANS), 0, math.sin(-doer_rotation / RADIANS))
+
+    return IsWithinAngle(doer_pos, facing, 165 * DEGREES, entity:GetPosition())
+end
+
+local function DoScythe(inst, doer, target)
+    local doer_pos = doer:GetPosition()
+    local x, y, z = doer_pos:Get()
+
+    local doer_rotation = doer.Transform:GetRotation()
+
+    local ents = TheSim:FindEntities(x, y, z, 4, { "pickable" }, { "INLIMBO", "FX" },
+        { "plant", "lichen", "oceanvine", "kelp" })
+
+    for _, ent in pairs(ents) do
+        if ent:IsValid()
+            and ent.components.pickable ~= nil
+            and IsEntityInFront(inst, ent, doer_rotation, doer_pos) then
+            HarvestPickable(inst, ent, doer)
+        end
+    end
+
+    return true
+end
+
 local function OnSpellHit(inst, doer, target)
 
 end
@@ -73,6 +113,10 @@ local function fn()
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
+
+
+    inst:AddComponent("icey2_scythe")
+    inst.components.icey2_scythe:SetDoScytheFn(DoScythe)
 
     -- inst:AddComponent("icey2_aoeweapon_flurry_lunge")
     -- inst.components.icey2_aoeweapon_flurry_lunge:SetOnHitFn(OnSpellHit)

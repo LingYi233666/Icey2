@@ -9,6 +9,19 @@ local Icey2AOEWeapon_ThrowScythe = Class(AOEWeapon_Base, function(self, inst)
     inst:AddTag("icey2_aoeweapon")
 end)
 
+-- function Icey2AOEWeapon_ThrowScythe:HarvestPickable(ent)
+--     if ent.components.pickable.picksound ~= nil then
+--         self.inst.SoundEmitter:PlaySound(ent.components.pickable.picksound)
+--     end
+
+--     local success, loot = ent.components.pickable:Pick(TheWorld)
+
+--     if loot ~= nil then
+--         for i, item in ipairs(loot) do
+--             Launch(item, self.inst, 1.5)
+--         end
+--     end
+-- end
 
 function Icey2AOEWeapon_ThrowScythe:Launch(attacker, target_pos)
 

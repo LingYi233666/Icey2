@@ -90,12 +90,14 @@ PREFAB_SKINS["icey2"] = { -- 修复人物大图显示
 }
 
 local modimport_filenames = {
-    "basic_utils", "math_utils", "weaponskill_utils", "language_chs", "spdamage", "rpc_defines",
+    "actions", "basic_utils", "math_utils", "weaponskill_utils", "language_chs", "spdamage", "rpc_defines",
     "skill_defines", "components", "input", "stategraphs_server",
     "stategraphs_client", "hud", "debug"
 }
 
-for _, filename in pairs(modimport_filenames) do modimport("main/" .. filename) end
+for _, filename in pairs(modimport_filenames) do
+    modimport("main/" .. filename)
+end
 
 AddMinimapAtlas("images/map_icons/icey2.xml") -- 增加小地图图标
 
