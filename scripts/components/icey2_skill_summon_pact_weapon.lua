@@ -226,8 +226,21 @@ function Icey2SkillSummonPactWeapon:DataToWeapon(weapondata)
 end
 
 function Icey2SkillSummonPactWeapon:StartRegiveTask()
+    if self.linked_weapon
+        and self.linked_weapon:IsValid()
+        and self.linked_weapon:HasTag("icey2_pact_weapon_no_regive") then
+        return
+    end
+
     self._regive_weapon_task = self.inst:DoPeriodicTask(0, function()
         if not (self.linked_weapon and self.linked_weapon:IsValid()) then
+            self:StopRegiveTask()
+            return
+        end
+
+        if self.linked_weapon
+            and self.linked_weapon:IsValid()
+            and self.linked_weapon:HasTag("icey2_pact_weapon_no_regive") then
             self:StopRegiveTask()
             return
         end
