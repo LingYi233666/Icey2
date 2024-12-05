@@ -271,52 +271,20 @@ local function fn()
     return inst
 end
 
-local function height_controller_fn()
+
+local function rollingfn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddNetwork()
-
-    MakeProjectilePhysics(inst)
-
-    inst.AnimState:SetBank("icey2_pact_weapon_scythe")
-    inst.AnimState:SetBuild("icey2_pact_weapon_scythe")
-    -- inst.AnimState:PlayAnimation("controller")
-
-    inst:AddTag("FX")
-
-    inst.entity:SetPristine()
-
-    if not TheWorld.ismastersim then
-        return inst
-    end
-
-    inst.SetHeight = function(inst, height_pixel)
-        local max_height_pixel = 1000
-        inst.AnimState:SetPercent("controller", height_pixel / max_height_pixel)
-    end
-
-
-    return inst
-end
-
-local function totemfn()
-    local inst = CreateEntity()
-
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddNetwork()
-
-    MakeProjectilePhysics(inst)
 
     inst.Transform:SetEightFaced()
 
     inst.AnimState:SetBank("icey2_pact_weapon_scythe")
     inst.AnimState:SetBuild("icey2_pact_weapon_scythe")
-    inst.AnimState:PlayAnimation("totem")
+    inst.AnimState:PlayAnimation("rolling", true)
 
-    inst:AddTag("NOCLICK")
     inst:AddTag("FX")
 
     inst.entity:SetPristine()
@@ -325,32 +293,10 @@ local function totemfn()
         return inst
     end
 
-
     inst.persists = false
-
-    inst.buffered_creatures = {}
-    inst.buffer_task = inst:DoPeriodicTask(0, BufferTask)
-
-
-    inst.KillFX = KillFX
-    inst.SetOwner = SetOwner
-
-
-    -- May be do damage to nearby enemies ?
-    -- inst:AddComponent("weapon")
-    -- inst.components.weapon:SetDamage(17)
-
-    -- inst:AddComponent("icey2_spdamage_force")
-    -- inst.components.icey2_spdamage_force:SetBaseDamage(17)
-
-    inst:AddComponent("timer")
-    inst.components.timer:StartTimer("killfx", 10)
-
-    inst:ListenForEvent("timerdone", TotemTimerDone)
 
     return inst
 end
 
 return Prefab("icey2_pact_weapon_scythe", fn, assets),
-    -- Prefab("icey2_pact_weapon_scythe_height_controller", height_controller_fn, assets)
     Prefab("icey2_pact_weapon_scythe_rolling", rollingfn, assets)
