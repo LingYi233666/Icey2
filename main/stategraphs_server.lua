@@ -503,6 +503,8 @@ AddStategraphState("wilson", State {
         if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
             inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:StartFinalBlow(inst)
         end
+
+        inst.components.health:SetInvincible(true)
     end,
 
     onupdate = function(inst)
@@ -526,6 +528,8 @@ AddStategraphState("wilson", State {
             if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
                 inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:FinalBlow(inst)
             end
+
+            inst.components.health:SetInvincible(false)
         end),
 
         TimeEvent(16 * FRAMES, function(inst)
@@ -604,5 +608,7 @@ AddStategraphState("wilson", State {
             and not inst.sg.statemem.run_stop_fn then
             inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:StopFinalBlow(inst, false)
         end
+
+        inst.components.health:SetInvincible(false)
     end,
 })

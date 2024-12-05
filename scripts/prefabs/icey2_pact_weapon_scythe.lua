@@ -139,7 +139,7 @@ local function ProjectileOnThrown(inst, thrower)
     if not inst.rolling_fx.Follower then
         inst.rolling_fx.entity:AddFollower()
     end
-    inst.rolling_fx:FollowSymbol(inst.GUID, "swap_rolling_fx", 0, 0, 0)
+    inst.rolling_fx.Follower:FollowSymbol(inst.GUID, "swap_rolling_fx", 0, 0, 0)
 
     inst.SoundEmitter:PlaySound("wilson_rework/torch/torch_spin", "spin_loop")
 
@@ -213,7 +213,7 @@ local function fn()
     inst.AnimState:SetBuild("icey2_pact_weapon_scythe")
     inst.AnimState:PlayAnimation("idle")
 
-    -- inst:AddTag("sharp")
+    inst:AddTag("special_action_toss")
 
     MakeInventoryFloatable(inst, "med", 0.05, { 1.1, 0.5, 1.1 }, true, -9)
 
@@ -298,5 +298,37 @@ local function rollingfn()
     return inst
 end
 
+local function swapanimfn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
+
+    inst.AnimState:SetBank("icey2_pact_weapon_scythe")
+    inst.AnimState:SetBuild("icey2_pact_weapon_scythe")
+
+    inst.AnimState:SetLightOverride(0.6)
+
+    inst:AddComponent("highlightchild")
+
+    inst:AddTag("FX")
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst:AddComponent("colouradder")
+
+    inst.persists = false
+
+    return inst
+end
+
+
+
 return Prefab("icey2_pact_weapon_scythe", fn, assets),
-    Prefab("icey2_pact_weapon_scythe_rolling", rollingfn, assets)
+    Prefab("icey2_pact_weapon_scythe_rolling", rollingfn, assets),
+    Prefab("icey2_pact_weapon_scythe_swapanim", swapanimfn, assets)
