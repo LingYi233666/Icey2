@@ -15,7 +15,9 @@ local Icey2SkillSummonPactWeapon = Class(Icey2SkillBase_Active, function(self, i
         -- "icey2_greatsickle",
 
         "icey2_pact_weapon_rapier",
+        "icey2_pact_weapon_scythe",
 
+        -- These are for testing.
         "spear",
         "hambat",
         "tentaclespike",
@@ -256,7 +258,7 @@ function Icey2SkillSummonPactWeapon:StopRegiveTask()
 end
 
 -- ThePlayer.components.icey2_skill_summon_pact_weapon:SummonWeapon("spear")
-function Icey2SkillSummonPactWeapon:SummonWeapon(prefab)
+function Icey2SkillSummonPactWeapon:SummonWeapon(prefab, emit_fx)
     if not table.contains(self.pact_weapon_options, prefab) then
         return
     end
@@ -287,6 +289,12 @@ function Icey2SkillSummonPactWeapon:SummonWeapon(prefab)
     self:LinkWeapon(weapon)
     if not self.inst.components.inventory:Equip(weapon) then
         self:StartRegiveTask()
+    else
+        if emit_fx then
+            local fx = self.inst:SpawnChild("icey2_pact_weapon_rapier_emit_fx")
+            fx.entity:AddFollower()
+            fx.Follower:FollowSymbol(self.inst.GUID, "swap_object", nil, nil, nil, true)
+        end
     end
 end
 
@@ -321,8 +329,8 @@ function Icey2SkillSummonPactWeapon:OnLoad(data)
             self.pact_weapon_savedatas = data.pact_weapon_savedatas
         end
         if data.pact_weapon_time_since_remove ~= nil then
-            for prefab, time_since_remove in pairs(self.pact_weapon_time_since_remove) do
-                data.pact_weapon_last_remove_time[prefab] = GetTime() - time_since_remove
+            for prefab, time_since_remove in pairs(data.pact_weapon_time_since_remove) do
+                self.pact_weapon_last_remove_time[prefab] = GetTime() - time_since_remove
             end
         end
         if data.linked_weapon_prefab ~= nil then

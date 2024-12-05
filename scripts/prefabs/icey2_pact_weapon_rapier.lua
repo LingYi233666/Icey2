@@ -3,7 +3,7 @@ local assets =
     Asset("ANIM", "anim/icey2_pact_weapon_rapier.zip"),
     Asset("ANIM", "anim/swap_icey2_pact_weapon_rapier.zip"),
 
-    -- Asset("ANIM", "anim/icey2_pact_weapon_great_sword.zip"),
+    Asset("ANIM", "anim/swap_icey2_pact_weapon_great_sword.zip"),
 
     Asset("IMAGE", "images/inventoryimages/icey2_pact_weapon_rapier.tex"),
     Asset("ATLAS", "images/inventoryimages/icey2_pact_weapon_rapier.xml"),
@@ -43,6 +43,12 @@ local function SpellFn(inst, doer, pos)
         weapon = inst,
         target_pos = pos,
     })
+
+    if Icey2Basic.IsWearingArmor(doer) then
+        inst.components.rechargeable:Discharge(5)
+    else
+        inst.components.rechargeable:Discharge(1)
+    end
 end
 
 local function fn()
@@ -112,7 +118,12 @@ local function greatsword_fxfn()
     inst.AnimState:SetBuild("icey2_pact_weapon_rapier")
     inst.AnimState:PlayAnimation("greatsword", true)
 
+    inst.AnimState:OverrideSymbol("swap_great_sword", "swap_icey2_pact_weapon_great_sword",
+        "swap_icey2_pact_weapon_great_sword")
+
     inst:AddTag("FX")
+
+    inst.AnimState:SetLightOverride(0.6)
 
     inst.entity:SetPristine()
 
@@ -125,5 +136,36 @@ local function greatsword_fxfn()
     return inst
 end
 
+local function emit_fxfn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
+
+    inst.AnimState:SetBank("halloween_embers_cold")
+    inst.AnimState:SetBuild("halloween_embers_cold")
+    -- inst.AnimState:PlayAnimation("puff_" .. math.random(1, 3))
+    inst.AnimState:PlayAnimation("puff_1")
+
+    inst:AddTag("FX")
+
+    inst.AnimState:SetLightOverride(1)
+    inst.AnimState:SetDeltaTimeMultiplier(1.5)
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.persists = false
+
+    inst:ListenForEvent("animover", inst.Remove)
+
+    return inst
+end
+
 return Prefab("icey2_pact_weapon_rapier", fn, assets),
-    Prefab("icey2_pact_weapon_rapier_greatsword_fx", greatsword_fxfn, assets)
+    Prefab("icey2_pact_weapon_rapier_greatsword_fx", greatsword_fxfn, assets),
+    Prefab("icey2_pact_weapon_rapier_emit_fx", emit_fxfn, assets)

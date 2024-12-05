@@ -196,6 +196,20 @@ local function MyMoveTo(widget, start_pos, end_pos, duration, endfn)
     end)
 end
 
+function Icey2SkillTab:SpawnUnlockFX(pos)
+    local unlockfx = self.scroll_list.list_root.grid:AddChild(UIAnim())
+    unlockfx:GetAnimState():SetBank("skill_unlock")
+    unlockfx:GetAnimState():SetBuild("skill_unlock")
+    unlockfx:GetAnimState():PlayAnimation("idle")
+    unlockfx:SetScale(1.3, 1.3)
+    unlockfx:SetPosition(pos.x, pos.y)
+    unlockfx.inst:ListenForEvent("animover", function() unlockfx:Kill() end)
+
+    TheFrontEnd:GetSound():PlaySound("wilson_rework/ui/unlock_gatedskill")
+
+    return unlockfx
+end
+
 -- Fly up wituout menu: 3.7s
 -- Fly to slot: 5.8s
 -- Static: 3.2s
@@ -210,79 +224,75 @@ function Icey2SkillTab:PlaySkillLearnedAnim_Part2(name)
 
     local target_k = self.scroll_list:FindDataIndex(target_data)
 
-    if target_k and target_k > 0 then
-        -- local row = math.ceil(target_k / self.config.num_columns)
-        -- local col = target_k % self.config.num_columns
-        -- if col == 0 then
-        --     col = self.config.num_columns
-        -- end
-
-        -- print("target_k = ", target_k)
-        -- print("target row, col = ", row, col)
-
-        self.scroll_list:ScrollToDataIndex(target_k)
-        self:ModifySlideBar()
-
-        local index_in_view = nil
-        local target_slot = nil
-        for k, v in pairs(self.scroll_list.widgets_to_update) do
-            if v.skill_name == name then
-                index_in_view, target_slot = k, v
-                break
-            end
-        end
-
-        local row = math.ceil(index_in_view / self.config.num_columns)
-        local y_offset = 190 + self.config.widget_height * row
-
-        if target_slot then
-            self:SetClickable(false)
-            target_slot:EnableIcon(false)
-
-            local pos = target_slot:GetPosition()
-
-            local new_guy = self.scroll_list.list_root.grid:AddChild(
-                Icey2SkillLearnedFX(name))
-            new_guy:SetPosition(pos.x, pos.y + y_offset)
-            new_guy:MoveToFront()
-            MyMoveTo(new_guy, Vector3(pos.x, pos.y + y_offset, 0),
-                Vector3(pos.x, pos.y, 0), 5, function()
-                    self.inst:DoTaskInTime(0.6, function()
-                        target_slot:EnableIcon(
-                            self.owner.replica.icey2_skiller:IsLearned(name))
-                        target_slot:EnableFlashing(true)
-
-                        self:OnSkillSlotClick(target_slot)
-
-                        local unlockfx = self.scroll_list.list_root.grid:AddChild(
-                            UIAnim())
-                        unlockfx:GetAnimState():SetBank("skill_unlock")
-                        unlockfx:GetAnimState():SetBuild("skill_unlock")
-                        unlockfx:GetAnimState():PlayAnimation("idle")
-                        unlockfx:SetScale(1.3, 1.3)
-                        unlockfx:SetPosition(pos.x, pos.y)
-                        unlockfx.inst:ListenForEvent("animover",
-                            function()
-                                unlockfx:Kill()
-                            end)
-
-                        self.inst:DoTaskInTime(2.9, function()
-                            target_slot:EnableFlashing(false)
-                            self:SetClickable(true)
-                        end)
-
-                        TheFrontEnd:GetSound():PlaySound(
-                            "wilson_rework/ui/unlock_gatedskill")
-
-                        new_guy:Kill()
-                    end)
-                end)
-        else
-            print("Target slot widget not found !")
-        end
-    else
+    if target_k == nil or target_k <= 0 then
         print("Index not found !")
+        return
     end
+
+    -- local row = math.ceil(target_k / self.config.num_columns)
+    -- local col = target_k % self.config.num_columns
+    -- if col == 0 then
+    --     col = self.config.num_columns
+    -- end
+
+    -- print("target_k = ", target_k)
+    -- print("target row, col = ", row, col)
+
+    self.scroll_list:ScrollToDataIndex(target_k)
+    self:ModifySlideBar()
+
+    local index_in_view = nil
+    local target_slot = nil
+    for k, v in pairs(self.scroll_list.widgets_to_update) do
+        if v.skill_name == name then
+            index_in_view, target_slot = k, v
+            break
+        end
+    end
+
+    local row = math.ceil(index_in_view / self.config.num_columns)
+    local y_offset = 190 + self.config.widget_height * row
+
+    if target_slot == nil then
+        print("Target slot widget not found !")
+        return
+    end
+
+    self:SetClickable(false)
+    target_slot:EnableIcon(false)
+
+    local pos = target_slot:GetPosition()
+
+    self.skill_learned_fx = self.scroll_list.list_root.grid:AddChild(Icey2SkillLearnedFX(name))
+    self.skill_learned_fx:MoveToFront()
+
+    MyMoveTo(self.skill_learned_fx, Vector3(pos.x, pos.y + y_offset, 0), Vector3(pos.x, pos.y, 0), 5,
+        function()
+            self.inst:DoTaskInTime(0.6, function()
+                self.skill_learned_fx:Kill()
+                self.skill_learned_fx = nil
+
+                target_slot:EnableIcon(self.owner.replica.icey2_skiller:IsLearned(name))
+                target_slot:EnableFlashing(true)
+
+                self:OnSkillSlotClick(target_slot)
+                self:SpawnUnlockFX(pos)
+
+                self.inst:DoTaskInTime(2.9, function()
+                    target_slot:EnableFlashing(false)
+                    self:SetClickable(true)
+                end)
+            end)
+        end)
+end
+
+function Icey2SkillTab:InterruptSkillLearnedAnim(show_skill)
+    if self.skill_learned_fx then
+        self.skill_learned_fx:Kill()
+    end
+    self.skill_learned_fx = nil
+
+    self:SetClickable(true)
 end
 
 return Icey2SkillTab

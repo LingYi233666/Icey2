@@ -9,12 +9,14 @@ local prefabs = {}
 
 -- 初始物品
 local start_inv = {
-    "spear" -- 自带一个长矛
+    -- "spear" -- 自带一个长矛
 }
 
 local function OnNewSpawn(inst)
     for name, v in pairs(ICEY2_SKILL_DEFINES) do
-        if v.Root then inst.components.icey2_skiller:Learn(name) end
+        if v.Root then
+            inst.components.icey2_skiller:Learn(name)
+        end
     end
 end
 
@@ -34,11 +36,10 @@ end
 -- 这里的的函数只在主机执行  一般组件之类的都写在这里
 local master_postinit = function(inst)
     -- 人物音效
-    inst.soundsname = "willow"
+    inst.soundsname = "wendy"
 
     -- 最喜欢的食物  名字 倍率（1.2）
-    inst.components.foodaffinity:AddPrefabAffinity("baconeggs",
-        TUNING.AFFINITY_15_CALORIES_HUGE)
+    inst.components.foodaffinity:AddPrefabAffinity("baconeggs", TUNING.AFFINITY_15_CALORIES_HUGE)
 
     -- 三维	
     inst.components.health:SetMaxHealth(TUNING.ICEY2_HEALTH)

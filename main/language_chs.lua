@@ -21,11 +21,14 @@ STRINGS.CHARACTER_SURVIVABILITY.icey2 = "生存"
 STRINGS.NAMES.ICEY2_PACT_WEAPON_RAPIER = "能量刺剑"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_RAPIER = "这是某种...武器。"
 
+STRINGS.NAMES.ICEY2_PACT_WEAPON_SCYTHE = "能量镰刀"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_SCYTHE = "这是某种...武器。"
+
 ----------------------------------------------------------------------------------------------
 -- ACTIONS
 
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_RAPIER = "迭影"
-
+STRINGS.ACTIONS.ICEY2_SCYTHE = "收割"
 
 ----------------------------------------------------------------------------------------------
 -- HUD

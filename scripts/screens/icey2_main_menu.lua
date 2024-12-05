@@ -57,7 +57,7 @@ local Icey2MainMenu = Class(Screen, function(self, owner)
     }
 
     self.headertab_screener = Subscreener(self,
-                                          self._BuildHeaderTab, self.tab_screens
+        self._BuildHeaderTab, self.tab_screens
     )
     self.headertab_screener:OnMenuButtonSelected("skill_tab")
 
@@ -75,9 +75,8 @@ end)
 function Icey2MainMenu:OnDestroy()
     SetAutopaused(false)
 
-    if TheFrontEnd:GetSound():PlayingSound("icey2_skill_learned_music") then
-        TheFrontEnd:GetSound():KillSound("icey2_skill_learned_music")
-    end
+    self:InterruptSkillLearnedAnim(false)
+
     ThePlayer.HUD.controls.Icey2MainMenu = nil
     Icey2MainMenu._base.OnDestroy(self)
 end
@@ -128,28 +127,47 @@ end
 -- ThePlayer.HUD.Icey2MainMenu:PlaySkillLearnedAnim_Part1("PHANTOM_SWORD")
 function Icey2MainMenu:PlaySkillLearnedAnim_Part1(name, continue_to_part2)
     print("PlaySkillLearnedAnim_Part1")
+
     self.bg:SetClickable(false)
     self.bg:Hide()
 
     self.black.image:SetTint(0, 0, 0, 0.6)
 
-    TheFrontEnd:GetSound():PlaySound("icey2_sfx/hud/new_skill_achieved", "icey2_skill_learned_music")
-
-    local new_guy = self.root:AddChild(Icey2SkillLearnedFX(name))
-    new_guy:MoveToFront()
+    self.skill_learned_fx = self.root:AddChild(Icey2SkillLearnedFX(name))
+    self.skill_learned_fx:MoveToFront()
 
     self.inst:DoTaskInTime(1, function()
-        MyMoveTo(new_guy, Vector3(0, 0), Vector3(0, 600), 3, function()
+        MyMoveTo(self.skill_learned_fx, Vector3(0, 0), Vector3(0, 600), 3, function()
             self.bg:Show()
             self.bg:SetClickable(true)
+
+            self.skill_learned_fx:Kill()
+            self.skill_learned_fx = nil
 
             if continue_to_part2 ~= false then
                 self.headertab_screener:OnMenuButtonSelected("skill_tab")
                 self.tab_screens.skill_tab:PlaySkillLearnedAnim_Part2(name)
             end
-            new_guy:Kill()
         end)
     end)
+
+    TheFrontEnd:GetSound():PlaySound("icey2_sfx/hud/new_skill_achieved", "icey2_skill_learned_music")
+end
+
+function Icey2MainMenu:InterruptSkillLearnedAnim(show_skill)
+    if TheFrontEnd:GetSound():PlayingSound("icey2_skill_learned_music") then
+        TheFrontEnd:GetSound():KillSound("icey2_skill_learned_music")
+    end
+
+    if self.skill_learned_fx then
+        self.skill_learned_fx:Kill()
+    end
+    self.skill_learned_fx = nil
+
+    self.tab_screens.skill_tab:InterruptSkillLearnedAnim(show_skill)
+
+    self.bg:Show()
+    self.bg:SetClickable(true)
 end
 
 function Icey2MainMenu:OnControl(control, down)

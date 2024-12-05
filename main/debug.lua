@@ -51,3 +51,9 @@ function GLOBAL.c_test_laser(segment_len, forward_len)
     segment_len = segment_len or 0.3
     EmitLaserAtPoint(start_pos, target_pos, segment_len, forward_len)
 end
+
+-- ThePlayer.AnimState:AddOverrideBuild("waxwell_minion_spawn") ThePlayer.AnimState:AddOverrideBuild("waxwell_minion_appear")
+-- ThePlayer.AnimState:PlayAnimation("minion_spawn")
+-- ThePlayer.AnimState:PlayAnimation("ready_stance_pre") ThePlayer.AnimState:PushAnimation("ready_stance_loop", true)
+--
+-- ThePlayer.AnimState:PlayAnimation("ready_stance_pst")

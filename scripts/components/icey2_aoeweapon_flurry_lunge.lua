@@ -89,19 +89,38 @@ function Icey2AOEWeapon_FlurryLunge:Attack(attacker, target)
 end
 
 function Icey2AOEWeapon_FlurryLunge:StartFinalBlow(attacker)
-    self.fx = attacker:SpawnChild("icey2_pact_weapon_rapier_greatsword_fx")
-    self.fx.entity:AddFollower()
-    self.fx.Follower:FollowSymbol(attacker.GUID, "swap_object", nil, nil, nil, true)
+    -- if not (self.fx and self.fx:IsValid()) then
+    --     self.fx = attacker:SpawnChild("icey2_pact_weapon_rapier_greatsword_fx")
+    --     self.fx.entity:AddFollower()
+    --     self.fx.Follower:FollowSymbol(attacker.GUID, "swap_object", nil, nil, nil, true)
+    -- end
+
+    attacker.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_great_sword",
+        "swap_icey2_pact_weapon_great_sword")
 end
 
 function Icey2AOEWeapon_FlurryLunge:StopFinalBlow(attacker, emit_disappear_fx)
-    if self.fx and self.fx:IsValid() then
-        self.fx:Remove()
-        if emit_disappear_fx then
+    -- if self.fx and self.fx:IsValid() then
+    --     self.fx:Remove()
+    --     if emit_disappear_fx then
+    --         local emitfx = attacker:SpawnChild("icey2_pact_weapon_rapier_emit_fx")
+    --         emitfx.entity:AddFollower()
+    --         emitfx.Follower:FollowSymbol(attacker.GUID, "swap_object", nil, nil, nil, true)
+    --     end
+    -- end
+    -- self.fx = nil
 
-        end
+    if self.inst.components.equippable:IsEquipped() and self.inst.components.inventoryitem.owner == attacker then
+        attacker.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_rapier", "swap_icey2_pact_weapon_rapier")
+    else
+        attacker.AnimState:ClearOverrideSymbol("swap_object")
     end
-    self.fx = nil
+
+    if emit_disappear_fx then
+        local emitfx = attacker:SpawnChild("icey2_pact_weapon_rapier_emit_fx")
+        emitfx.entity:AddFollower()
+        emitfx.Follower:FollowSymbol(attacker.GUID, "swap_object", nil, nil, nil, true)
+    end
 end
 
 function Icey2AOEWeapon_FlurryLunge:FinalBlow(attacker)

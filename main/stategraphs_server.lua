@@ -312,6 +312,17 @@ AddStategraphState("wilson", State {
     onenter = function(inst)
         inst.components.locomotor:Stop()
         inst.AnimState:PlayAnimation("lunge_pre")
+
+        -- local weapon = inst.components.combat:GetWeapon()
+        -- if weapon then
+        --     local search_success = weapon.components.icey2_aoeweapon_flurry_lunge:SearchPossibleTargets(inst,
+        --         data.target_pos)
+
+        --     if not search_success then
+        --         inst.sg:GoToState("idle")
+        --         return
+        --     end
+        -- end
     end,
 
     timeline =
@@ -329,7 +340,9 @@ AddStategraphState("wilson", State {
                 data.target_pos)
 
             if not search_success then
-                inst.sg:GoToState("idle")
+                -- inst.sg:GoToState("idle")
+                inst.Transform:SetPosition(data.target_pos:Get())
+                inst.sg:GoToState("icey2_aoeweapon_flurry_lunge_final", { weapon = weapon })
                 return
             end
 
@@ -345,6 +358,7 @@ AddStategraphState("wilson", State {
                 inst.sg:GoToState("idle")
             end
         end),
+
         EventHandler("animover", function(inst)
             if inst.AnimState:AnimDone() then
                 if inst.AnimState:IsCurrentAnimation("lunge_pre") then
@@ -355,9 +369,11 @@ AddStategraphState("wilson", State {
                 end
             end
         end),
+
         EventHandler("equip", function(inst)
             inst.sg:GoToState("idle")
         end),
+
         EventHandler("unequip", function(inst)
             inst.sg:GoToState("idle")
         end),
@@ -512,11 +528,13 @@ AddStategraphState("wilson", State {
             end
         end),
 
-        TimeEvent(18 * FRAMES, function(inst)
+        TimeEvent(16 * FRAMES, function(inst)
             inst.sg:RemoveStateTag("abouttoattack")
+        end),
 
+        TimeEvent(16 * FRAMES, function(inst)
             if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
-                inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:StopFinalBlow(inst)
+                inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:StopFinalBlow(inst, true)
                 inst.sg.statemem.run_stop_fn = true
             end
 

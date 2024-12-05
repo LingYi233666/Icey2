@@ -14,7 +14,8 @@ end)
 ACTIONS.ICEY2_SCYTHE.rmb = false
 
 AddComponentAction("EQUIPPED", "icey2_scythe", function(inst, doer, target, actions, right)
-    if not right and target and target:HasTag("pickable") then
+    local cant_scythe_tags = { "plant", "lichen", "oceanvine", "kelp" }
+    if not right and target and target:HasTag("pickable") and target:HasOneOfTags(cant_scythe_tags) then
         table.insert(actions, ACTIONS.ICEY2_SCYTHE)
     end
 end)
