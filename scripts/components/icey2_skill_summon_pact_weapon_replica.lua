@@ -1,30 +1,14 @@
--- local function CreateSpeelBook()
---     local inst = CreateEntity()
-
---     inst.entity:AddTransform()
-
---     inst:AddTag("NOCLICK")
---     inst:AddTag("INLIMBO")
---     inst:AddTag("classified")
-
-
---     inst:AddComponent("spellbook")
---     inst.components.spellbook:SetRequiredTag("icey2")
---     inst.components.spellbook:SetRadius(100)
---     inst.components.spellbook:SetFocusRadius(102) --UIAnimButton don't use focus radius SPELLBOOK_FOCUS_RADIUS)
-
---     return inst
--- end
-
 -- ThePlayer.replica.icey2_skill_summon_pact_weapon.pact_weapon_options
 local Icey2SkillSummonPactWeapon = Class(function(self, inst)
     self.inst = inst
 
     self.pact_weapon_options = {}
-
+    self.exists_weapon_prefabs = {}
     self._pact_weapon_options_json = net_string(inst.GUID, "Icey2SkillSummonPactWeapon._pact_weapon_options_json",
         "Icey2SkillSummonPactWeapon._pact_weapon_options_json")
-    self._linked_weapon = net_entity(inst.GUID, " Icey2SkillSummonPactWeapon._linked_weapon")
+    -- self._linked_weapon = net_entity(inst.GUID, " Icey2SkillSummonPactWeapon._linked_weapon")
+    self._exists_weapon_prefabs_json = net_string(inst.GUID, "Icey2SkillSummonPactWeapon._exists_weapon_prefabs_json",
+        "Icey2SkillSummonPactWeapon._exists_weapon_prefabs_json")
 
     if not TheNet:IsDedicated() then
         -- self.speelbook = CreateSpeelBook()
@@ -33,6 +17,10 @@ local Icey2SkillSummonPactWeapon = Class(function(self, inst)
         inst:ListenForEvent("Icey2SkillSummonPactWeapon._pact_weapon_options_json", function()
             self.pact_weapon_options = json.decode(self._pact_weapon_options_json:value())
         end)
+
+        inst:ListenForEvent("Icey2SkillSummonPactWeapon._exists_weapon_prefabs_json", function()
+            self.exists_weapon_prefabs = json.decode(self._exists_weapon_prefabs_json:value())
+        end)
     end
 end)
 
@@ -40,40 +28,59 @@ function Icey2SkillSummonPactWeapon:SetWeaponOptionsJson(json_data)
     self._pact_weapon_options_json:set(json_data)
 end
 
-function Icey2SkillSummonPactWeapon:SetLinkedWeapon(wp)
-    self._linked_weapon:set(wp)
+function Icey2SkillSummonPactWeapon:SetExistsWeaponPrefabsJson(json_data)
+    self._exists_weapon_prefabs_json:set(json_data)
 end
+
+-- function Icey2SkillSummonPactWeapon:SetLinkedWeapon(wp)
+--     self._linked_weapon:set(wp)
+-- end
 
 function Icey2SkillSummonPactWeapon:CreateWheelItems()
     self.wheel_items = {}
 
     local options = deepcopy(self.pact_weapon_options)
-    if self._linked_weapon:value() ~= nil then
-        table.insert(options, "remove_pact_weapon")
+    if #self.exists_weapon_prefabs > 0 then
+        table.insert(options, "remove_all")
     end
 
     for _, v in pairs(options) do
-        local label
-        if v == "remove_pact_weapon" then
-            label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.REMOVE
+        local label, execute_fn
+        -- if v == "remove_pact_weapon" then
+        --     label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.REMOVE
+        -- else
+        --     label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.GENERAL ..
+        --         (STRINGS.NAMES[v:upper()] or "MISSING_NAME")
+        -- end
+        if v == "remove_all" then
+            label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.REMOVE_ALL
+
+            execute_fn = function(inst)
+                SendModRPCToServer(MOD_RPC["icey2_rpc"]["remove_all_pact_weapon"])
+            end
+        elseif table.contains(self.exists_weapon_prefabs, v) then
+            label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.REMOVE ..
+                (STRINGS.NAMES[v:upper()] or "MISSING_NAME")
+
+            execute_fn = function(inst)
+                SendModRPCToServer(MOD_RPC["icey2_rpc"]["remove_pact_weapon"], v)
+            end
         else
             label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.GENERAL ..
                 (STRINGS.NAMES[v:upper()] or "MISSING_NAME")
+
+            execute_fn = function(inst)
+                SendModRPCToServer(MOD_RPC["icey2_rpc"]["summon_pact_weapon"], v)
+            end
         end
+
 
         table.insert(self.wheel_items, {
             label = label,
             onselect = function(inst)
                 -- print("onselect", inst, v)
             end,
-            execute = function(inst)
-                -- print("execute", inst, v)
-                if v == "remove_pact_weapon" then
-                    SendModRPCToServer(MOD_RPC["icey2_rpc"]["remove_pact_weapon"])
-                else
-                    SendModRPCToServer(MOD_RPC["icey2_rpc"]["summon_pact_weapon"], v)
-                end
-            end,
+            execute = execute_fn,
             bank = "spell_icons_willow",
             build = "spell_icons_willow",
             anims =

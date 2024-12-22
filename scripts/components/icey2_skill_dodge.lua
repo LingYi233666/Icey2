@@ -19,11 +19,12 @@ local Icey2SkillDodge = Class(Icey2SkillBase_Active, function(self, inst)
 end)
 
 function Icey2SkillDodge:DoDeltaCharge(delta)
-    self.dodge_charge = math.clamp(self.dodge_charge + delta, 0,
-        self.max_dodge_charge)
+    self.dodge_charge = math.clamp(self.dodge_charge + delta, 0, self.max_dodge_charge)
 end
 
-function Icey2SkillDodge:SetMaxCharge(c) self.max_dodge_charge = c end
+function Icey2SkillDodge:SetMaxCharge(c)
+    self.max_dodge_charge = c
+end
 
 function Icey2SkillDodge:RechageTask()
     self:DoDeltaCharge(FRAMES * self.recharge_rate)

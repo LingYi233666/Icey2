@@ -53,6 +53,8 @@ local function MakeCircle(name, multcolour, addcolour, radius)
         inst.AnimState:SetSortOrder(3)
         inst.AnimState:SetFinalOffset(1)
 
+        inst.AnimState:SetBank("deerclops")
+        inst.AnimState:SetBuild("deerclops_mutated")
         inst.AnimState:PlayAnimation("target_fx_pre")
         inst.AnimState:PushAnimation("target_fx", true)
 
@@ -86,6 +88,8 @@ local function MakeCircle(name, multcolour, addcolour, radius)
             return inst
         end
 
+        inst.persists = false
+
         inst.ApplyRadius = function(inst, r)
             local ICE_LANCE_RADIUS = 5.5
             local s = r / ICE_LANCE_RADIUS
@@ -112,13 +116,14 @@ local color_presets = {
     red = { multcolour = { 1, 0, 0, 1 }, addcolor = { 1, 0, 0, 1 } },
     blue = { multcolour = { 0, 0, 1, 1 }, addcolor = { 0, 0, 1, 1 } },
     lightblue = { multcolour = { 0, 1, 1, 1 }, addcolor = { 0, 1, 1, 1 } },
-    iceyblue = { multcolour = { 1, 1, 1, 1 }, addcolor = { 96 / 255, 249 / 255, 255 / 255, 1 } },
+    iceyblue = { multcolour = { 96 / 255, 249 / 255, 255 / 255, 0.5 }, addcolor = { 96 / 255, 249 / 255, 255 / 255, 1 } },
 }
 
 local bundle = {}
 for color, data in pairs(color_presets) do
     for radius = 1, 15 do
-        MakeCircle("icey2_circle_mark_" .. color .. "_" .. tostring(radius), data.multcolour, data.addcolor, radius)
+        table.insert(bundle,
+            MakeCircle("icey2_circle_mark_" .. color .. "_" .. tostring(radius), data.multcolour, data.addcolor, radius))
     end
 end
 

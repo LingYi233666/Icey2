@@ -45,9 +45,9 @@ local Icey2SkillTab = Class(Widget, function(self, owner, config)
             widget:SetOnClick(function()
                 self:OnSkillSlotClick(widget)
             end)
-            if data.name == "PHANTOM_SWORD" then
-                ThePlayer.HUD.debug_slot = widget
-            end
+            -- if data.name == "PHANTOM_SWORD" then
+            --     ThePlayer.HUD.debug_slot = widget
+            -- end
         end,
         scrollbar_offset = 15,
         scrollbar_height_offset = 0

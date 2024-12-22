@@ -2,12 +2,26 @@ local assets =
 {
     Asset("ANIM", "anim/icey2_pact_weapon_scythe.zip"),
     -- Asset("ANIM", "anim/swap_icey2_pact_weapon_scythe.zip"),
+    Asset("ANIM", "anim/swap_lucy_axe.zip"),
+    Asset("ANIM", "anim/lavaarena_lucy.zip"),
+    Asset("ANIM", "anim/icey2_pact_weapon_scythe_spin.zip"),
 
     Asset("IMAGE", "images/inventoryimages/icey2_pact_weapon_scythe.tex"),
     Asset("ATLAS", "images/inventoryimages/icey2_pact_weapon_scythe.xml"),
 }
 
-local FX_DEFS =
+-- local FX_DEFS =
+-- {
+--     -- { anim = "swap_loop_1", frame_begin = 0, frame_end = 2 },
+--     -- { anim = "swap_loop_3", frame_begin = 2 },
+--     -- { anim = "swap_loop_6", frame_begin = 5 },
+--     -- { anim = "swap_loop_7", frame_begin = 6 },
+--     -- { anim = "swap_loop_8", frame_begin = 7 },
+
+
+-- }
+
+local FX_DEFS_NORMAL =
 {
     { anim = "swap_loop_1", frame_begin = 0, frame_end = 2 },
     { anim = "swap_loop_3", frame_begin = 2 },
@@ -16,44 +30,34 @@ local FX_DEFS =
     { anim = "swap_loop_8", frame_begin = 7 },
 }
 
-local function CreateSwapAnims(inst)
-    inst.swapanims = {}
+local FX_DEFS_PARRY =
+{
+    { anim = "swap_loop_1",   frame_begin = 0 },
+    { anim = "swap_loop_6_4", frame_begin = 1 }, --up
+    { anim = "swap_loop_3",   frame_begin = 2, frame_end = 4 },
+    { anim = "swap_loop_6",   frame_begin = 5 },
+    { anim = "swap_loop_7",   frame_begin = 6 },
+    { anim = "swap_loop_6",   frame_begin = 7 },                 -- down
+    { anim = "swap_loop_8",   frame_begin = 8, frame_end = 11 }, -- side
 
-    -- local indexes = { 1, 3, 6, 7, 8 }
-    -- for _, index in pairs(indexes) do
-    --     inst.swapanims[index] = inst:SpawnChild("icey2_pact_weapon_scythe_swapanim_" .. index)
-    --     inst.swapanims[index]:Hide()
-    -- end
+
+    -- { anim = "swap_loop_1",  frame_begin = 0 },
+    -- { anim = "swap_parry_1", frame_begin = 1 }, --side
+    -- { anim = "swap_parry_2", frame_begin = 2 }, --down
+    -- { anim = "swap_parry_3", frame_begin = 3 }, --up
+    -- { anim = "swap_loop_1",  frame_begin = 5, frame_end = 11 },
+}
 
 
-    for _, data in pairs(FX_DEFS) do
-        local fx = inst:SpawnChild("icey2_pact_weapon_scythe_swapanim")
-        fx.AnimState:PlayAnimation(data.anim, true)
-        fx:Hide()
+-- local function DetachSwapAnims(inst)
+--     if inst.swapanims then
+--         for _, v in pairs(inst.swapanims) do
+--             v:Remove()
+--         end
+--     end
 
-        table.insert(inst.swapanims, fx)
-    end
-end
-
-local function AttachSwapAnims(inst, owner)
-    for k, v in pairs(inst.swapanims) do
-        owner:AddChild(v)
-
-        v.components.highlightchild:SetOwner(owner)
-        if owner.components.colouradder ~= nil then
-            owner.components.colouradder:AttachChild(v)
-        end
-
-        if not v.Follower then
-            v.entity:AddFollower()
-        end
-
-        v.Follower:FollowSymbol(owner.GUID, "swap_object", nil, nil, nil, true, nil, FX_DEFS[k].frame_begin,
-            FX_DEFS[k].frame_end)
-
-        v:Show()
-    end
-end
+--     inst.swapanims = {}
+-- end
 
 local function DetachSwapAnims(inst, old_owner)
     for _, v in pairs(inst.swapanims) do
@@ -70,23 +74,69 @@ local function DetachSwapAnims(inst, old_owner)
     end
 end
 
+local function CreateSwapAnims(inst, fx_defines)
+    -- DetachSwapAnims(inst)
+    inst.swapanims = {}
+    for _, data in pairs(fx_defines) do
+        local fx = inst:SpawnChild("icey2_pact_weapon_scythe_swapanim")
+        fx.AnimState:PlayAnimation(data.anim, true)
+        fx:Hide()
+
+        table.insert(inst.swapanims, fx)
+    end
+end
+
+local function AttachSwapAnims(inst, owner, symbol, fx_defines)
+    for k, v in pairs(inst.swapanims) do
+        owner:AddChild(v)
+
+        v.components.highlightchild:SetOwner(owner)
+        if owner.components.colouradder ~= nil then
+            owner.components.colouradder:AttachChild(v)
+        end
+
+        if not v.Follower then
+            v.entity:AddFollower()
+        end
+
+        v:Show()
+        v.AnimState:PlayAnimation(fx_defines[k].anim, true)
+        v.Follower:FollowSymbol(owner.GUID, symbol, nil, nil, nil, true, nil, fx_defines[k].frame_begin,
+            fx_defines[k].frame_end)
+    end
+end
+
+-- ThePlayer.sg:GoToState("parry_pre") ThePlayer.sg:AddStateTag("parrying") ThePlayer.sg.statemem.parrytime = 99999
 local function OnEquip(inst, owner)
-    -- owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_scythe", "swap_icey2_pact_weapon_scythe")
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
     owner.AnimState:ClearOverrideSymbol("swap_object")
+    -- owner.AnimState:OverrideSymbol("swap_object", "icey2_pact_weapon_scythe", "swap_scythe")
 
-    AttachSwapAnims(inst, owner)
 
-    inst.components.icey2_bonus_area:Stop()
-    inst:RemoveTag("icey2_pact_weapon_no_regive")
+    AttachSwapAnims(inst, owner, "swap_object", FX_DEFS_NORMAL)
+
+    -- inst._on_owner_state_change = function(_, data)
+    --     local statename = data.statename
+    --     if owner.sg:HasStateTag("preparrying") or owner.sg:HasStateTag("parrying") then
+    --         print("swap to parry anim")
+    --         AttachSwapAnims(inst, owner, "swap_object", FX_DEFS_PARRY)
+    --     else
+    --         AttachSwapAnims(inst, owner, "swap_object", FX_DEFS_NORMAL)
+    --     end
+    -- end
+
+    -- inst:ListenForEvent("newstate", inst._on_owner_state_change, owner)
 end
 
 local function OnUnequip(inst, owner)
     owner.AnimState:Hide("ARM_carry")
     owner.AnimState:Show("ARM_normal")
 
-    DetachSwapAnims(inst, owner)
+    -- inst:RemoveEventCallback("newstate", inst._on_owner_state_change, owner)
+    -- inst._on_owner_state_change = nil
+
+    DetachSwapAnims(inst)
 end
 
 local function HarvestPickable(inst, ent, doer)
@@ -129,25 +179,75 @@ local function DoScythe(inst, doer, target)
     return true
 end
 
+local function AutoEquipAnotherWeapon(inst, owner)
+
+end
+
+
 local function ProjectileOnThrown(inst, thrower)
     inst.launch_time = GetTime()
 
     -- inst.AnimState:PlayAnimation("spin_loop", true)
-    inst.AnimState:SetPercent("height_controller", 200 / 1000)
+    inst.AnimState:SetPercent("height_controller", 110 / 1000)
 
     inst.rolling_fx = inst:SpawnChild("icey2_pact_weapon_scythe_rolling")
-    if not inst.rolling_fx.Follower then
-        inst.rolling_fx.entity:AddFollower()
+    inst.tail_vfx = inst:SpawnChild("icey2_scythe_tail_vfx")
+
+    inst.rolling_fx.Transform:SetPosition(0, 1, 0)
+    local s = 1.1
+    inst.rolling_fx.AnimState:SetScale(s, s, s)
+
+    if not inst.tail_vfx.Follower then
+        inst.tail_vfx.entity:AddFollower()
     end
-    inst.rolling_fx.Follower:FollowSymbol(inst.GUID, "swap_rolling_fx", 0, 0, 0)
+    inst.tail_vfx.Follower:FollowSymbol(inst.GUID, "swap_rolling_fx", 0, 0, 0)
 
     inst.SoundEmitter:PlaySound("wilson_rework/torch/torch_spin", "spin_loop")
 
     inst.components.inventoryitem.canbepickedup = false
 
+    inst.attacked_targets = {}
+
+    AutoEquipAnotherWeapon(inst, thrower)
+
 
     inst:AddTag("FX")
     inst:AddTag("icey2_pact_weapon_no_regive")
+end
+
+local function TryAreaAttack(inst, radius, instancemult, hitfx)
+    local victims = {}
+    if inst.owner and inst.owner:IsValid() then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local ents = TheSim:FindEntities(x, y, z, radius, { "_combat" }, { "INLIMBO", "FX" })
+
+        for _, v in pairs(ents) do
+            if not inst.attacked_targets[v]
+                and inst.owner.components.combat:CanTarget(v)
+                and not inst.owner.components.combat:IsAlly(v) then
+                inst.owner.components.combat:DoAttack(v, inst, inst, nil, instancemult, 99999, inst:GetPosition())
+                if hitfx and GetTime() - (inst.last_spin_hit_time or 0) > 2 * FRAMES then
+                    local height_controller = SpawnAt("icey2_height_controller", v)
+                    local fx = height_controller:SpawnChild("icey2_leaf_hitfx")
+                    if not fx.Follower then
+                        fx.entity:AddFollower()
+                    end
+                    fx.Follower:FollowSymbol(height_controller.GUID, "swap_rolling_fx", 0, 100, 0)
+
+                    height_controller:ListenForEvent("animover", function()
+                        fx:Remove()
+                        height_controller:Remove()
+                    end, fx)
+
+                    inst.last_spin_hit_time = GetTime()
+                end
+                table.insert(victims, v)
+                inst.attacked_targets[v] = true
+            end
+        end
+    end
+
+    return victims
 end
 
 local function ProjectileOnUpdate(inst)
@@ -155,12 +255,14 @@ local function ProjectileOnUpdate(inst)
     local speed = inst.components.complexprojectile.horizontalSpeed
     inst.Physics:SetMotorVel(speed, 0, 0)
 
-    if GetTime() - inst.launch_time > 1 then
+    if GetTime() - inst.launch_time > 0.63 then
         inst.components.complexprojectile:Hit()
         return
     end
 
-    -- TODO: Hit enemies
+    local victims = TryAreaAttack(inst, 2, 0.75, true)
+
+    return true
 end
 
 local function ProjectileOnHit(inst)
@@ -169,6 +271,11 @@ local function ProjectileOnHit(inst)
     end
     inst.rolling_fx = nil
 
+    if inst.tail_vfx and inst.tail_vfx:IsValid() then
+        inst.tail_vfx:Remove()
+    end
+    inst.tail_vfx = nil
+
     inst.AnimState:PlayAnimation("idle")
 
     inst.SoundEmitter:KillSound("spin_loop")
@@ -176,28 +283,75 @@ local function ProjectileOnHit(inst)
 
     inst.components.inventoryitem.canbepickedup = true
 
-    -- TODO: Spawn fxs, hit enemies
-    SpawnAt("explode_small", inst)
+    -- Spawn fxs, hit enemies
+    inst.attacked_targets = {}
+    TryAreaAttack(inst, 1, 1)
+    inst.attacked_targets = nil
+
+    SpawnAt("icey2_explode_lunar", inst, { 0.5, 0.5, 0.5 })
+
+    ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, .015, .8, inst, 20)
 
     -- Bonus area start
     inst.components.icey2_bonus_area:Start(10)
 
     inst:RemoveTag("FX")
+    inst:EnableComplexProjectile(false)
 end
+
+local function EnableComplexProjectile(inst, enable)
+    if enable and not inst.components.complexprojectile then
+        inst:AddComponent("complexprojectile")
+        inst.components.complexprojectile:SetOnLaunch(ProjectileOnThrown)
+        inst.components.complexprojectile:SetOnUpdate(ProjectileOnUpdate)
+        inst.components.complexprojectile:SetOnHit(ProjectileOnHit)
+        inst.components.complexprojectile:SetHorizontalSpeed(18)
+        inst.components.complexprojectile.ismeleeweapon = true
+    elseif not enable and inst.components.complexprojectile then
+        inst:RemoveComponent("complexprojectile")
+    end
+end
+
 
 local function BonusAreaTest(inst, target)
     return target.components.combat
         and target == inst.owner
 end
 
+local function SpellFn(inst, doer, pos)
+    local proj = doer.components.inventory:DropItem(inst, false)
+    if proj then
+        local x, y, z = doer.Transform:GetWorldPosition()
 
+        inst.owner = doer
 
-local function OnSpellHit(inst, doer, target)
+        proj.Physics:Stop()
+        proj.Transform:SetPosition(x, y, z)
 
+        inst:EnableComplexProjectile(true)
+        inst.components.complexprojectile:Launch(pos, doer)
+
+        if Icey2Basic.IsWearingArmor(doer) then
+            inst.components.rechargeable:Discharge(10)
+        else
+            inst.components.rechargeable:Discharge(1)
+        end
+    end
 end
 
-local function SpellFn(inst, doer, pos)
+local function OnPickUp(inst)
+    inst.components.icey2_bonus_area:Stop()
+    inst:RemoveTag("icey2_pact_weapon_no_regive")
+end
 
+local function OnBonusAreaStop(inst)
+    inst:RemoveTag("icey2_pact_weapon_no_regive")
+    if inst.owner
+        and inst.owner:IsValid()
+        and inst.components.inventoryitem.owner ~= inst.owner
+        and inst.owner.components.icey2_skill_summon_pact_weapon then
+        inst.owner.components.icey2_skill_summon_pact_weapon:StartRegiveTask(inst)
+    end
 end
 
 local function fn()
@@ -206,6 +360,7 @@ local function fn()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddNetwork()
+    inst.entity:AddSoundEmitter()
 
     MakeInventoryPhysics(inst)
 
@@ -213,14 +368,21 @@ local function fn()
     inst.AnimState:SetBuild("icey2_pact_weapon_scythe")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.AnimState:SetLightOverride(0.6)
+
+    inst.AnimState:SetSymbolMultColour("swap_rolling_fx", 0, 0, 0, 0)
+
+
     inst:AddTag("special_action_toss")
+    inst:AddTag("throw_line")
 
     MakeInventoryFloatable(inst, "med", 0.05, { 1.1, 0.5, 1.1 }, true, -9)
 
 
-    -- Icey2WeaponSkill.AddAoetargetingClient(inst, "point", nil, 12)
-    -- inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1_6"
-    -- inst.components.aoetargeting.reticule.pingprefab = "reticuleaoeping_1_6"
+    Icey2WeaponSkill.AddAoetargetingClient(inst, "line", nil, 12)
+    inst.components.aoetargeting.reticule.reticuleprefab = "reticulelong"
+    inst.components.aoetargeting.reticule.pingprefab = "reticulelongping"
+    inst.components.aoetargeting:SetAlwaysValid(true)
 
     inst.entity:SetPristine()
 
@@ -228,7 +390,9 @@ local function fn()
         return inst
     end
 
-    CreateSwapAnims(inst)
+    inst.EnableComplexProjectile = EnableComplexProjectile
+
+    CreateSwapAnims(inst, FX_DEFS_NORMAL)
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(34)
@@ -241,6 +405,7 @@ local function fn()
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.imagename = "icey2_pact_weapon_scythe"
     inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_scythe.xml"
+    inst.components.inventoryitem.canonlygoinpocket = true
 
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(OnEquip)
@@ -249,22 +414,20 @@ local function fn()
     inst:AddComponent("icey2_scythe")
     inst.components.icey2_scythe:SetDoScytheFn(DoScythe)
 
-    inst:AddComponent("complexprojectile")
-    inst.components.complexprojectile:SetOnLaunch(ProjectileOnThrown)
-    inst.components.complexprojectile:SetOnUpdate(ProjectileOnUpdate)
-    inst.components.complexprojectile:SetOnHit(ProjectileOnHit)
-    inst.components.complexprojectile.ismeleeweapon = true
-
     inst:AddComponent("icey2_bonus_area")
     inst.components.icey2_bonus_area.radius = 6
+    inst.components.icey2_bonus_area.bonus_damage_planar = 17
     inst.components.icey2_bonus_area.circle_prefab = "icey2_circle_mark_iceyblue_6"
     inst.components.icey2_bonus_area.testfn = BonusAreaTest
 
-    -- inst:AddComponent("icey2_aoeweapon_flurry_lunge")
-    -- inst.components.icey2_aoeweapon_flurry_lunge:SetOnHitFn(OnSpellHit)
+    -- inst:AddComponent("icey2_aoeweapon_throw_scythe")
+    -- inst.components.icey2_aoeweapon_throw_scythe:SetOnHitFn(OnSpellHit)
 
 
-    -- Icey2WeaponSkill.AddAoetargetingServer(inst, SpellFn)
+    Icey2WeaponSkill.AddAoetargetingServer(inst, SpellFn)
+
+    inst:ListenForEvent("onputininventory", OnPickUp)
+    inst:ListenForEvent("icey2_bonus_area_stop", OnBonusAreaStop)
 
     MakeHauntableLaunch(inst)
 
@@ -279,11 +442,19 @@ local function rollingfn()
     inst.entity:AddAnimState()
     inst.entity:AddNetwork()
 
-    inst.Transform:SetEightFaced()
+    -- inst.Transform:SetEightFaced()
+    inst.Transform:SetSixFaced()
 
-    inst.AnimState:SetBank("icey2_pact_weapon_scythe")
-    inst.AnimState:SetBuild("icey2_pact_weapon_scythe")
-    inst.AnimState:PlayAnimation("rolling", true)
+
+    -- inst.AnimState:SetBank("icey2_pact_weapon_scythe")
+    -- inst.AnimState:SetBuild("icey2_pact_weapon_scythe")
+    -- inst.AnimState:PlayAnimation("rolling", true)
+
+    inst.AnimState:SetBank("lavaarena_lucy")
+    inst.AnimState:SetBuild("icey2_pact_weapon_scythe_spin")
+    inst.AnimState:PlayAnimation("spin_loop", true)
+
+    inst.AnimState:SetLightOverride(0.6)
 
     inst:AddTag("FX")
 
@@ -327,8 +498,33 @@ local function swapanimfn()
     return inst
 end
 
+local function height_controllerfn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
+
+    inst.AnimState:SetBank("icey2_pact_weapon_scythe")
+    inst.AnimState:SetBuild("icey2_pact_weapon_scythe")
+    inst.AnimState:SetPercent("height_controller", 0)
+
+    inst:AddTag("FX")
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.persists = false
+
+    return inst
+end
+
 
 
 return Prefab("icey2_pact_weapon_scythe", fn, assets),
     Prefab("icey2_pact_weapon_scythe_rolling", rollingfn, assets),
-    Prefab("icey2_pact_weapon_scythe_swapanim", swapanimfn, assets)
+    Prefab("icey2_pact_weapon_scythe_swapanim", swapanimfn, assets),
+    Prefab("icey2_height_controller", height_controllerfn, assets)

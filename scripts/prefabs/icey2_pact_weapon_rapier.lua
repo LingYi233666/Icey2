@@ -45,7 +45,7 @@ local function SpellFn(inst, doer, pos)
     })
 
     if Icey2Basic.IsWearingArmor(doer) then
-        inst.components.rechargeable:Discharge(5)
+        inst.components.rechargeable:Discharge(10)
     else
         inst.components.rechargeable:Discharge(1)
     end
@@ -63,6 +63,9 @@ local function fn()
     inst.AnimState:SetBank("icey2_pact_weapon_rapier")
     inst.AnimState:SetBuild("icey2_pact_weapon_rapier")
     inst.AnimState:PlayAnimation("idle")
+
+    inst.AnimState:SetLightOverride(0.6)
+
 
     inst:AddTag("sharp")
     inst:AddTag("pointy")
@@ -91,6 +94,7 @@ local function fn()
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.imagename = "icey2_pact_weapon_rapier"
     inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_rapier.xml"
+    inst.components.inventoryitem.canonlygoinpocket = true
 
     inst:AddComponent("equippable")
     inst.components.equippable:SetOnEquip(onequip)

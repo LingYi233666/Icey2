@@ -24,10 +24,23 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_RAPIER = "这是某种...�
 STRINGS.NAMES.ICEY2_PACT_WEAPON_SCYTHE = "能量镰刀"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_SCYTHE = "这是某种...武器。"
 
+STRINGS.NAMES.ICEY1_BLUEROSE = "高频切割刃"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY1_BLUEROSE = "已经很旧了。"
+STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY1_BLUEROSE = "看起来很眼熟。"
+
+STRINGS.NAMES.ICEY1_MOUND = "安息之地"
+STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY1_MOUND = {
+    DUG = "......",
+    GENERIC = "最好还是不要打扰她了。",
+}
+
 ----------------------------------------------------------------------------------------------
 -- ACTIONS
 
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_RAPIER = "迭影"
+STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_SCYTHE = "掷镰"
+STRINGS.ACTIONS.CASTAOE.ICEY1_BLUEROSE = "突围冲击"
+
 STRINGS.ACTIONS.ICEY2_SCYTHE = "收割"
 
 ----------------------------------------------------------------------------------------------
@@ -44,27 +57,45 @@ STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES = {
 
 STRINGS.ICEY2_UI.SKILL_TAB = {
     SKILL_DESC = {
+        FORCE_SHIELD = {
+            TITLE = "力场护盾",
+            DESC = "你的力场护盾与任何护甲的加持一样有效。在你不装备任何护甲或盾牌时，力场护盾能帮助你吸收等量伤害。\n护盾当前值与最大值能在右上角查看。",
+        },
+
+        BATTLE_FOCUS = {
+            TITLE = "战意聚焦",
+            DESC = "在你不装备任何护甲或盾牌时，连续攻击敌人会使你进入战斗专注状态，提高力场伤害、恐惧光环抵抗与移动速度。受到攻击会让战斗专注效果中断。",
+        },
+
         PHANTOM_SWORD = {
             TITLE = "幻影剑",
-            DESC = "释放5枚电浆飞弹攻击鼠标指向的生物，每枚飞弹造成5~14力场伤害。飞弹一定会命中目标。\n如果鼠标指向处没有生物。则飞弹会自动寻找附近的敌人。"
+            DESC = "消耗少许饥饿值，释放5枚电浆飞弹攻击鼠标指向的生物，每枚飞弹造成少量力场伤害。飞弹一定会命中目标。\n如果鼠标指向处没有生物。则飞弹会自动寻找附近的敌人。"
         },
 
         DODGE = {
             TITLE = "闪光冲刺",
-            DESC = "消耗1点饥饿值，向鼠标指向方向冲刺，冲刺期间你不会受到伤害。\n冲刺开始时，若你没有装备护甲或盾牌，则自动使用残影向正在攻击你的敌人发动一次反击。"
+            DESC = "消耗少许饥饿值，向鼠标指向方向冲刺，冲刺期间你不会受到伤害。\n冲刺开始时，自动使用残影向正在攻击你的敌人发动一次反击。\n若你装备了任何种类的护甲或盾牌，就无法使用闪光冲刺。"
         },
 
         SUMMON_PACT_WEAPON = {
             TITLE = "创造能量武器",
             DESC =
-            "消耗1点精神值，在你手中凭空创造出1把能量刺剑。\n你不能丢弃以此技能制造的武器，其他生物也不能将其打落。当你不需要它时，可以再次释放此技能将其销毁。\n能量刺剑拥有17物理伤害和17力场伤害，武器战技如下：\n战技·迭影：\n对鼠标指向地点周围的敌人连续发动攻击。",
+            "在你手中凭空创造出1把能量刺剑。\n你不能丢弃以此技能制造的武器，其他生物也不能将其打落。当你不需要它时，可以再次释放此技能将其销毁。\n能量刺剑能同时造成物理和力场伤害，武器战技如下：\n战技·迭影：\n对鼠标指向地点周围的敌人连续发动攻击。",
             DESC_TIP_MORE_WEAPON = "*某些技能可以让你召唤更多种类的能量武器。",
-            DESC_CURRENT_WEAPON = "除了能量刺剑，你现在还有以下武器可选：%s。\n但是，你同一时间只能拥有一把能量武器，当你召唤新的能量武器时，旧武器会被销毁。",
+            DESC_CURRENT_WEAPON = "除了能量刺剑，你现在还有以下武器可选：%s。",
 
             WHEEL_INFO = {
                 GENERAL = "创造：",
-                REMOVE = "销毁当前能量武器",
+                -- REMOVE = "销毁当前能量武器",
+                REMOVE = "销毁：",
+                REMOVE_ALL = "销毁全部能量武器",
             },
+        },
+
+        NEW_PACT_WEAPON_SCYTHE = {
+            TITLE = "能量武器：镰刀",
+            DESC =
+            "“创造能量武器”技能新增武器种类：能量镰刀。能量镰刀可以用于战斗，或是用来收割农作物，武器战技如下：\n战技·掷镰：\n向鼠标方向投掷镰刀，对一条直线上的敌人造成伤害，并在落地点形成一道能够增加你伤害的力幕。",
         },
 
         UNKNWON = {
@@ -87,4 +118,7 @@ STRINGS.ICEY2_UI.KEY_CONFIG_DIALOG = {
     SET_KEY_CANCEL = "取消"
 }
 
+STRINGS.ICEY2_UI.SHIELD_METRICS = {
+    TIP = "护盾：%d/%d"
+}
 ----------------------------------------------------------------------------------------------

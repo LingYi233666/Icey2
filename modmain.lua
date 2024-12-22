@@ -17,6 +17,17 @@ PrefabFiles = {
     "icey2_pact_weapon_scythe",
     "icey2_rolling_scythe",
     "icey2_circle_mark_fxs",
+    "icey2_explode_lunar",
+
+    "icey2_weapon_change_vfx",
+    "icey2_moonpluse_fx",
+    "icey2_leaf_hitfx",
+    "icey2_scythe_tail_vfx",
+
+
+    "icey1_bluerose",
+    "icey1_mound",
+    "icey1_graveyard_light",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的
@@ -65,9 +76,14 @@ Assets = {
     Asset("SOUNDPACKAGE", "sound/icey2_sfx.fev"),
     Asset("SOUND", "sound/icey2_sfx.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/icey2_bgm.fev"),
+    Asset("SOUND", "sound/icey2_bgm.fsb"),
+
     Asset("ANIM", "anim/icey2_new_skill_circle.zip"),
 
-    Asset("ANIM", "anim/icey2_speedrun.zip")
+    Asset("ANIM", "anim/icey2_speedrun.zip"),
+
+    Asset("ANIM", "anim/icey2_skill_shield_metrics.zip"),
 
     -- Asset("SOUNDPACKAGE", "sound/icey2_bgm.fev"),
     -- Asset("SOUND", "sound/icey2_bgm.fsb"),
@@ -108,7 +124,7 @@ AddMinimapAtlas("images/map_icons/icey2.xml") -- 增加小地图图标
 AddModCharacter("icey2", "ROBOT")
 
 -- 选人界面人物三维显示
-TUNING.ICEY2_HEALTH = 150
+TUNING.ICEY2_HEALTH = 75
 TUNING.ICEY2_HUNGER = 150
 TUNING.ICEY2_SANITY = 150
 

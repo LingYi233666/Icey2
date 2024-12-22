@@ -56,6 +56,7 @@ local Icey2SkillBase_Active = Class(function(self, inst)
     self.can_cast_while_busy = false
     self.can_cast_while_no_interrupt = false
     self.can_cast_while_riding = false
+    self.can_cast_while_wearing_armor = false
 end)
 
 function Icey2SkillBase_Active:_IsDead()
@@ -144,6 +145,10 @@ function Icey2SkillBase_Active:CanCast(x, y, z, target)
 
     if not self.can_cast_while_riding and self:_IsRiding() then
         return false, "PLAYER_RIDING"
+    end
+
+    if not self.can_cast_while_wearing_armor and Icey2Basic.IsWearingArmor(self.inst) then
+        return false, "PLAYER_WEARING_ARMOR"
     end
 
     if self:IsCoolingDown() then

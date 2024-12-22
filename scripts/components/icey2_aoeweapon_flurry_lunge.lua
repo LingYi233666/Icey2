@@ -10,7 +10,7 @@ local Icey2AOEWeapon_FlurryLunge = Class(AOEWeapon_Base, function(self, inst)
     self.is_final_blow = false
 
     self:SetTags("_combat")
-    self:SetWorkActions()
+    self:SetWorkActions(nil)
 
     inst:AddTag("icey2_aoeweapon")
 end)
@@ -117,9 +117,9 @@ function Icey2AOEWeapon_FlurryLunge:StopFinalBlow(attacker, emit_disappear_fx)
     end
 
     if emit_disappear_fx then
-        local emitfx = attacker:SpawnChild("icey2_pact_weapon_rapier_emit_fx")
-        emitfx.entity:AddFollower()
-        emitfx.Follower:FollowSymbol(attacker.GUID, "swap_object", nil, nil, nil, true)
+        -- local emitfx = attacker:SpawnChild("icey2_pact_weapon_rapier_emit_fx")
+        -- emitfx.entity:AddFollower()
+        -- emitfx.Follower:FollowSymbol(attacker.GUID, "swap_object", nil, nil, nil, true)
     end
 end
 

@@ -5,17 +5,17 @@ local function onjson_data(self, data)
 end
 
 local Icey2Skiller = Class(function(self, inst)
-							   self.inst = inst
+	self.inst = inst
 
-							   self.learned_skill = {}
+	self.learned_skill = {}
 
-							   -- self.json_data = "{}"
+	-- self.json_data = "{}"
 
 
-							   self:UpdateJsonData()
-						   end, nil, {
-							   json_data = onjson_data,
-						   })
+	self:UpdateJsonData()
+end, nil, {
+	json_data = onjson_data,
+})
 
 
 -- ThePlayer.components.icey2_skiller:Learn("PHANTOM_SWORD")
@@ -41,6 +41,8 @@ function Icey2Skiller:Learn(name, is_onload)
 	end
 
 	self:UpdateJsonData()
+
+	return self.learned_skill[name]
 end
 
 function Icey2Skiller:Forget(name)

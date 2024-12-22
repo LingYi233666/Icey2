@@ -25,20 +25,57 @@ AddModRPCHandler("icey2_rpc", "summon_pact_weapon", function(inst, prefabname)
 end)
 
 
-AddModRPCHandler("icey2_rpc", "remove_pact_weapon", function(inst)
+AddModRPCHandler("icey2_rpc", "remove_pact_weapon", function(inst, prefabname_or_ent)
     if inst.components.icey2_skill_summon_pact_weapon then
-        inst.components.icey2_skill_summon_pact_weapon:UnlinkWeapon(true)
+        inst.components.icey2_skill_summon_pact_weapon:UnlinkWeapon(prefabname_or_ent, true)
+    end
+end)
+
+AddModRPCHandler("icey2_rpc", "remove_all_pact_weapon", function(inst)
+    if inst.components.icey2_skill_summon_pact_weapon then
+        inst.components.icey2_skill_summon_pact_weapon:UnlinkAllWeapons(true)
+    end
+end)
+
+--  SendModRPCToServer(MOD_RPC["icey2_rpc"]["learn_skill"], "NEW_PACT_WEAPON_SCYTHE", 0.4,true)
+-- SendModRPCToServer(MOD_RPC["icey2_rpc"]["learn_skill"], "NEW_PACT_WEAPON_SCYTHE",true,1)
+-- SendModRPCToServer(MOD_RPC["icey2_rpc"]["learn_skill"], "BATTLE_FOCUS",true,1)
+AddModRPCHandler("icey2_rpc", "learn_skill", function(inst, skill_name, show_anim, show_emote, emote_anim)
+    if inst.components.icey2_skiller and inst.components.icey2_skiller:Learn(skill_name) then
+        if show_emote then
+            -- inst.sg:GoToState("emote", { anim = "emote_swoon" })
+            -- inst.AnimState:SetTime(1)
+
+            -- inst.sg:GoToState("emote", { anim = "emoteXL_happycheer" })
+            emote_anim = emote_anim or "emote_swoon"
+            inst.sg:GoToState("emote", { anim = emote_anim })
+
+            if type(show_emote) == "number" then
+                inst.AnimState:SetTime(show_emote)
+            end
+        end
+        if show_anim then
+            if type(show_anim) == "number" then
+                inst:DoTaskInTime(show_anim, function()
+                    SendModRPCToClient(CLIENT_MOD_RPC["icey2_rpc"]["play_skill_learned_anim"], inst.userid, skill_name)
+                end)
+            else
+                SendModRPCToClient(CLIENT_MOD_RPC["icey2_rpc"]["play_skill_learned_anim"], inst.userid, skill_name)
+            end
+        end
     end
 end)
 
 
-
-AddClientModRPCHandler("icey2_rpc", "play_skill_learned_anim", function(name)
+AddClientModRPCHandler("icey2_rpc", "play_skill_learned_anim", function(skill_name)
     local screen = Icey2MainMenu(ThePlayer)
     TheFrontEnd:PushScreen(screen)
 
-    screen:PlaySkillLearnedAnim_Part1(name)
+    screen:PlaySkillLearnedAnim_Part1(skill_name)
 end)
+
+
+
 
 -- SendModRPCToClient(CLIENT_MOD_RPC["icey2_rpc"]["play_skill_learned_anim"], ThePlayer.userid, "PHANTOM_SWORD")
 

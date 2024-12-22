@@ -6,6 +6,7 @@ local Icey2SkillPhantomSword = Class(Icey2SkillBase_Active, function(self, inst)
     ------------------------------------------
     self.can_cast_while_busy = true
     self.can_cast_while_riding = true
+    self.can_cast_while_wearing_armor = true
     self.costs.hunger = 1
     self.cooldown = 0.5
 

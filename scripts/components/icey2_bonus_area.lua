@@ -10,6 +10,10 @@ local Icey2BonusArea = Class(function(self, inst)
     self.end_time = nil
     self.circle_fx = nil
     self.buffered_creatures = {}
+
+    self.inst:ListenForEvent("onremove", function()
+        self:Stop()
+    end)
 end)
 
 function Icey2BonusArea:Start(duration)
@@ -24,10 +28,13 @@ function Icey2BonusArea:Start(duration)
     end
 
     if self.circle_prefab then
-        self.circle_fx = self.inst:SpawnChild(self.circle_prefab)
+        -- self.circle_fx = self.inst:SpawnChild(self.circle_prefab)
+        self.circle_fx = SpawnAt(self.circle_prefab, self.inst)
     end
 
     self.inst:StartUpdatingComponent(self)
+
+    self.inst:PushEvent("icey2_bonus_area_start")
 end
 
 function Icey2BonusArea:CheckToRemove(remove_all)
@@ -68,6 +75,8 @@ function Icey2BonusArea:Stop()
         end
     end
     self.circle_fx = nil
+
+    self.inst:PushEvent("icey2_bonus_area_stop")
 end
 
 function Icey2BonusArea:CanBeBuffered(target)
@@ -84,7 +93,7 @@ function Icey2BonusArea:OnUpdate(dt)
     end
 
 
-    local x, y, z = inst.Transform:GetWorldPosition()
+    local x, y, z = self.inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, self.radius, nil, { "INLIMBO", "FX" })
 
     for _, v in pairs(ents) do
@@ -98,7 +107,7 @@ function Icey2BonusArea:OnUpdate(dt)
             if not v.components.planardamage then
                 v:AddComponent("planardamage")
             end
-            v.components.planardamage:AddBonus(self.inst, self.bonus_damage_planar, self .. prefab)
+            v.components.planardamage:AddBonus(self.inst, self.bonus_damage_planar, self.inst.prefab)
 
             self.buffered_creatures[v] = true
 

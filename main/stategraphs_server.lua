@@ -81,8 +81,7 @@ AddStategraphState("wilson", State {
     onenter = function(inst, data)
         -- inst.AnimState:PlayAnimation("atk_leap_pre")
 
-        local equip =
-            inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        local equip = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
         if equip then
             inst.AnimState:PlayAnimation("atk_leap_lag")
@@ -392,7 +391,7 @@ AddStategraphState("wilson", State {
         if weapon and target and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) == weapon then
             inst.AnimState:PlayAnimation("lunge_pst")
             inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
-
+            inst.SoundEmitter:PlaySound("dontstarve/common/lava_arena/fireball")
 
             inst.components.health:SetInvincible(true)
             weapon.components.icey2_aoeweapon_flurry_lunge:TeleportNearTarget(inst, target)
@@ -530,6 +529,17 @@ AddStategraphState("wilson", State {
             end
 
             inst.components.health:SetInvincible(false)
+
+            -- SpawnAt("moonpulse_fx", inst, { 0.5, 0.5, 0, 5 })
+        end),
+
+        TimeEvent(15 * FRAMES, function(inst)
+            for i = 0, 2 do
+                local emitfx = inst:SpawnChild("icey2_weapon_change_vfx")
+                emitfx.entity:AddFollower()
+                emitfx.Follower:FollowSymbol(inst.GUID, "swap_object", 0, -i * 100, 0, true)
+                emitfx:DoTaskInTime(0.5, emitfx.Remove)
+            end
         end),
 
         TimeEvent(16 * FRAMES, function(inst)

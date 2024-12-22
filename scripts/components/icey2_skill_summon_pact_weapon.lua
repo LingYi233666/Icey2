@@ -15,39 +15,51 @@ local Icey2SkillSummonPactWeapon = Class(Icey2SkillBase_Active, function(self, i
         -- "icey2_greatsickle",
 
         "icey2_pact_weapon_rapier",
-        "icey2_pact_weapon_scythe",
+        -- "icey2_pact_weapon_scythe",
 
         -- These are for testing.
-        "spear",
-        "hambat",
-        "tentaclespike",
+        -- "spear",
+        -- "hambat",
+        -- "tentaclespike",
     }
 
-    self.pact_weapon_can_use = {}
     self.pact_weapon_savedatas = {}
     self.pact_weapon_last_remove_time = {}
 
 
-    self.linked_weapon = nil
+    self.linked_weapons = {}
 
     self.restrictedtag = "icey2_skill_summon_pact_weapon_" .. self.inst.GUID
 
     self.inst:AddTag(self.restrictedtag)
 
-    self._regive_weapon_task = nil
-    self._on_linked_weapon_dropped_fn = nil
-    self._on_linked_weapon_pickup_fn = nil
-    self._on_linked_weapon_equipped_fn = nil
-    self._on_linked_weapon_removed_fn = nil
+    -- self._regive_weapon_task = nil
+    -- self._on_linked_weapon_dropped_fn = nil
+    -- self._on_linked_weapon_pickup_fn = nil
+    -- self._on_linked_weapon_equipped_fn = nil
+    -- self._on_linked_weapon_removed_fn = nil
+
+    self.weapon_event_listeners = {}
+    self.regive_weapon_tasks = {}
 
     self.inst:ListenForEvent("death", function()
-        self:UnlinkWeapon(true)
+        self:UnlinkAllWeapons(true)
     end)
     self.inst:ListenForEvent("onremove", function()
-        self:UnlinkWeapon(true)
+        self:UnlinkAllWeapons(true)
     end)
     self.inst:ListenForEvent("playerdeactivated", function()
-        self:UnlinkWeapon(true)
+        self:UnlinkAllWeapons(true)
+    end)
+    self.inst:DoTaskInTime(1, function()
+        print("re-summon weapons")
+        dumptable(self.linked_weapon_prefabs_tmp)
+        if self.linked_weapon_prefabs_tmp then
+            for _, v in pairs(self.linked_weapon_prefabs_tmp) do
+                self:SummonWeapon(v)
+            end
+        end
+        self.linked_weapon_prefabs_tmp = nil
     end)
 
     self:UpdateJsonData()
@@ -56,15 +68,18 @@ end)
 
 function Icey2SkillSummonPactWeapon:UpdateJsonData()
     local options_clone = shallowcopy(self.pact_weapon_options)
+    local exists_weapon_prefabs = {}
 
-    for prefab, enable in pairs(self.pact_weapon_can_use) do
-        if enable == false then
-            table.removearrayvalue(options_clone, prefab)
+    for _, v in pairs(self.linked_weapons) do
+        if v and v:IsValid() then
+            table.insert(exists_weapon_prefabs, v.prefab)
         end
     end
 
-    local js_value = json.encode(options_clone)
-    self.inst.replica.icey2_skill_summon_pact_weapon:SetWeaponOptionsJson(js_value)
+    local options_js_value = json.encode(options_clone)
+    local exists_weapon_prefabs_js_value = json.encode(exists_weapon_prefabs)
+    self.inst.replica.icey2_skill_summon_pact_weapon:SetWeaponOptionsJson(options_js_value)
+    self.inst.replica.icey2_skill_summon_pact_weapon:SetExistsWeaponPrefabsJson(exists_weapon_prefabs_js_value)
 end
 
 function Icey2SkillSummonPactWeapon:AddWeaponPrefab(prefab)
@@ -90,109 +105,164 @@ function Icey2SkillSummonPactWeapon:RemoveWeaponPrefab(prefab)
     self:UpdateJsonData()
 end
 
--- For scythe
-function Icey2SkillSummonPactWeapon:SetWeaponCanUse(prefab, enable)
-    if enable then
-        self.pact_weapon_can_use[prefab] = nil
-    else
-        self.pact_weapon_can_use[prefab] = false
+function Icey2SkillSummonPactWeapon:InitEventListeners(weapon)
+    self.weapon_event_listeners[weapon] = {
+        {
+            "dropitem",
+            function(_, data)
+                if data.item == weapon then
+                    print("Drop pact weapon:", data.item)
+
+                    self:StartRegiveTask(weapon)
+                end
+            end
+        },
+
+        {
+            "itemget",
+            function(_, data)
+                if data.item == weapon then
+                    print("Pickup my pact weapon:", data.item)
+
+                    self:StopRegiveTask(weapon)
+                end
+            end,
+        },
+
+        {
+            "onremove",
+            function()
+                local prefab = weapon.prefab
+                self:UnlinkWeapon(weapon)
+                self.pact_weapon_savedatas[prefab] = nil
+            end,
+            weapon,
+        }
+    }
+
+
+    for _, data in pairs(self.weapon_event_listeners[weapon]) do
+        self.inst:ListenForEvent(data[1], data[2], data[3])
     end
-    self:UpdateJsonData()
+end
+
+function Icey2SkillSummonPactWeapon:RemoveEventListeners(weapon)
+    for _, data in pairs(self.weapon_event_listeners[weapon]) do
+        self.inst:RemoveEventCallback(data[1], data[2], data[3])
+    end
+    self.weapon_event_listeners[weapon] = nil
 end
 
 function Icey2SkillSummonPactWeapon:LinkWeapon(weapon)
-    self:UnlinkWeapon(true)
+    self:UnlinkWeapon(weapon, true)
 
-    self.linked_weapon = weapon
+    table.insert(self.linked_weapons, weapon)
 
     weapon.persists = false
     weapon.components.equippable.restrictedtag = self.restrictedtag
     weapon.components.equippable.refuse_on_restrict = true
 
-    self._on_linked_weapon_dropped_fn = function(_, data)
-        if self.ignore_drop_handler then
-            return
-        end
+    self:InitEventListeners(weapon)
+    self:UpdateJsonData()
+    ---------------------------------------------------------
 
-        if data.item == weapon then
-            print("Drop pact weapon:", data.item)
+    -- self._on_linked_weapon_dropped_fn = function(_, data)
 
-            if self._regive_weapon_task then
-                return
-            end
 
-            -- if not self:ReturnWeaponToOwner(weapon) then
-            --     self:StartRegiveTask()
-            -- end
-            self:StartRegiveTask()
-        end
-    end
+    --     if data.item == weapon then
+    --         print("Drop pact weapon:", data.item)
 
-    self._on_linked_weapon_pickup_fn = function(_, data)
-        if data.item == weapon then
-            print("Pickup my pact weapon:", data.item)
+    --         if self._regive_weapon_task then
+    --             return
+    --         end
 
-            self:StopRegiveTask()
-        end
-    end
+    --         self:StartRegiveTask()
+    --     end
+    -- end
 
-    self._on_linked_weapon_equipped_fn = function(_, data)
-        local owner = weapon.components.inventoryitem.owner
-        if owner ~= self.inst then
-            print(weapon, "is equipped by someone else !")
-            self:StartRegiveTask()
-        end
-    end
+    -- self._on_linked_weapon_pickup_fn = function(_, data)
+    --     if data.item == weapon then
+    --         print("Pickup my pact weapon:", data.item)
 
-    self._on_linked_weapon_removed_fn = function(_, data)
-        local prefab = weapon.prefab
-        self:UnlinkWeapon()
-        self.pact_weapon_savedatas[prefab] = nil
-    end
+    --         self:StopRegiveTask()
+    --     end
+    -- end
 
-    self.inst:ListenForEvent("dropitem", self._on_linked_weapon_dropped_fn)
-    self.inst:ListenForEvent("itemget", self._on_linked_weapon_pickup_fn)
-    self.inst:ListenForEvent("equipped", self._on_linked_weapon_equipped_fn, weapon)
-    self.inst:ListenForEvent("onremove", self._on_linked_weapon_removed_fn, weapon)
+    -- self._on_linked_weapon_equipped_fn = function(_, data)
+    --     local owner = weapon.components.inventoryitem.owner
+    --     if owner ~= self.inst then
+    --         print(weapon, "is equipped by someone else !")
+    --         self:StartRegiveTask()
+    --     end
+    -- end
 
-    self.inst.replica.icey2_skill_summon_pact_weapon:SetLinkedWeapon(weapon)
+    -- self._on_linked_weapon_removed_fn = function(_, data)
+    --     local prefab = weapon.prefab
+    --     self:UnlinkWeapon()
+    --     self.pact_weapon_savedatas[prefab] = nil
+    -- end
+
+    -- self.inst:ListenForEvent("dropitem", self._on_linked_weapon_dropped_fn)
+    -- self.inst:ListenForEvent("itemget", self._on_linked_weapon_pickup_fn)
+    -- self.inst:ListenForEvent("equipped", self._on_linked_weapon_equipped_fn, weapon)
+    -- self.inst:ListenForEvent("onremove", self._on_linked_weapon_removed_fn, weapon)
+
+    -- self.inst.replica.icey2_skill_summon_pact_weapon:SetLinkedWeapon(weapon)
 end
 
-function Icey2SkillSummonPactWeapon:UnlinkWeapon(remove_weapon)
-    if self.linked_weapon then
-        local weapon = self.linked_weapon
+function Icey2SkillSummonPactWeapon:UnlinkWeapon(weapon_or_prefab, remove_weapon)
+    local weapon
+    if type(weapon_or_prefab) == "string" then
+        for _, v in pairs(self.linked_weapons) do
+            if v.prefab == weapon_or_prefab then
+                weapon = v
+                break
+            end
+        end
 
-        weapon.components.equippable.restrictedtag = nil
-        weapon.components.equippable.refuse_on_restrict = false
+        if weapon == nil then
+            -- print(weapon_or_prefab, "is not in self.linked_weapons, exists weapons are:")
+            -- dumptable(self.linked_weapons)
+            return
+        end
+    else
+        weapon = weapon_or_prefab
 
-        self:StopRegiveTask()
-        self.inst:RemoveEventCallback("dropitem", self._on_linked_weapon_dropped_fn)
-        self.inst:RemoveEventCallback("itemget", self._on_linked_weapon_pickup_fn)
-        self.inst:RemoveEventCallback("equipped", self._on_linked_weapon_equipped_fn, weapon)
-        self.inst:RemoveEventCallback("onremove", self._on_linked_weapon_removed_fn, weapon)
-
-        self.linked_weapon = nil
-
-        self._regive_weapon_task = nil
-        self._on_linked_weapon_dropped_fn = nil
-        self._on_linked_weapon_pickup_fn = nil
-        self._on_linked_weapon_equipped_fn = nil
-        self._on_linked_weapon_removed_fn = nil
-
-        weapon:PushEvent("icey2_unlink_pact_weapon", { old_owner = self.inst })
-
-        if remove_weapon and weapon:IsValid() then
-            self.pact_weapon_savedatas[weapon.prefab] = self:WeaponToData(weapon)
-            self.pact_weapon_last_remove_time[weapon.prefab] = GetTime()
-            weapon:Remove()
+        if not table.contains(self.linked_weapons, weapon) then
+            -- print(weapon, "is not in self.linked_weapons, exists weapons are:")
+            -- dumptable(self.linked_weapons)
+            return
         end
     end
 
-    self.inst.replica.icey2_skill_summon_pact_weapon:SetLinkedWeapon(nil)
+    weapon.components.equippable.restrictedtag = nil
+    weapon.components.equippable.refuse_on_restrict = false
+
+    table.removearrayvalue(self.linked_weapons, weapon)
+
+    self:RemoveEventListeners(weapon)
+    self:StopRegiveTask(weapon)
+
+    weapon:PushEvent("icey2_unlink_pact_weapon", { old_owner = self.inst })
+
+    if remove_weapon and weapon:IsValid() then
+        self.pact_weapon_savedatas[weapon.prefab] = self:WeaponToData(weapon)
+        self.pact_weapon_last_remove_time[weapon.prefab] = GetTime()
+        weapon:Remove()
+    end
+
+    self:UpdateJsonData()
+end
+
+function Icey2SkillSummonPactWeapon:UnlinkAllWeapons(remove_weapon)
+    local tmp = shallowcopy(self.linked_weapons)
+
+    for _, v in pairs(tmp) do
+        self:UnlinkWeapon(v, remove_weapon)
+    end
 end
 
 function Icey2SkillSummonPactWeapon:ReturnWeaponToOwner(weapon)
-    -- self.ignore_drop_handler = true
     local hands = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
     if self.inst.components.inventory:IsFull() and hands ~= nil then
@@ -200,16 +270,13 @@ function Icey2SkillSummonPactWeapon:ReturnWeaponToOwner(weapon)
     end
 
     if hands == nil and self.inst.components.inventory:Equip(weapon) then
-        self.ignore_drop_handler = false
         return true
     end
 
     if self.inst.components.inventory:GiveItem(weapon) then
-        self.ignore_drop_handler = false
         return true
     end
 
-    self.ignore_drop_handler = false
     return false
 end
 
@@ -225,55 +292,71 @@ function Icey2SkillSummonPactWeapon:DataToWeapon(weapondata)
     return entity
 end
 
-function Icey2SkillSummonPactWeapon:StartRegiveTask()
-    if self.linked_weapon
-        and self.linked_weapon:IsValid()
-        and self.linked_weapon:HasTag("icey2_pact_weapon_no_regive") then
+function Icey2SkillSummonPactWeapon:StartRegiveTask(weapon)
+    if weapon and weapon:IsValid() and weapon:HasTag("icey2_pact_weapon_no_regive") then
         return
     end
 
-    self._regive_weapon_task = self.inst:DoPeriodicTask(0, function()
-        if not (self.linked_weapon and self.linked_weapon:IsValid()) then
-            self:StopRegiveTask()
+
+    -- self:StopRegiveTask(weapon)
+    if self.regive_weapon_tasks[weapon] then
+        return
+    end
+
+    self.regive_weapon_tasks[weapon] = self.inst:DoPeriodicTask(0, function()
+        if not (weapon and weapon:IsValid()) then
+            self:StopRegiveTask(weapon)
             return
         end
 
-        if self.linked_weapon
-            and self.linked_weapon:IsValid()
-            and self.linked_weapon:HasTag("icey2_pact_weapon_no_regive") then
-            self:StopRegiveTask()
+        if weapon:HasTag("icey2_pact_weapon_no_regive") then
+            self:StopRegiveTask(weapon)
             return
         end
 
-        if self.linked_weapon.components.inventoryitem.owner == self.inst then
-            self:StopRegiveTask()
+        if weapon.components.inventoryitem.owner == self.inst then
+            self:StopRegiveTask(weapon)
             return
         end
 
-        if not self.inst:IsNear(self.linked_weapon, 30) then
-            self:UnlinkWeapon(true)
+        if not self.inst:IsNear(weapon, 30) then
+            self:UnlinkWeapon(weapon, true)
             return
         end
 
-        if self.inst:IsNear(self.linked_weapon, 6) then
-            if self:ReturnWeaponToOwner(self.linked_weapon) then
-                self:StopRegiveTask()
+        if self.inst:IsNear(weapon, 6) then
+            if self:ReturnWeaponToOwner(weapon) then
+                self:StopRegiveTask(weapon)
             end
         end
     end)
 end
 
-function Icey2SkillSummonPactWeapon:StopRegiveTask()
-    if self._regive_weapon_task then
-        self._regive_weapon_task:Cancel()
-        self._regive_weapon_task = nil
+function Icey2SkillSummonPactWeapon:StopRegiveTask(weapon)
+    if self.regive_weapon_tasks[weapon] then
+        self.regive_weapon_tasks[weapon]:Cancel()
+        self.regive_weapon_tasks[weapon] = nil
     end
+    -- if self._regive_weapon_task then
+    --     self._regive_weapon_task:Cancel()
+    --     self._regive_weapon_task = nil
+    -- end
 end
 
 -- ThePlayer.components.icey2_skill_summon_pact_weapon:SummonWeapon("spear")
 function Icey2SkillSummonPactWeapon:SummonWeapon(prefab, emit_fx)
     if not table.contains(self.pact_weapon_options, prefab) then
+        print(prefab, "is not contained by pact_weapon_options")
+        print("pact_weapon_options are follows:")
+        dumptable(self.pact_weapon_options)
         return
+    end
+
+    for _, v in pairs(self.linked_weapons) do
+        if v.prefab == prefab then
+            print("You already have a", prefab, "it's", v)
+            return
+        end
     end
 
     local weapon
@@ -289,7 +372,9 @@ function Icey2SkillSummonPactWeapon:SummonWeapon(prefab, emit_fx)
             -- When weapon is not summoned, its skill cd is not calculated,
             -- so I add this, apply duration to skill cd.
             local duration = math.max(0, GetTime() - self.pact_weapon_last_remove_time[prefab])
-            weapon.components.rechargeable:SetCharge(weapon.components.rechargeable:GetCharge() + duration)
+
+            local factor = weapon.components.rechargeable.total / weapon.components.rechargeable:GetChargeTime()
+            weapon.components.rechargeable:SetCharge(weapon.components.rechargeable:GetCharge() + duration * factor)
         end
     else
         weapon = SpawnAt(prefab, self.inst)
@@ -318,10 +403,25 @@ end
 function Icey2SkillSummonPactWeapon:OnSave()
     local data = Icey2SkillBase_Active.OnSave(self)
 
-    if self.linked_weapon then
-        data.linked_weapon_prefab = self.linked_weapon.prefab
-        self.pact_weapon_savedatas[self.linked_weapon.prefab] = self:WeaponToData(self.linked_weapon)
+    -- if self.linked_weapon then
+    --     data.linked_weapon_prefab = self.linked_weapon.prefab
+    --     self.pact_weapon_savedatas[self.linked_weapon.prefab] = self:WeaponToData(self.linked_weapon)
+    -- end
+
+    if #self.linked_weapons > 0 then
+        data.linked_weapon_prefabs = {}
+        for _, v in pairs(self.linked_weapons) do
+            if v and v:IsValid() then
+                table.insert(data.linked_weapon_prefabs, v.prefab)
+                self.pact_weapon_savedatas[v.prefab] = self:WeaponToData(v)
+            end
+        end
     end
+
+    -- self:UnlinkAllWeapons(true)
+
+
+
     data.pact_weapon_savedatas = self.pact_weapon_savedatas
     data.pact_weapon_time_since_remove = {}
     for prefab, last_remove_time in pairs(self.pact_weapon_last_remove_time) do
@@ -346,13 +446,20 @@ function Icey2SkillSummonPactWeapon:OnLoad(data)
                 self.pact_weapon_last_remove_time[prefab] = GetTime() - time_since_remove
             end
         end
-        if data.linked_weapon_prefab ~= nil then
-            self:SummonWeapon(data.linked_weapon_prefab)
+        -- if data.linked_weapon_prefab ~= nil then
+        --     self:SummonWeapon(data.linked_weapon_prefab)
+        -- end
+
+        print("Loading data.linked_weapon_prefabs")
+        if data.linked_weapon_prefabs ~= nil then
+            self.linked_weapon_prefabs_tmp = shallowcopy(data.linked_weapon_prefabs)
         end
+        dumptable(data.linked_weapon_prefabs)
+        dumptable(self.linked_weapon_prefabs_tmp)
     end
 
-    print("Icey2SkillSummonPactWeapon:OnLoad() pact_weapon_savedatas = ")
-    dumptable(self.pact_weapon_savedatas)
+    -- print("Icey2SkillSummonPactWeapon:OnLoad() pact_weapon_savedatas = ")
+    -- dumptable(self.pact_weapon_savedatas)
 end
 
 function Icey2SkillSummonPactWeapon:OnUpdate()

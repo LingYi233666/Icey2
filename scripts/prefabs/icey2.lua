@@ -39,12 +39,31 @@ local master_postinit = function(inst)
     inst.soundsname = "wendy"
 
     -- 最喜欢的食物  名字 倍率（1.2）
-    inst.components.foodaffinity:AddPrefabAffinity("baconeggs", TUNING.AFFINITY_15_CALORIES_HUGE)
+    -- 老马克肖：艾希最喜欢吃老马爱吃的汉堡
+    local favorite_foods = {
+        "leafymeatburger",
+        "quagmire_food_020",
+        "quagmire_food_033",
+        "quagmire_food_034",
+        "quagmire_food_035",
+        "quagmire_food_052",
+    }
+
+    for _, food in pairs(favorite_foods) do
+        inst.components.foodaffinity:AddPrefabAffinity(food, TUNING.AFFINITY_15_CALORIES_HUGE)
+    end
+
 
     -- 三维	
     inst.components.health:SetMaxHealth(TUNING.ICEY2_HEALTH)
     inst.components.hunger:SetMax(TUNING.ICEY2_HUNGER)
     inst.components.sanity:SetMax(TUNING.ICEY2_SANITY)
+
+    inst.components.eater:SetCanEatGears()
+
+    ----------------------------------------------------------------------
+
+    inst:AddComponent("icey2_spdamage_force")
 
     inst:AddComponent("icey2_skiller")
 
@@ -53,11 +72,12 @@ local master_postinit = function(inst)
     inst:AddComponent("icey2_skill_dodge")
 
     inst:AddComponent("icey2_skill_unarmoured_movement")
-    -- ThePlayer.components.icey2_skill_unarmoured_movement:Enable()
 
     inst:AddComponent("icey2_skill_shield")
 
     inst:AddComponent("icey2_skill_summon_pact_weapon")
+
+    inst:AddComponent("icey2_skill_battle_focus")
 
     inst.OnNewSpawn = OnNewSpawn
 end
