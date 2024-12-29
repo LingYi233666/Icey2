@@ -17,6 +17,7 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
     --     weapon = weapon,
     --     redirected = damageredirecttarget
     -- }
+
     self._on_hit_other = function(_, data)
         -- print("on hit other", data.redirected, data.weapon)
         -- redirected to another target
@@ -24,25 +25,66 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
             return
         end
 
-        -- riding
-        if inst.components.rider and inst.components.rider:IsRiding() then
-            return
-        end
-
         local addition = 10
 
         local weapon = data.weapon
-        -- No weapon or projectile or ranged weapon
-        if not weapon
-            or weapon.components.projectile
-            or weapon.components.complexprojectile
-            or weapon.components.weapon:CanRangedAttack()
-            or (inst.sg and inst.sg:HasStateTag("aoe")) then
-            addition = addition * 0.1
+        -- projectile or ranged weapon
+        if weapon then
+            if weapon.components.projectile
+                or weapon.components.complexprojectile
+                or weapon.components.weapon:CanRangedAttack() then
+                addition = addition * 0
+            end
+        end
+
+        if inst.sg and inst.sg:HasStateTag("aoe") then
+            addition = addition * 0
+        end
+
+        -- riding
+        if inst.components.rider and inst.components.rider:IsRiding() then
+            addition = addition * 0
+        end
+
+        if not data.target
+            or not data.target.components.combat
+            or (data.target.components.combat:CalcDamage(self.inst) <= 0.01 and data.target.prefab ~= "dummytarget") then
+            addition = addition * 0
         end
 
         if Icey2Basic.IsWearingArmor(inst) then
             addition = addition * 0.1
+        end
+
+        local supply_chance = {}
+
+        if addition > 1.1 then
+            if self:GetPercent() >= 0.5 and self.inst.components.icey2_skill_shield then
+                local p = self.inst.components.icey2_skill_shield:GetPercent()
+                if p < 1 then
+                    supply_chance.icey2_supply_ball_shield = 1 - p
+                else
+                    -- supply_chance.icey2_supply_ball_shield = 0.001
+                end
+            end
+
+            if self:GetPercent() >= 1 and self.inst.components.health then
+                local p = self.inst.components.health:GetPercent()
+                if p < 1 then
+                    supply_chance.icey2_supply_ball_health = (1 - p) * 0.33
+                else
+                    -- supply_chance.icey2_supply_ball_health = 0.001
+                end
+            end
+        end
+
+        if GetTableSize(supply_chance) > 0 then
+            local prefab = weighted_random_choice(supply_chance)
+            if prefab then
+                local start_pos = data.target:GetPosition()
+                start_pos.y = start_pos.y + math.random(0.8, 2)
+                SpawnPrefab(prefab):Setup(self.inst, start_pos)
+            end
         end
 
 
@@ -84,7 +126,7 @@ function Icey2SkillBattleFocus:SetVal(current)
 
     if old_current < self.max and self.current >= self.max then
         -- Start battle focus bonus
-        self.inst.components.icey2_spdamage_force:AddBonus(self.inst, 8, "icey2_skill_battle_focus")
+        self.inst.components.icey2_spdamage_force:AddBonus(self.inst, 8.5, "icey2_skill_battle_focus")
         self.inst.components.sanity.neg_aura_modifiers:SetModifier(self.inst, 0.5, "icey2_skill_battle_focus")
         self.inst.components.locomotor:SetExternalSpeedMultiplier(self.inst, "icey2_skill_battle_focus", 1.05)
     elseif old_current >= self.max and self.current < self.max then

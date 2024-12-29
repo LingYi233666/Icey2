@@ -251,10 +251,7 @@ local function OnProjectileLaunch(inst, attacker, target_pos)
     inst.start_launch_time = GetTime()
 end
 
-local function CutAngle(v1, v2)
-    local result = math.atan2(v1:Cross(v2):Length(), v1:Dot(v2))
-    return result
-end
+
 
 local offset_presets = {
     -- rad_min, rad_max, height_min, height_max
@@ -359,7 +356,7 @@ local function OnUpdate(inst)
         inst.direction = inst.direction + delta_vec:GetNormalized() * max_delta_length
     end
 
-    local cut_angle = CutAngle(inst.direction, towards) * RADIANS
+    local cut_angle = Icey2Math.RadiansBetweenVectors(inst.direction, towards) * RADIANS
     local is_inverse_moving = math.abs(cut_angle) > 90
 
 
@@ -433,7 +430,7 @@ local function projectilefn()
     inst.components.weapon:SetDamage(0)
 
     inst:AddComponent("icey2_spdamage_force")
-    inst.components.icey2_spdamage_force:SetBaseDamage(Icey2Math.SumDices(1, 10) + 4)
+    inst.components.icey2_spdamage_force:SetBaseDamage(Icey2Math.SumDices(1, 4) + 1)
 
     inst:AddComponent("complexprojectile")
     inst.components.complexprojectile:SetOnHit(OnProjectileHit)

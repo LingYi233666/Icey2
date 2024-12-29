@@ -75,13 +75,7 @@ local function CreateEllipseEmitter(r1, r2, r3)
     return fn
 end
 
-local function GetFaceVector(inst)
-    local angle = (inst.Transform:GetRotation() + 90) * DEGREES
-    local sinangle = math.sin(angle)
-    local cosangle = math.cos(angle)
 
-    return Vector3(sinangle, 0, cosangle)
-end
 
 local function fn()
     local inst = CreateEntity()
@@ -149,7 +143,7 @@ local function fn()
 
         num_to_emit = num_to_emit + per_tick * math.random(2, 3)
         while num_to_emit > 1 do
-            local face_vec = GetFaceVector(parent)
+            local face_vec = Icey2Basic.GetFaceVector(parent)
             emit_arrow_fn(effect, ellipse_emitter, face_vec * GetRandomMinMax(0.25, 0.33))
             num_to_emit = num_to_emit - 1
         end

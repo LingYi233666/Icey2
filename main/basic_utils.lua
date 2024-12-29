@@ -42,4 +42,12 @@ function Icey2Basic.GetUnarmouredMovementAnim(inst, state)
     end
 end
 
+function Icey2Basic.GetFaceVector(inst)
+    local angle = (inst.Transform:GetRotation() + 90) * DEGREES
+    local sinangle = math.sin(angle)
+    local cosangle = math.cos(angle)
+
+    return Vector3(sinangle, 0, cosangle)
+end
+
 GLOBAL.Icey2Basic = Icey2Basic

@@ -28,6 +28,9 @@ PrefabFiles = {
     "icey1_bluerose",
     "icey1_mound",
     "icey1_graveyard_light",
+
+    "icey2_supply_balls",
+    "icey2_supply_ball_tails",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的
@@ -67,11 +70,26 @@ Assets = {
 
     --------------------------------------------------------------
 
-    Asset("IMAGE", "images/ui/skill_slot/sample.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/sample.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/battle_focus.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/battle_focus.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/dodge.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/dodge.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/force_shield.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/force_shield.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_scythe.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_scythe.xml"),
 
     Asset("IMAGE", "images/ui/skill_slot/phantom_sword.tex"),
     Asset("ATLAS", "images/ui/skill_slot/phantom_sword.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/sample.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/sample.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/summon_pact_weapon.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/summon_pact_weapon.xml"),
 
     Asset("SOUNDPACKAGE", "sound/icey2_sfx.fev"),
     Asset("SOUND", "sound/icey2_sfx.fsb"),

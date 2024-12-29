@@ -469,7 +469,7 @@ AddStategraphState("wilson", State {
 
 AddStategraphState("wilson", State {
     name = "icey2_aoeweapon_flurry_lunge_final",
-    tags = { "attack", "abouttoattack", "busy", "nopredict" },
+    tags = { "aoe", "attack", "abouttoattack", "busy", "nopredict" },
 
     onenter = function(inst, data)
         inst.sg.statemem.weapon = data.weapon

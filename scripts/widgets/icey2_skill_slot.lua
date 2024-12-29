@@ -10,6 +10,7 @@ local Icey2SkillSlot = Class(ImageButton, function(self)
 
     ImageButton._ctor(self, atlas, image, image, image, image, image)
 
+    -- self.image:SetTint(0, 0, 0, 0)
 
     self.icon = self:AddChild(Image())
     self.icon:Hide()
@@ -58,6 +59,7 @@ function Icey2SkillSlot:EnableIcon(enable)
         self.icon:SetTint(0, 0, 0, 1)
         self.image:SetTint(0.6, 0.6, 0.6, 1)
     end
+    self.image:SetTint(0, 0, 0, 0.25)
 end
 
 function Icey2SkillSlot:EnableFlashing(enable)

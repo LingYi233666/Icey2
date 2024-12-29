@@ -74,7 +74,11 @@ ICEY2_SKILL_DEFINES = {
         OnForget = function(inst) end,
 
         OnPressed_Client = function(inst)
-            inst.replica.icey2_skill_summon_pact_weapon:ShowPactWeaponsWheel()
+            if inst.replica.icey2_skill_summon_pact_weapon.call_cd == nil
+                or GetTime() - inst.replica.icey2_skill_summon_pact_weapon.call_cd > 0.1 then
+                inst.replica.icey2_skill_summon_pact_weapon:ShowPactWeaponsWheel()
+                inst.replica.icey2_skill_summon_pact_weapon.call_cd = GetTime()
+            end
         end,
 
         DescFn = function(inst)

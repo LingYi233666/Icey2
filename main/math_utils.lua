@@ -15,12 +15,17 @@ function Icey2Math.SumDices(num_dice, dice_max_value, advantage_or_disadvantage)
         end
     elseif advantage_or_disadvantage > 0 then
         result = math.max(Icey2Math.SumDices(num_dice, dice_max_value),
-                          Icey2Math.SumDices(num_dice, dice_max_value))
+            Icey2Math.SumDices(num_dice, dice_max_value))
     elseif advantage_or_disadvantage < 0 then
         result = math.min(Icey2Math.SumDices(num_dice, dice_max_value),
-                          Icey2Math.SumDices(num_dice, dice_max_value))
+            Icey2Math.SumDices(num_dice, dice_max_value))
     end
 
+    return result
+end
+
+function Icey2Math.RadiansBetweenVectors(v1, v2)
+    local result = math.atan2(v1:Cross(v2):Length(), v1:Dot(v2))
     return result
 end
 
