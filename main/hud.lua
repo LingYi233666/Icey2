@@ -52,3 +52,20 @@ AddPrefabPostInit("player_classified", function(inst)
         end
     end)
 end)
+
+-- AddClassPostConstruct("widgets/redux/craftingmenu_details", function(self)
+--     local old_PopulateRecipeDetailPanel = self.PopulateRecipeDetailPanel
+
+--     self.PopulateRecipeDetailPanel = function(self, data, ...)
+--         local old_ret = old_PopulateRecipeDetailPanel(self, data, ...)
+
+--         if data
+--             and data.recipe
+--             and data.recipe.name
+--             and data.recipe.name:starts("icey2_skill_builder_") then
+--             self.skins_spinner.spinner_bg:SetTint(0, 0, 0, 0.7)
+--         end
+
+--         return old_ret
+--     end
+-- end)

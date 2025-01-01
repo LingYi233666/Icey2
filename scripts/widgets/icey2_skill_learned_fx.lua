@@ -40,6 +40,12 @@ local Icey2SkillLearnedFX = Class(Widget, function(self, skillname)
     local search_result = softresolvefilepath(atlas)
 
     if search_result == nil then
+        atlas = "images/ui/skill_slot/unknown.xml"
+        image = "unknown.tex"
+        search_result = softresolvefilepath(atlas)
+    end
+
+    if search_result == nil then
 
     else
         self.icon:SetTexture(atlas, image)

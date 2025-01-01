@@ -74,11 +74,6 @@ AddClientModRPCHandler("icey2_rpc", "play_skill_learned_anim", function(skill_na
     screen:PlaySkillLearnedAnim_Part1(skill_name)
 end)
 
-
-
-
--- SendModRPCToClient(CLIENT_MOD_RPC["icey2_rpc"]["play_skill_learned_anim"], ThePlayer.userid, "PHANTOM_SWORD")
-
--- AddModRPCHandler("icey2_rpc", "debug_test_phantom_sword", function(inst, x, y, z, ent)
---     ICEY2_SKILL_DEFINES.PHANTOM_SWORD.OnPressed(inst, x, y, z, ent)
--- end)
+AddModRPCHandler("icey2_rpc", "update_mouse_position", function(inst, x, z)
+    inst.components.icey2_control_key_helper:SetMousePosition(Vector3(x, 0, z))
+end)

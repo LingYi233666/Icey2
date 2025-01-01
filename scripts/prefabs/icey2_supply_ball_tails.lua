@@ -23,14 +23,14 @@ end
 local function InitEnvelope()
     EnvelopeManager:AddColourEnvelope(COLOUR_ENVELOPE_NAME_TAIL_BLUE, {
         { 0,   IntColour(96, 249, 255, 0) },
-        { 0.1, IntColour(96, 249, 255, 200) },
+        { 0.1, IntColour(96, 249, 255, 150) },
         -- { 0.6, IntColour(96, 249, 255, 180) },
         { 1,   IntColour(96, 249, 255, 0) },
     })
 
     EnvelopeManager:AddColourEnvelope(COLOUR_ENVELOPE_NAME_TAIL_RED, {
         { 0,   IntColour(200, 25, 25, 0) },
-        { 0.1, IntColour(200, 25, 25, 200) },
+        { 0.1, IntColour(200, 25, 25, 150) },
         -- { 0.6, IntColour(200, 25, 25, 180) },
         { 1,   IntColour(200, 25, 25, 0) },
     })

@@ -29,4 +29,22 @@ function Icey2Math.RadiansBetweenVectors(v1, v2)
     return result
 end
 
+-- NOTE: DST coordinates is Front-X, Left-Z, Up-Y
+-- Params:
+--  theta: radiance between y-axis and direction
+--  phi:  radiance between x-axis and direction
+function Icey2Math.CustomSphereEmitter(radius_min, radius_max, theta_min, theta_max, phi_min, phi_max)
+    local function fn()
+        local radius = GetRandomMinMax(radius_min, radius_max)
+        local theta = GetRandomMinMax(theta_min, theta_max)
+        local phi = GetRandomMinMax(phi_min, phi_max)
+
+        return radius * math.sin(theta) * math.cos(phi),
+            radius * math.cos(theta),
+            radius * math.sin(theta) * math.sin(phi)
+    end
+
+    return fn
+end
+
 GLOBAL.Icey2Math = Icey2Math

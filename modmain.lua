@@ -31,6 +31,13 @@ PrefabFiles = {
 
     "icey2_supply_balls",
     "icey2_supply_ball_tails",
+
+    "icey2_skill_builders",
+
+    "icey2_greatparry_vfx",
+    "icey2_parry_target",
+
+    "icey2_focus_hit_fxs",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的
@@ -41,11 +48,11 @@ Assets = {
     Asset("IMAGE", "images/saveslot_portraits/icey2.tex"), -- 存档图片
     Asset("ATLAS", "images/saveslot_portraits/icey2.xml"),
 
-    Asset("IMAGE", "images/selectscreen_portraits/icey2.tex"), -- 单机选人界面
-    Asset("ATLAS", "images/selectscreen_portraits/icey2.xml"),
+    -- Asset("IMAGE", "images/selectscreen_portraits/icey2.tex"), -- 单机选人界面
+    -- Asset("ATLAS", "images/selectscreen_portraits/icey2.xml"),
 
-    Asset("IMAGE", "images/selectscreen_portraits/icey2_silho.tex"), -- 单机未解锁界面
-    Asset("ATLAS", "images/selectscreen_portraits/icey2_silho.xml"),
+    -- Asset("IMAGE", "images/selectscreen_portraits/icey2_silho.tex"), -- 单机未解锁界面
+    -- Asset("ATLAS", "images/selectscreen_portraits/icey2_silho.xml"),
 
     Asset("IMAGE", "bigportraits/icey2.tex"), -- 人物大图（方形的那个）
     Asset("ATLAS", "bigportraits/icey2.xml"),
@@ -91,6 +98,10 @@ Assets = {
     Asset("IMAGE", "images/ui/skill_slot/summon_pact_weapon.tex"),
     Asset("ATLAS", "images/ui/skill_slot/summon_pact_weapon.xml"),
 
+    Asset("IMAGE", "images/ui/skill_slot/unknown.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/unknown.xml"),
+
+
     Asset("SOUNDPACKAGE", "sound/icey2_sfx.fev"),
     Asset("SOUND", "sound/icey2_sfx.fsb"),
 
@@ -128,7 +139,7 @@ PREFAB_SKINS["icey2"] = { -- 修复人物大图显示
 
 local modimport_filenames = {
     "actions", "basic_utils", "math_utils", "weaponskill_utils", "language_chs", "spdamage", "rpc_defines",
-    "skill_defines", "components", "input", "stategraphs_server",
+    "skill_defines", "recipes", "components", "input", "stategraphs_server",
     "stategraphs_client", "hud", "debug"
 }
 
@@ -138,7 +149,8 @@ end
 
 AddMinimapAtlas("images/map_icons/icey2.xml") -- 增加小地图图标
 
--- 增加人物到mod人物列表的里面 性别为女性（MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL）
+-- 增加人物到mod人物列表的里面 性别为机器人（MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL）
+-- 可恶，为什么没有FUTANARI？我要扶她机娘！
 AddModCharacter("icey2", "ROBOT")
 
 -- 选人界面人物三维显示
@@ -147,7 +159,7 @@ TUNING.ICEY2_HUNGER = 150
 TUNING.ICEY2_SANITY = 150
 
 -- 选人界面初始物品显示
-TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.ICEY2 = { "spear" }
+TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.ICEY2 = {}
 
 --[[如果你的初始物品是mod物品需要定义mod物品的图片路径 比如物品是 abc
 

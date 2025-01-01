@@ -122,6 +122,10 @@ function Icey2SkillBase_Active:_ApplyCost(x, y, z, target)
     end
 end
 
+function Icey2SkillBase_Active:GetTimeSinceLastCast()
+    return GetTime() - self.last_cast_time
+end
+
 function Icey2SkillBase_Active:GetCooldownRemain()
     return math.max(0, self.cooldown - GetTime() + self.last_cast_time)
 end

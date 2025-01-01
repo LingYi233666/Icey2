@@ -99,7 +99,9 @@ ICEY2_SKILL_DEFINES = {
             inst.components.icey2_skill_summon_pact_weapon:RemoveWeaponPrefab("icey2_pact_weapon_scythe")
         end,
 
-        Root = true,
+        -- Root = true,
+        Ingredients = { Ingredient("flint", 3), Ingredient("twigs", 1), Ingredient(CHARACTER_INGREDIENT.SANITY, 50) },
+        Tech = TECH.MAGIC_TWO,
     },
 
     PHANTOM_SWORD = {
@@ -109,7 +111,8 @@ ICEY2_SKILL_DEFINES = {
 
         OnPressed = CastSkillByComponentWrapper("icey2_skill_phantom_sword"),
 
-        Root = true,
+        -- Root = true,
+        Ingredients = { Ingredient("moonrocknugget", 5), },
     },
 
     BATTLE_FOCUS = {
@@ -117,7 +120,42 @@ ICEY2_SKILL_DEFINES = {
 
         OnForget = PassiveSkillOnForgetWrapper("icey2_skill_battle_focus"),
 
-        Root = true,
+        -- Root = true,
+
+        Ingredients = { Ingredient("bluegem", 1), },
+        Tech = TECH.SCIENCE_TWO,
+    },
+
+
+    PARRY = {
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        OnPressed = function(inst, x, y, z, ent)
+            local can_cast, reason = inst.components.icey2_skill_parry:CanStartParry(x, y, z, ent)
+
+            if can_cast then
+                inst.components.icey2_skill_parry:StartParry()
+            else
+                -- print("icey2_skill_parry start parry failed, reason: " .. tostring(reason))
+            end
+        end,
+
+        OnReleased = function(inst, x, y, z, ent)
+            local can_cast, reason = inst.components.icey2_skill_parry:CanStopParry(x, y, z, ent)
+
+            if can_cast then
+                inst.components.icey2_skill_parry:StopParry()
+            else
+                -- print("icey2_skill_parry stop parry failed, reason: " .. tostring(reason))
+            end
+        end,
+
+        Ingredients = { Ingredient("rocks", 10), Ingredient(CHARACTER_INGREDIENT.SANITY, 50) },
+        Tech = TECH.SCIENCE_ONE,
+
+        -- Root = true,
     },
 }
 

@@ -1,8 +1,8 @@
 -- The character select screen lines  --人物选人界面的描述
 STRINGS.CHARACTER_TITLES.icey2 = "艾希"
 STRINGS.CHARACTER_NAMES.icey2 = "艾希"
-STRINGS.CHARACTER_DESCRIPTIONS.icey2 = "*Perk 1\n*Perk 2\n*Perk 3"
-STRINGS.CHARACTER_QUOTES.icey2 = "\"Quote\""
+STRINGS.CHARACTER_DESCRIPTIONS.icey2 = "*依旧是作者的老婆\n*已经产生了自我意识\n*控场技能丰富\n"
+STRINGS.CHARACTER_QUOTES.icey2 = "\"又有死宅在找我的本子\""
 
 -- Custom speech strings  ----人物语言文件  可以进去自定义
 STRINGS.CHARACTERS.ICEY2 = require "speech_icey2"
@@ -12,7 +12,7 @@ STRINGS.NAMES.ICEY2 = "艾希"
 STRINGS.SKIN_NAMES.icey2_none = "艾希" -- 检查界面显示的名字
 
 -- 生存几率
-STRINGS.CHARACTER_SURVIVABILITY.icey2 = "生存"
+STRINGS.CHARACTER_SURVIVABILITY.icey2 = "较高"
 
 ----------------------------------------------------------------------------------------------
 -- NAMES & DESCRIBE
@@ -33,6 +33,19 @@ STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY1_MOUND = {
     DUG = "......",
     GENERIC = "最好还是不要打扰她了。",
 }
+
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "解锁能量武器：镰刀"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "使你的能量武器种类增加！"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "解锁战意聚焦"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "不受伤的连续攻击可以恢复属性。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_PHANTOM_SWORD = "解锁幻影剑"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_PHANTOM_SWORD = "释放幻影剑自动追踪敌人。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_PARRY = "解锁聚能盾牌"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_PARRY = "制造盾牌格挡面前的攻击。"
 
 ----------------------------------------------------------------------------------------------
 -- ACTIONS
@@ -65,7 +78,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         BATTLE_FOCUS = {
             TITLE = "战意聚焦",
             DESC =
-            "在你不装备任何护甲或盾牌时，使用武器连续普通攻击会使你进入战斗专注状态，提高力场伤害、恐惧抵抗与移动速度。在此状态下，你可以从敌人的生命中撕扯出精华，回复护盾/生命值。\n受到攻击会让战斗专注效果中断。",
+            "在你不装备任何护甲或盾牌时，使用近战武器连续普通攻击会使你进入战斗专注状态，提高力场伤害、恐惧抵抗与移动速度。在此状态下，你可以从敌人的生命中撕扯出精华，回复护盾或者生命值。\n受到攻击会让战斗专注效果中断。",
         },
 
         PHANTOM_SWORD = {
@@ -94,12 +107,18 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         },
 
         NEW_PACT_WEAPON_SCYTHE = {
-            TITLE = "创造能量武器：镰刀",
+            TITLE = "能量武器：镰刀",
             DESC =
             "“创造能量武器”技能新增武器种类：能量镰刀。能量镰刀可以用于战斗，或是用来收割农作物，武器战技如下：\n战技·掷镰：\n向鼠标方向投掷镰刀，对一条直线上的敌人造成伤害，并在落地点形成一道能够增加你伤害的力幕。",
         },
 
-        UNKNWON = {
+        PARRY = {
+            TITLE = "聚能盾牌",
+            DESC =
+            "将力场护盾的全部能量输出集中在你的手中，形成一面能够吸收正前方攻击的坚固盾牌。\n如果你在举起盾牌后短时间内格挡了一次攻击，且你已经掌握“战意聚焦”技能，你会立刻进入战斗专注状态，",
+        },
+
+        UNKNOWN = {
             TITLE = "未知技能",
             DESC = "有些东西需要靠你自己去发现。"
         }

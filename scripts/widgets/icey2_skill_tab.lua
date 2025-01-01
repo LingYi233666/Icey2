@@ -101,11 +101,11 @@ function Icey2SkillTab:FreshData(new_data)
             table.insert(self.data, { name = name })
         end
         table.sort(self.data, function(a, b)
-            local a_cast_value = IsCastByButton(a.name) and 1 or 0
-            local b_cast_value = IsCastByButton(b.name) and 1 or 0
+            -- local a_cast_value = IsCastByButton(a.name) and 1 or 0
+            -- local b_cast_value = IsCastByButton(b.name) and 1 or 0
 
-            return a_cast_value > b_cast_value or a.name < b.name
-            -- return a.name > b.name
+            -- return a_cast_value > b_cast_value or a.name < b.name
+            return a.name > b.name
         end)
     else
         self.data = new_data
@@ -136,7 +136,7 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
         if is_learned then
             self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name].TITLE)
         else
-            self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNWON.TITLE)
+            self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNOWN.TITLE)
         end
 
         self.skill_desc:Show()
@@ -150,7 +150,7 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
 
             self:UpdateSkillDesc(desc)
         else
-            self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNWON.DESC)
+            self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNOWN.DESC)
         end
 
         if is_learned and IsCastByButton(self.current_skill_name) then

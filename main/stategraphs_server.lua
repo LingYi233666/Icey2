@@ -622,3 +622,62 @@ AddStategraphState("wilson", State {
         inst.components.health:SetInvincible(false)
     end,
 })
+
+
+
+AddStategraphState("wilson", State {
+    name = "icey2_parry_pre",
+    tags = { "preparrying", "parrying", "busy", "nomorph", "nopredict" },
+
+    onenter = function(inst, data)
+        inst.sg.statemem.isshield = true
+
+        inst.components.locomotor:Stop()
+        inst.AnimState:PlayAnimation("shieldparry_pre")
+        inst.AnimState:PushAnimation("shieldparry_loop", true)
+
+        inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+
+        inst.sg.statemem.parrytime = 99999
+        inst.components.combat.redirectdamagefn = function(inst, attacker, damage, weapon, stimuli)
+            return inst.components.icey2_skill_parry
+                and inst.components.icey2_skill_parry:TryParry(attacker, damage, weapon, stimuli)
+        end
+    end,
+
+    ontimeout = function(inst)
+        inst.sg.statemem.parrying = true
+        inst.sg:GoToState("parry_idle", {
+            duration = inst.sg.statemem.parrytime,
+            pauseframes = 30,
+            isshield = inst.sg.statemem.isshield
+        })
+    end,
+
+    onexit = function(inst)
+        if not inst.sg.statemem.parrying then
+            inst.components.combat.redirectdamagefn = nil
+        end
+    end,
+})
+
+
+
+AddStategraphState("wilson",
+    State {
+        name = "icey2_funnyidle",
+        tags = { "idle", "canrotate", "nodangle" },
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("ready_stance_pre")
+            inst.AnimState:PushAnimation("ready_stance_loop", true)
+
+            inst.sg:SetTimeout(GetRandomMinMax(5, 10))
+        end,
+
+        ontimeout = function(inst)
+            inst.AnimState:PlayAnimation("ready_stance_pst")
+            inst.sg:GoToState("idle", true)
+        end,
+    }
+)

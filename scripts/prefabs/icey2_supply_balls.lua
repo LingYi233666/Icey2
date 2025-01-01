@@ -288,7 +288,88 @@ local function fn_health_hit()
     return inst
 end
 
+
+local function fn_shield_spawn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddSoundEmitter()
+    inst.entity:AddNetwork()
+
+    inst:AddTag("FX")
+    inst:AddTag("NOCLICK")
+
+    inst.AnimState:SetBank("deer_ice_charge")
+    inst.AnimState:SetBuild("deer_ice_charge")
+    inst.AnimState:PlayAnimation("blast")
+
+    inst.AnimState:HideSymbol("glow_")
+
+    inst.AnimState:SetLightOverride(1)
+
+    inst.AnimState:SetMultColour(unpack(MULTCOLOUR_SHIELD))
+
+    inst.Transform:SetScale(SCALE_BALL_SHIELD, SCALE_BALL_SHIELD, 1)
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.persists = false
+
+    inst.vfx = inst:SpawnChild("icey2_focus_hit_vfx_blue")
+
+    inst:ListenForEvent("animover", inst.Remove)
+
+    return inst
+end
+
+local function fn_health_spawn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddSoundEmitter()
+    inst.entity:AddNetwork()
+
+    inst:AddTag("FX")
+    inst:AddTag("NOCLICK")
+
+    inst.AnimState:SetBank("deer_fire_charge")
+    inst.AnimState:SetBuild("deer_fire_charge")
+    inst.AnimState:PlayAnimation("blast")
+
+    inst.AnimState:HideSymbol("glow_")
+    inst.AnimState:HideSymbol("fire_puff_fx")
+
+    inst.AnimState:SetLightOverride(1)
+
+    inst.AnimState:SetMultColour(unpack(MULTCOLOUR_HEALTH))
+
+    inst.Transform:SetScale(SCALE_BALL_HEALTH, SCALE_BALL_HEALTH, 1)
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.persists = false
+
+    inst.vfx = inst:SpawnChild("icey2_focus_hit_vfx_red")
+
+    inst:ListenForEvent("animover", inst.Remove)
+
+    return inst
+end
+
+
 return Prefab("icey2_supply_ball_shield", fn_shield, assets),
-    Prefab("icey2_supply_ball_shield_hit", fn_shield_hit, assets),
     Prefab("icey2_supply_ball_health", fn_health, assets),
-    Prefab("icey2_supply_ball_health_hit", fn_health_hit, assets)
+    Prefab("icey2_supply_ball_shield_hit", fn_shield_hit, assets),
+    Prefab("icey2_supply_ball_health_hit", fn_health_hit, assets),
+    Prefab("icey2_supply_ball_shield_spawn", fn_shield_spawn, assets),
+    Prefab("icey2_supply_ball_health_spawn", fn_health_spawn, assets)

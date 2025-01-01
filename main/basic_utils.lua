@@ -50,4 +50,15 @@ function Icey2Basic.GetFaceVector(inst)
     return Vector3(sinangle, 0, cosangle)
 end
 
+function Icey2Basic.GetFaceAngle(inst, target)
+    local myangle = inst:GetRotation()
+    local faceguyangle = inst:GetAngleToPoint(target:GetPosition():Get())
+    local deltaangle = math.abs(myangle - faceguyangle)
+    if deltaangle > 180 then
+        deltaangle = 360 - deltaangle
+    end
+
+    return deltaangle
+end
+
 GLOBAL.Icey2Basic = Icey2Basic

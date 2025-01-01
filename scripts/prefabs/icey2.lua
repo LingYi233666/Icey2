@@ -12,11 +12,21 @@ local start_inv = {
     -- "spear" -- 自带一个长矛
 }
 
-local function OnNewSpawn(inst)
-    for name, v in pairs(ICEY2_SKILL_DEFINES) do
-        if v.Root then
-            inst.components.icey2_skiller:Learn(name)
-        end
+
+local function CustomIdleStateFn(inst)
+    -- if inst.components.icey2_skill_battle_focus
+    --     and inst.components.icey2_skill_battle_focus:IsEnabled()
+    --     and inst.components.icey2_skill_battle_focus:GetPercent() > 0.5 then
+    --     return "icey2_funnyidle"
+    -- end
+
+    return "icey2_funnyidle"
+end
+
+local function ParryCallback(inst, data)
+    if inst.components.icey2_skill_battle_focus and inst.components.icey2_skill_battle_focus:IsEnabled() then
+        inst.components.icey2_skill_battle_focus:RefreshAttackTime()
+        inst.components.icey2_skill_battle_focus:DoDelta(100)
     end
 end
 
@@ -31,12 +41,15 @@ local common_postinit = function(inst)
     if not inst.components.updatelooper then
         inst:AddComponent("updatelooper")
     end
+
+    inst:AddComponent("icey2_control_key_helper")
 end
 
 -- 这里的的函数只在主机执行  一般组件之类的都写在这里
 local master_postinit = function(inst)
     -- 人物音效
     inst.soundsname = "wendy"
+    -- inst.customidlestate = CustomIdleStateFn
 
     -- 最喜欢的食物  名字 倍率（1.2）
     -- 老马克肖：艾希最喜欢吃老马爱吃的汉堡
@@ -79,7 +92,10 @@ local master_postinit = function(inst)
 
     inst:AddComponent("icey2_skill_battle_focus")
 
-    inst.OnNewSpawn = OnNewSpawn
+    inst:AddComponent("icey2_skill_parry")
+    inst.components.icey2_skill_parry.parrycallback = ParryCallback
+
+    -- inst.OnNewSpawn = OnNewSpawn
 end
 
 return MakePlayerCharacter("icey2", prefabs, assets, common_postinit,

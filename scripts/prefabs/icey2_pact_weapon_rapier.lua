@@ -45,9 +45,9 @@ local function SpellFn(inst, doer, pos)
     })
 
     if Icey2Basic.IsWearingArmor(doer) then
-        inst.components.rechargeable:Discharge(10)
+        inst.components.rechargeable:Discharge(15)
     else
-        inst.components.rechargeable:Discharge(1)
+        inst.components.rechargeable:Discharge(5)
     end
 end
 

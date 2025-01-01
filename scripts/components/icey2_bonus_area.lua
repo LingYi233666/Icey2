@@ -5,7 +5,7 @@ local Icey2BonusArea = Class(function(self, inst)
     self.testfn = nil
     self.circle_prefab = nil
     self.bonus_damage_mult = 1
-    self.bonus_damage_planar = 5
+    self.bonus_damage_force = 5
 
     self.end_time = nil
     self.circle_fx = nil
@@ -53,8 +53,8 @@ function Icey2BonusArea:CheckToRemove(remove_all)
                 v.components.combat.externaldamagemultipliers:RemoveModifier(self.inst, self.inst.prefab)
             end
 
-            if v.components.planardamage then
-                v.components.planardamage:RemoveBonus(self.inst, self.inst.prefab)
+            if v.components.icey2_spdamage_force then
+                v.components.icey2_spdamage_force:RemoveBonus(self.inst, self.inst.prefab)
             end
         end
         self.buffered_creatures[v] = nil
@@ -104,10 +104,10 @@ function Icey2BonusArea:OnUpdate(dt)
                     self.inst.prefab)
             end
 
-            if not v.components.planardamage then
-                v:AddComponent("planardamage")
+            if not v.components.icey2_spdamage_force then
+                v:AddComponent("icey2_spdamage_force")
             end
-            v.components.planardamage:AddBonus(self.inst, self.bonus_damage_planar, self.inst.prefab)
+            v.components.icey2_spdamage_force:AddBonus(self.inst, self.bonus_damage_force, self.inst.prefab)
 
             self.buffered_creatures[v] = true
 

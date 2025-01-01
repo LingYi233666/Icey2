@@ -78,19 +78,32 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
             end
         end
 
+        local spawn_fx_map = {
+            icey2_supply_ball_shield = "icey2_supply_ball_shield_spawn",
+            icey2_supply_ball_health = "icey2_supply_ball_health_spawn",
+
+            -- icey2_supply_ball_shield = "icey2_focus_hit",
+            -- icey2_supply_ball_health = "icey2_focus_hit",
+
+        }
+
         if GetTableSize(supply_chance) > 0 then
             local prefab = weighted_random_choice(supply_chance)
             if prefab then
                 local start_pos = data.target:GetPosition()
-                start_pos.y = start_pos.y + math.random(0.8, 2)
+                start_pos.y = start_pos.y + GetRandomMinMax(0.8, 2)
+
                 SpawnPrefab(prefab):Setup(self.inst, start_pos)
+
+                if spawn_fx_map[prefab] then
+                    local fx = SpawnAt(spawn_fx_map[prefab], start_pos)
+                    fx:FaceAwayFromPoint(self.inst:GetPosition(), true)
+                end
             end
         end
 
-
+        self:RefreshAttackTime()
         self:DoDelta(addition)
-
-        self.last_valid_attack_time = GetTime()
     end
 
     self._on_attacked = function(_, data)
@@ -146,6 +159,10 @@ end
 
 function Icey2SkillBattleFocus:GetPercent()
     return self.current / self.max
+end
+
+function Icey2SkillBattleFocus:RefreshAttackTime()
+    self.last_valid_attack_time = GetTime()
 end
 
 function Icey2SkillBattleFocus:GetTimeSinceLastValidAttack()
