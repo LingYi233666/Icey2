@@ -9,15 +9,26 @@ local function DefaultParryTestFnWrapper(self)
             return
         end
 
+        if not attacker then
+            return
+        end
+
         local cur_shield = player.components.icey2_skill_shield.current
         local cost_shield = self:GetShieldRequired(damage)
         local tar_deg = Icey2Basic.GetFaceAngle(player, attacker)
 
-        return (player.sg
+
+        local base_judge = (player.sg
             and player.sg:HasStateTag("parrying")
             and -self.parry_degree / 2 <= tar_deg
-            and tar_deg <= self.parry_degree / 2
-            and cost_shield <= cur_shield) and self.parry_target
+            and tar_deg <= self.parry_degree / 2)
+
+        if not base_judge then
+            return
+        end
+
+
+        return (cost_shield <= cur_shield) and self.parry_target or self.shield_break_target
     end
 
     return TestFn
@@ -41,6 +52,7 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
     self.parrycallback = nil
 
     self.parry_target = inst:SpawnChild("icey2_parry_target")
+    self.shield_break_target = inst:SpawnChild("icey2_parry_target")
 
     ----------------------------------------------------------------------------------
 
@@ -49,18 +61,39 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
         local redirected = data.redirected
         local attacker = data.attacker
 
-        if redirected and redirected == self.parry_target then
-            if self:GetTimeSinceParry() <= self.good_parry_time_threshold then
-                inst.SoundEmitter:PlaySound("dontstarve/creatures/lava_arena/trails/hide_pre", nil, 0.5)
-                inst:SpawnChild("icey2_greatparry_vfx").Transform:SetPosition(0.5, 0, 0)
-            end
+        if redirected then
+            if redirected == self.parry_target then
+                if self:GetTimeSinceParry() <= self.good_parry_time_threshold then
+                    data.is_good_parry = true
+                    inst.SoundEmitter:PlaySound("dontstarve/creatures/lava_arena/trails/hide_pre", nil, 0.5)
+                    inst:SpawnChild("icey2_greatparry_vfx").Transform:SetPosition(0.5, 0, 0)
+                end
 
-            inst.components.icey2_skill_shield:DoDelta(-self:GetShieldRequired(damage))
+                inst.components.icey2_skill_shield:DoDelta(-self:GetShieldRequired(damage))
 
-            table.insert(self.parry_history, MergeMaps(data, { time = GetTime() }))
+                table.insert(self.parry_history, MergeMaps(data, { time = GetTime() }))
 
-            if self.parrycallback then
-                self.parrycallback(inst, data)
+                if self.parrycallback then
+                    self.parrycallback(inst, data)
+                end
+            elseif redirected == self.shield_break_target then
+                local cur_shield = inst.components.icey2_skill_shield.current
+
+                inst.components.icey2_skill_shield:DoDelta(-cur_shield)
+                inst.components.icey2_skill_shield:Pause(10)
+
+                inst.SoundEmitter:PlaySound("icey2_sfx/skill/parry/shield_break")
+
+                -- TODO: Spawn shield break shards
+                local shard_fx = inst:SpawnChild("icey2_shield_break_shard_vfx")
+                -- shard_fx.Transform:SetPosition(1, 0, 0)
+                shard_fx:DoTaskInTime(0, shard_fx.Remove)
+
+                local fx = inst:SpawnChild("icey2_shield_break_fx")
+
+                if not inst.components.health:IsDead() then
+                    inst.sg:GoToState("hit")
+                end
             end
         end
     end
@@ -84,6 +117,10 @@ function Icey2SkillParry:CanStartParry(x, y, z, target)
     local success, reason = Icey2SkillBase_Active.CanCast(self, x, y, z, target)
     if not success then
         return false, reason
+    end
+
+    if not (self.inst.components.icey2_skill_shield and self.inst.components.icey2_skill_shield.current > 0) then
+        return false, "OUT_OF_SHIELD"
     end
 
     if self:IsParrying() then
@@ -111,8 +148,8 @@ function Icey2SkillParry:StartParry()
     self.inst.AnimState:Show("ARM_carry")
     self.inst.AnimState:Hide("ARM_normal")
     self.inst.AnimState:HideSymbol("swap_object")
-    self.inst.AnimState:OverrideSymbol("swap_shield", "swap_wathgrithr_shield", "swap_shield")
-    -- self.inst.AnimState:SetSymbolLightOverride("swap_shield", 1)
+    self.inst.AnimState:OverrideSymbol("swap_shield", "swap_icey2_parry_shield", "swap_shield")
+    self.inst.AnimState:SetSymbolLightOverride("swap_shield", 1)
     -- self.inst.AnimState:SetSymbolAddColour("swap_shield", 96 / 255, 249 / 255, 255 / 255, 1)
 
     self.inst.sg:GoToState("icey2_parry_pre")

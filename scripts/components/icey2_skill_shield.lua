@@ -67,6 +67,11 @@ function Icey2SkillShield:DoDelta(amount)
     self.inst:PushEvent("icey2_shield_delta", { old = old })
 end
 
+function Icey2SkillShield:SetPercent(percent)
+    local val = self.max * percent
+    self:SetVal(val)
+end
+
 function Icey2SkillShield:GetPercent()
     return self.current / self.max
 end
@@ -86,7 +91,11 @@ function Icey2SkillShield:RedirectDamageToShield(amount, overtime, cause,
         return amount
     end
 
-    if self.inst.sg:HasStateTag("preparrying") or self.inst.sg:HasStateTag("parrying") then
+    -- if self.inst.sg:HasStateTag("preparrying") or self.inst.sg:HasStateTag("parrying") then
+    --     return amount
+    -- end
+
+    if self.inst.components.icey2_skill_parry and self.inst.components.icey2_skill_parry:IsParrying() then
         return amount
     end
 
@@ -116,7 +125,11 @@ end
 
 function Icey2SkillShield:Pause(duration)
     self.paused = true
-    self.resume_time = GetTime() + duration
+    if self.resume_time == nil then
+        self.resume_time = GetTime() + duration
+    else
+        self.resume_time = math.max(self.resume_time, GetTime() + duration)
+    end
 end
 
 function Icey2SkillShield:Resume()

@@ -2,7 +2,9 @@ local MakePlayerCharacter = require "prefabs/player_common"
 
 local assets = {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
-    Asset("ANIM", "anim/hibiki.zip"),
+    -- Asset("ANIM", "anim/hibiki.zip"),
+    Asset("ANIM", "anim/swap_icey2_parry_shield.zip"),
+    Asset("ANIM", "anim/icey2_pact_weapon_wheel.zip"),
 }
 -- ThePlayer.AnimState:OverrideSymbol("hairpigtails", "hibiki", "hairpigtails")
 local prefabs = {}
@@ -24,7 +26,9 @@ local function CustomIdleStateFn(inst)
 end
 
 local function ParryCallback(inst, data)
-    if inst.components.icey2_skill_battle_focus and inst.components.icey2_skill_battle_focus:IsEnabled() then
+    if inst.components.icey2_skill_battle_focus
+        and inst.components.icey2_skill_battle_focus:IsEnabled()
+        and data.is_good_parry then
         inst.components.icey2_skill_battle_focus:RefreshAttackTime()
         inst.components.icey2_skill_battle_focus:DoDelta(100)
     end

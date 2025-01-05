@@ -38,6 +38,10 @@ PrefabFiles = {
     "icey2_parry_target",
 
     "icey2_focus_hit_fxs",
+
+    "icey2_parry_shield_shining_fx",
+
+    "icey2_shield_break_fxs",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的
@@ -97,6 +101,9 @@ Assets = {
 
     Asset("IMAGE", "images/ui/skill_slot/summon_pact_weapon.tex"),
     Asset("ATLAS", "images/ui/skill_slot/summon_pact_weapon.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/parry.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/parry.xml"),
 
     Asset("IMAGE", "images/ui/skill_slot/unknown.tex"),
     Asset("ATLAS", "images/ui/skill_slot/unknown.xml"),

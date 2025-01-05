@@ -52,6 +52,8 @@ function Icey2SkillSummonPactWeapon:CreateWheelItems()
         --     label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.GENERAL ..
         --         (STRINGS.NAMES[v:upper()] or "MISSING_NAME")
         -- end
+
+        local is_remove_select = false
         if v == "remove_all" then
             label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.REMOVE_ALL
 
@@ -65,6 +67,8 @@ function Icey2SkillSummonPactWeapon:CreateWheelItems()
             execute_fn = function(inst)
                 SendModRPCToServer(MOD_RPC["icey2_rpc"]["remove_pact_weapon"], v)
             end
+
+            is_remove_select = true
         else
             label = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.WHEEL_INFO.GENERAL ..
                 (STRINGS.NAMES[v:upper()] or "MISSING_NAME")
@@ -74,22 +78,25 @@ function Icey2SkillSummonPactWeapon:CreateWheelItems()
             end
         end
 
+        local idle_anim_name = v:lower()
+        if is_remove_select then
+            idle_anim_name = idle_anim_name .. "_remove"
+        end
 
         table.insert(self.wheel_items, {
             label = label,
-            onselect = function(inst)
-                -- print("onselect", inst, v)
-            end,
             execute = execute_fn,
-            bank = "spell_icons_willow",
-            build = "spell_icons_willow",
+            bank = "icey2_pact_weapon_wheel",
+            build = "icey2_pact_weapon_wheel",
             anims =
             {
-                idle = { anim = "fire_throw" },
-                focus = { anim = "fire_throw_focus", loop = true },
-                down = { anim = "fire_throw_pressed" },
+                -- idle = { anim = "fire_throw" },
+                -- focus = { anim = "fire_throw_focus", loop = true },
+                -- down = { anim = "fire_throw_pressed" },
+
+                idle = { anim = idle_anim_name },
             },
-            widget_scale = 0.6,
+            widget_scale = 0.2,
         })
     end
 end
@@ -120,7 +127,7 @@ function Icey2SkillSummonPactWeapon:ShowPactWeaponsWheel(delay)
                 end
             end
             ThePlayer.HUD.controls.spellwheel:SetScale(TheFrontEnd:GetProportionalHUDScale()) --instead of GetHUDScale(), because parent already has SCALEMODE_PROPORTIONAL
-            ThePlayer.HUD.controls.spellwheel:SetItems(itemscpy, 100, 102)
+            ThePlayer.HUD.controls.spellwheel:SetItems(itemscpy, 140, 144)
             ThePlayer.HUD.controls.spellwheel:Open()
         end
     end

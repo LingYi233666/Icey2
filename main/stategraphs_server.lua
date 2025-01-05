@@ -643,6 +643,32 @@ AddStategraphState("wilson", State {
             return inst.components.icey2_skill_parry
                 and inst.components.icey2_skill_parry:TryParry(attacker, damage, weapon, stimuli)
         end
+
+        local s = 0.4
+
+        local fxs = {
+            SpawnPrefab("icey2_parry_shield_shining_fx"),
+            SpawnPrefab("icey2_parry_shield_shining_fx"),
+            SpawnPrefab("icey2_parry_shield_shining_fx")
+        }
+
+        for _, fx in pairs(fxs) do
+            fx.entity:AddFollower()
+            fx.Transform:SetScale(s, s, s)
+
+            fx:ListenForEvent("animover", function()
+                if not inst.AnimState:IsCurrentAnimation("shieldparry_pre")
+                    and not inst.AnimState:IsCurrentAnimation("shieldparry_loop")
+                    and not inst.AnimState:IsCurrentAnimation("shieldparry_pst")
+                    and not inst.AnimState:IsCurrentAnimation("shieldparryblock") then
+                    fx:Remove()
+                end
+            end, inst)
+        end
+
+        fxs[1].Follower:FollowSymbol(inst.GUID, "swap_shield", 0, 0, 0, nil, nil, 1)
+        fxs[2].Follower:FollowSymbol(inst.GUID, "swap_shield", 35, -45, 0, nil, nil, 2)
+        fxs[3].Follower:FollowSymbol(inst.GUID, "swap_shield", 59, -30, -0.05, nil, nil, 3)
     end,
 
     ontimeout = function(inst)
@@ -654,11 +680,20 @@ AddStategraphState("wilson", State {
         })
     end,
 
+
+    timeline = {
+        TimeEvent(0 * FRAMES, function(inst)
+
+        end),
+    },
+
     onexit = function(inst)
         if not inst.sg.statemem.parrying then
             inst.components.combat.redirectdamagefn = nil
         end
     end,
+
+
 })
 
 
