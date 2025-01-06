@@ -13,12 +13,6 @@ local Icey2Skiller = Class(function(self, inst)
 
 	-- self.json_data = "{}"
 
-	for name, v in pairs(ICEY2_SKILL_DEFINES) do
-		if v.Root then
-			self.learned_skill[name] = true
-		end
-	end
-
 	self:UpdateJsonData()
 end, nil, {
 	json_data = onjson_data,

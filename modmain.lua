@@ -79,50 +79,12 @@ Assets = {
     Asset("IMAGE", "bigportraits/icey2_none.tex"), -- 人物大图（椭圆的那个）
     Asset("ATLAS", "bigportraits/icey2_none.xml"),
 
-    --------------------------------------------------------------
-
-    Asset("IMAGE", "images/ui/skill_slot/battle_focus.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/battle_focus.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/dodge.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/dodge.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/force_shield.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/force_shield.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_scythe.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_scythe.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/phantom_sword.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/phantom_sword.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/sample.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/sample.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/summon_pact_weapon.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/summon_pact_weapon.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/parry.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/parry.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/unknown.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/unknown.xml"),
-
 
     Asset("SOUNDPACKAGE", "sound/icey2_sfx.fev"),
     Asset("SOUND", "sound/icey2_sfx.fsb"),
 
     Asset("SOUNDPACKAGE", "sound/icey2_bgm.fev"),
     Asset("SOUND", "sound/icey2_bgm.fsb"),
-
-    Asset("ANIM", "anim/icey2_new_skill_circle.zip"),
-
-    Asset("ANIM", "anim/icey2_speedrun.zip"),
-
-    Asset("ANIM", "anim/icey2_skill_shield_metrics.zip"),
-
-    -- Asset("SOUNDPACKAGE", "sound/icey2_bgm.fev"),
-    -- Asset("SOUND", "sound/icey2_bgm.fsb"),
 
     --[[---注意事项
 1、目前官方自从熔炉之后人物的界面显示用的都是那个椭圆的图

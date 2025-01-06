@@ -2,9 +2,42 @@ local MakePlayerCharacter = require "prefabs/player_common"
 
 local assets = {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
-    -- Asset("ANIM", "anim/hibiki.zip"),
-    Asset("ANIM", "anim/swap_icey2_parry_shield.zip"),
+
     Asset("ANIM", "anim/icey2_pact_weapon_wheel.zip"),
+    Asset("ANIM", "anim/icey2_new_skill_circle.zip"),
+    Asset("ANIM", "anim/icey2_speedrun.zip"),
+    Asset("ANIM", "anim/icey2_skill_shield_metrics.zip"),
+
+    Asset("ANIM", "anim/swap_icey2_parry_shield.zip"),
+
+    --------------------------------------------------------------
+
+    Asset("IMAGE", "images/ui/skill_slot/battle_focus.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/battle_focus.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/dodge.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/dodge.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/force_shield.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/force_shield.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_scythe.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_scythe.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/phantom_sword.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/phantom_sword.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/sample.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/sample.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/summon_pact_weapon.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/summon_pact_weapon.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/parry.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/parry.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/unknown.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/unknown.xml"),
 }
 -- ThePlayer.AnimState:OverrideSymbol("hairpigtails", "hibiki", "hairpigtails")
 local prefabs = {}
@@ -28,9 +61,20 @@ end
 local function ParryCallback(inst, data)
     if inst.components.icey2_skill_battle_focus
         and inst.components.icey2_skill_battle_focus:IsEnabled()
-        and data.is_good_parry then
+        and data.is_good_parry
+        and not Icey2Basic.IsWearingArmor(inst) then
         inst.components.icey2_skill_battle_focus:RefreshAttackTime()
         inst.components.icey2_skill_battle_focus:DoDelta(100)
+    end
+end
+
+local function OnPlayerSpawn(inst)
+    for name, v in pairs(ICEY2_SKILL_DEFINES) do
+        if v.Root then
+            if not inst.components.icey2_skiller:IsLearned(name) then
+                inst.components.icey2_skiller:Learn(name)
+            end
+        end
     end
 end
 
@@ -100,6 +144,10 @@ local master_postinit = function(inst)
     inst.components.icey2_skill_parry.parrycallback = ParryCallback
 
     -- inst.OnNewSpawn = OnNewSpawn
+
+    -- inst:ListenForEvent("playeractivated", OnPlayerSpawn)
+
+    OnPlayerSpawn(inst)
 end
 
 return MakePlayerCharacter("icey2", prefabs, assets, common_postinit,

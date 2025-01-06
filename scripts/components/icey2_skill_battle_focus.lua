@@ -53,7 +53,7 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
         end
 
         if Icey2Basic.IsWearingArmor(inst) then
-            addition = addition * 0.1
+            addition = addition * 0
         end
 
         local supply_chance = {}
