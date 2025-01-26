@@ -72,6 +72,21 @@ function Icey2AOEWeapon_FlurryLunge:FindPosNearTarget(attacker, target)
     return target:GetPosition() + offset
 end
 
+function Icey2AOEWeapon_FlurryLunge:SpawnFlashFX(attacker)
+    local height_controller = SpawnAt("icey2_height_controller", attacker)
+    local fx = height_controller:SpawnChild("icey2_dodge_fx")
+    local s = 1.5
+    fx.AnimState:SetScale(s, s, s)
+    if not fx.Follower then
+        fx.entity:AddFollower()
+    end
+    fx.Follower:FollowSymbol(height_controller.GUID, "swap_rolling_fx", 0, -75, 0)
+    height_controller:ListenForEvent("animover", function()
+        fx:Remove()
+        height_controller:Remove()
+    end, fx)
+end
+
 function Icey2AOEWeapon_FlurryLunge:TeleportNearTarget(attacker, target)
     attacker.Transform:SetPosition(self:FindPosNearTarget(attacker, target):Get())
     attacker:ForceFacePoint(target:GetPosition())

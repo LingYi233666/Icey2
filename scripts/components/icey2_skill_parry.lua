@@ -83,6 +83,8 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
                 inst.components.icey2_skill_shield:Pause(10)
 
                 inst.SoundEmitter:PlaySound("icey2_sfx/skill/parry/shield_break")
+                -- inst.SoundEmitter:PlaySound("icey2_sfx/skill/parry/shield_break2")
+
 
                 -- TODO: Spawn shield break shards
                 local shard_fx = inst:SpawnChild("icey2_shield_break_shard_vfx")

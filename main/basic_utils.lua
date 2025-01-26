@@ -42,6 +42,33 @@ function Icey2Basic.GetUnarmouredMovementAnim(inst, state)
     end
 end
 
+function Icey2Basic.IsCarryingGunlance(inst, is_ranged)
+    local hand_inv = nil
+
+    if inst.components.inventory then
+        hand_inv = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+    elseif inst.replica.inventory then
+        hand_inv = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+    end
+
+    if is_ranged == nil then
+        return hand_inv
+            and hand_inv.prefab == "icey2_pact_weapon_gunlance"
+    end
+
+    if is_ranged == true then
+        return hand_inv
+            and hand_inv.prefab == "icey2_pact_weapon_gunlance"
+            and hand_inv:HasTag("icey2_pact_weapon_gunlance_ranged")
+    end
+
+
+
+    return hand_inv
+        and hand_inv.prefab == "icey2_pact_weapon_gunlance"
+        and not hand_inv:HasTag("icey2_pact_weapon_gunlance_ranged")
+end
+
 function Icey2Basic.GetFaceVector(inst)
     local angle = (inst.Transform:GetRotation() + 90) * DEGREES
     local sinangle = math.sin(angle)

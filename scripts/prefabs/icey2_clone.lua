@@ -14,6 +14,9 @@ local function CommonFn()
     MakeCharacterPhysics(inst, 75, .5)
     RemovePhysicsColliders(inst)
 
+    inst:AddTag("FX")
+    inst:AddTag("NOCLICK")
+
     inst.Transform:SetFourFaced(inst)
 
     inst.AnimState:SetBank("wilson")
@@ -43,6 +46,8 @@ local function CommonFn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.persists = false
 
     inst:AddComponent("skinner")
     inst.components.skinner:SetupNonPlayerData()

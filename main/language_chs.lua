@@ -1,7 +1,7 @@
 -- The character select screen lines  --人物选人界面的描述
 STRINGS.CHARACTER_TITLES.icey2 = "艾希"
 STRINGS.CHARACTER_NAMES.icey2 = "艾希"
-STRINGS.CHARACTER_DESCRIPTIONS.icey2 = "*依旧是作者的老婆\n*已经产生了自我意识\n*控场技能丰富\n"
+STRINGS.CHARACTER_DESCRIPTIONS.icey2 = "*产生了自我意识的战斗型机器人\n*搭载的现代科技允许她控制力场能量\n*曾经在一座塔顶战胜过强大的敌人\n"
 STRINGS.CHARACTER_QUOTES.icey2 = "\"又有死宅在找我的本子\""
 
 -- Custom speech strings  ----人物语言文件  可以进去自定义
@@ -34,6 +34,17 @@ STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY1_MOUND = {
     GENERIC = "最好还是不要打扰她了。",
 }
 
+STRINGS.NAMES.ICEY2_SKULL_PILE = "一堆废料"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_SKULL_PILE = "好诡异的废料堆。"
+STRINGS.CHARACTERS.WX78.DESCRIBE.ICEY2_SKULL_PILE = "不！我好不容易才把它们藏起来的！"
+
+STRINGS.NAMES.ICEY2_HEALTH_UPGRADER = "金属血"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_HEALTH_UPGRADER = "额，这是什么？"
+STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY2_HEALTH_UPGRADER = "吃下它能强化我的身体，但是我真的应该吃它吗？"
+STRINGS.CHARACTERS.WORTOX.DESCRIBE.ICEY2_HEALTH_UPGRADER = "附着在金属中的灵质，哼！"
+STRINGS.CHARACTERS.WENDY.DESCRIBE.ICEY2_HEALTH_UPGRADER = "我能听到他们的哭喊声..."
+STRINGS.CHARACTERS.WINONA.DESCRIBE.ICEY2_HEALTH_UPGRADER = "WX78,这是你的一部分吗？"
+STRINGS.CHARACTERS.WX78.DESCRIBE.ICEY2_HEALTH_UPGRADER = "目标已被确认为我的意识碎片"
 
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "解锁能量武器：镰刀"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "使你的能量武器种类增加！"
@@ -55,7 +66,13 @@ STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_SCYTHE = "掷镰"
 STRINGS.ACTIONS.CASTAOE.ICEY1_BLUEROSE = "突围冲击"
 
 STRINGS.ACTIONS.ICEY2_SCYTHE = "收割"
-
+STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM = {
+    GENERIC = "切换形态",
+    ICEY2_PACT_WEAPON_GUNLANCE = {
+        "切换至地狱幽灵",
+        "切换至等离子刀刃",
+    },
+}
 ----------------------------------------------------------------------------------------------
 -- HUD
 
@@ -70,6 +87,12 @@ STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES = {
 
 STRINGS.ICEY2_UI.SKILL_TAB = {
     SKILL_DESC = {
+        HUNGER_IS_ELECTRICITY = {
+            TITLE = "电能驱动",
+            DESC =
+            "艾希是一个机器人，因此，她的饥饿值属性被电力值属性所取代。尽管如此，艾希依然能如同普通人一般进食，且可以吃下齿轮类食物，食物的效果也不会提高或者打折扣。电力值的自然消耗速度也与普通人的饥饿消耗速度相同。",
+        },
+
         FORCE_SHIELD = {
             TITLE = "力场护盾",
             DESC = "你的力场护盾与任何护甲的加持一样有效。在你不装备任何护甲或盾牌时，力场护盾能帮助你吸收等量伤害。\n护盾当前值与最大值能在右上角查看。",
@@ -78,17 +101,17 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         BATTLE_FOCUS = {
             TITLE = "战意聚焦",
             DESC =
-            "在你不装备任何护甲或盾牌时，使用近战武器连续普通攻击会使你进入战斗专注状态，提高力场伤害、恐惧抵抗与移动速度。在此状态下，你可以从敌人的生命中撕扯出精华，回复护盾或者生命值。\n受到攻击会让战斗专注效果中断。",
+            "在你不装备任何护甲或盾牌时，在闪光冲刺中反击或者使用近战武器进行普通攻击会使你逐渐进入战斗专注状态，提高力场伤害、恐惧抵抗与移动速度。在此状态下，你可以从敌人的生命中撕扯出精华，回复护盾或者生命值。\n受到攻击会让战斗专注效果中断。",
         },
 
         PHANTOM_SWORD = {
             TITLE = "幻影剑",
-            DESC = "消耗少许饥饿值，释放5枚电浆飞弹攻击鼠标指向的生物，每枚飞弹造成少量力场伤害。飞弹一定会命中目标。\n如果鼠标指向处没有生物。则飞弹会自动寻找附近的敌人。"
+            DESC = "消耗少许电力值，释放5枚电浆飞弹攻击鼠标指向的生物，每枚飞弹造成少量力场伤害。飞弹一定会命中目标。\n如果鼠标指向处没有生物。则飞弹会自动寻找附近的敌人。"
         },
 
         DODGE = {
             TITLE = "闪光冲刺",
-            DESC = "消耗少许饥饿值，向鼠标指向方向冲刺，冲刺期间你不会受到伤害。\n冲刺开始时，自动使用残影向正在攻击你的敌人发动一次反击。\n若你装备了任何种类的护甲或盾牌，就无法使用闪光冲刺。"
+            DESC = "消耗少许电力值，向鼠标指向方向冲刺，冲刺期间你不会受到伤害。\n冲刺开始时，自动使用残影向正在攻击你的敌人发动一次反击。\n若你装备了任何种类的护甲或盾牌，就无法使用闪光冲刺。"
         },
 
         SUMMON_PACT_WEAPON = {
@@ -110,6 +133,12 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
             TITLE = "能量武器：镰刀",
             DESC =
             "“创造能量武器”技能新增武器种类：能量镰刀。能量镰刀可以用于战斗，或是用来收割农作物，武器战技如下：\n战技·掷镰：\n向鼠标方向投掷镰刀，对一条直线上的敌人造成伤害，并在落地点形成一道能够增加你伤害的力幕。",
+        },
+
+        NEW_PACT_WEAPON_GUNLANCE = {
+            TITLE = "能量武器：刃枪",
+            DESC =
+            "“创造能量武器”技能新增武器种类：能量刃枪。能量刃枪是一种两用武器，近战攻击能从受害者身上汲取大量能量。远程攻击能连续不断地发射强大的苦痛灵魂。点击鼠标右键可以切换近战、远程模式。能量刃枪的远程攻击需要消耗护盾能量和电力值。\n此外，能量刃枪十分笨重，装备它会让你无法使用闪光冲刺。",
         },
 
         PARRY = {

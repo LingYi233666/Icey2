@@ -4,6 +4,9 @@ local function fn()
     inst.entity:AddTransform()
     inst.entity:AddNetwork()
 
+    inst:AddTag("FX")
+    inst:AddTag("NOBLOCK")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

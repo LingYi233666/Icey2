@@ -50,6 +50,11 @@ end
 
 
 ICEY2_SKILL_DEFINES = {
+
+    HUNGER_IS_ELECTRICITY = {
+        Root = true,
+    },
+
     FORCE_SHIELD = {
         OnLearned = PassiveSkillOnLearnedWrapper("icey2_skill_shield"),
 

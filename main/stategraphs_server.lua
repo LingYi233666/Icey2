@@ -20,23 +20,32 @@ AddStategraphPostInit("wilson", function(sg)
             if inst:HasTag("acting") then
 
             else
-                if inst:HasTag("icey2_skill_unarmoured_movement") then
-                    handle_by_old = false
-                    inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
-                else
-
+                if not (inst.components.rider and inst.components.rider:IsRiding()) then
+                    if inst:HasTag("icey2_skill_unarmoured_movement") then
+                        handle_by_old = false
+                        inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
+                    elseif Icey2Basic.IsCarryingGunlance(inst, true) then
+                        handle_by_old = false
+                        inst.sg:GoToState("icey2_gunlance_ranged_run_stop")
+                    end
                 end
             end
         elseif not is_moving and should_move then
-            if inst:HasTag("icey2_skill_unarmoured_movement") then
-                -- V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
-                if data and data.dir then
-                    inst.components.locomotor:SetMoveDir(data.dir)
+            if not (inst.components.rider and inst.components.rider:IsRiding()) then
+                if inst:HasTag("icey2_skill_unarmoured_movement") then
+                    -- V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
+                    if data and data.dir then
+                        inst.components.locomotor:SetMoveDir(data.dir)
+                    end
+                    handle_by_old = false
+                    inst.sg:GoToState("icey2_skill_unarmoured_movement_start")
+                elseif Icey2Basic.IsCarryingGunlance(inst, true) then
+                    if data and data.dir then
+                        inst.components.locomotor:SetMoveDir(data.dir)
+                    end
+                    handle_by_old = false
+                    inst.sg:GoToState("icey2_gunlance_ranged_run_start")
                 end
-                handle_by_old = false
-                inst.sg:GoToState("icey2_skill_unarmoured_movement_start")
-            else
-
             end
         elseif data.force_idle_state and
             not (is_moving or should_move or inst.sg:HasStateTag("idle") or
@@ -74,6 +83,55 @@ AddStategraphPostInit("wilson", function(sg)
     end
 end)
 
+
+-- attack
+AddStategraphPostInit("wilson", function(sg)
+    local old_ATTACK = sg.actionhandlers[ACTIONS.ATTACK].deststate
+    sg.actionhandlers[ACTIONS.ATTACK].deststate = function(inst, action)
+        local old_rets = old_ATTACK(inst, action)
+        if old_rets ~= nil
+            and not (inst.components.rider and inst.components.rider:IsRiding()) then
+            if Icey2Basic.IsCarryingGunlance(inst, true) then
+                return "icey2_gunlance_ranged_attack"
+            elseif Icey2Basic.IsCarryingGunlance(inst, false) then
+                return "icey2_gunlance_melee_attack"
+            end
+        end
+
+        return old_rets
+    end
+end)
+
+
+-- idle
+AddStategraphPostInit("wilson", function(sg)
+    local function ModifyIdleState_Gunlance(state)
+        local old_onenter = state.onenter
+
+        state.onenter = function(inst, ...)
+            local ret = old_onenter(inst, ...)
+            if not (inst.components.rider and inst.components.rider:IsRiding())
+                and Icey2Basic.IsCarryingGunlance(inst, true) then
+                inst.sg:GoToState("icey2_gunlance_ranged_idle")
+            end
+
+            return ret
+        end
+    end
+
+    local states_idle = {
+        sg.states["idle"],
+        sg.states["funnyidle"]
+    }
+
+    for _, state in pairs(states_idle) do
+        ModifyIdleState_Gunlance(state)
+    end
+end)
+
+
+-----------------------------------------------------------------------------
+-- Skill: dodge
 AddStategraphState("wilson", State {
     name = "icey2_dodge",
     tags = { "busy", "evade", "dodge", "no_stun", "nopredict", "nointerrupt" },
@@ -117,7 +175,79 @@ AddStategraphState("wilson", State {
     end
 })
 
+-----------------------------------------------------------------------------
+-- skill: parry
+AddStategraphState("wilson", State {
+    name = "icey2_parry_pre",
+    tags = { "preparrying", "parrying", "busy", "nomorph", "nopredict" },
 
+    onenter = function(inst, data)
+        inst.sg.statemem.isshield = true
+
+        inst.components.locomotor:Stop()
+        inst.AnimState:PlayAnimation("shieldparry_pre")
+        inst.AnimState:PushAnimation("shieldparry_loop", true)
+
+        inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+
+        inst.sg.statemem.parrytime = 99999
+        inst.components.combat.redirectdamagefn = function(inst, attacker, damage, weapon, stimuli)
+            return inst.components.icey2_skill_parry
+                and inst.components.icey2_skill_parry:TryParry(attacker, damage, weapon, stimuli)
+        end
+
+        local s = 0.4
+
+        local fxs = {
+            SpawnPrefab("icey2_parry_shield_shining_fx"),
+            SpawnPrefab("icey2_parry_shield_shining_fx"),
+            SpawnPrefab("icey2_parry_shield_shining_fx")
+        }
+
+        for _, fx in pairs(fxs) do
+            fx.entity:AddFollower()
+            fx.Transform:SetScale(s, s, s)
+
+            fx:ListenForEvent("animover", function()
+                if not inst.AnimState:IsCurrentAnimation("shieldparry_pre")
+                    and not inst.AnimState:IsCurrentAnimation("shieldparry_loop")
+                    and not inst.AnimState:IsCurrentAnimation("shieldparry_pst")
+                    and not inst.AnimState:IsCurrentAnimation("shieldparryblock") then
+                    fx:Remove()
+                end
+            end, inst)
+        end
+
+        fxs[1].Follower:FollowSymbol(inst.GUID, "swap_shield", 0, 0, 0, nil, nil, 1)
+        fxs[2].Follower:FollowSymbol(inst.GUID, "swap_shield", 35, -45, 0, nil, nil, 2)
+        fxs[3].Follower:FollowSymbol(inst.GUID, "swap_shield", 59, -30, -0.05, nil, nil, 3)
+    end,
+
+    ontimeout = function(inst)
+        inst.sg.statemem.parrying = true
+        inst.sg:GoToState("parry_idle", {
+            duration = inst.sg.statemem.parrytime,
+            pauseframes = 30,
+            isshield = inst.sg.statemem.isshield
+        })
+    end,
+
+
+    timeline = {
+        TimeEvent(0 * FRAMES, function(inst)
+
+        end),
+    },
+
+    onexit = function(inst)
+        if not inst.sg.statemem.parrying then
+            inst.components.combat.redirectdamagefn = nil
+        end
+    end,
+
+
+})
+-------------------------------------------------------------------------------------------
 
 local function DoEquipmentFoleySounds(inst)
     for k, v in pairs(inst.components.inventory.equipslots) do
@@ -151,6 +281,8 @@ local DoRunSounds = function(inst)
     end
 end
 
+-------------------------------------------------------------------------------------------
+-- Locomote: unarmored movement
 AddStategraphState("wilson", State {
     name = "icey2_skill_unarmoured_movement_start",
     tags = { "moving", "running", "canrotate", "autopredict" },
@@ -299,11 +431,362 @@ AddStategraphState("wilson", State {
         end)
     }
 })
+-------------------------------------------------------------------------------------------
+
+-- Locomote: carry gunlance with range attack form
+
+AddStategraphState("wilson", State {
+    name = "icey2_gunlance_ranged_run_start",
+    tags = { "moving", "running", "canrotate", "autopredict" },
+
+    onenter = function(inst)
+        if not Icey2Basic.IsCarryingGunlance(inst, true) then
+            inst.sg:GoToState("run_start")
+            return
+        end
+
+        inst.Transform:SetEightFaced()
+        inst.components.locomotor:RunForward()
+        inst.AnimState:PlayAnimation("walk_tf2minigun_pre")
+
+        inst.sg.mem.footsteps = 0
+    end,
+
+    onupdate = function(inst)
+        inst.components.locomotor:RunForward()
+    end,
+
+    timeline = {
+        TimeEvent(0 * FRAMES, function(inst)
+            DoRunSounds(inst)
+            DoFoleySounds(inst)
+        end),
+        TimeEvent(4 * FRAMES, function(inst)
+            DoRunSounds(inst)
+            DoFoleySounds(inst)
+        end)
+    },
+
+    events = {
+        EventHandler("animover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("icey2_gunlance_ranged_run")
+            end
+        end)
+    },
+    onexit = function(inst)
+        inst.Transform:SetFourFaced()
+    end,
+})
+
+AddStategraphState("wilson", State {
+    name = "icey2_gunlance_ranged_run",
+    tags = { "moving", "running", "canrotate", "autopredict" },
+
+    onenter = function(inst)
+        inst.Transform:SetEightFaced()
+
+        inst.components.locomotor:RunForward()
+
+        local anim = "walk_tf2minigun_loop"
+        if not inst.AnimState:IsCurrentAnimation(anim) then
+            inst.AnimState:PlayAnimation(anim, true)
+        end
+
+        inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+    end,
+
+    onupdate = function(inst)
+        if not Icey2Basic.IsCarryingGunlance(inst, true) then
+            inst.sg:GoToState("run_start")
+            return
+        end
+        inst.components.locomotor:RunForward()
+    end,
+
+    timeline = {
+        TimeEvent(5 * FRAMES, function(inst)
+            DoRunSounds(inst)
+            DoFoleySounds(inst)
+        end),
+        TimeEvent(9 * FRAMES, function(inst)
+            DoRunSounds(inst)
+            DoFoleySounds(inst)
+        end),
+        TimeEvent(13 * FRAMES, function(inst)
+            DoRunSounds(inst)
+            DoFoleySounds(inst)
+        end),
+        TimeEvent(14 * FRAMES, function(inst)
+            DoRunSounds(inst)
+            DoFoleySounds(inst)
+        end),
+        TimeEvent(17 * FRAMES, function(inst)
+            DoRunSounds(inst)
+            DoFoleySounds(inst)
+        end)
+    },
+
+    events = {
+
+    },
+
+    ontimeout = function(inst)
+        inst.sg:GoToState("icey2_gunlance_ranged_run")
+    end,
+
+    onexit = function(inst)
+        inst.Transform:SetFourFaced()
+    end,
+})
+
+AddStategraphState("wilson", State {
+    name = "icey2_gunlance_ranged_run_stop",
+    tags = { "canrotate", "idle", "autopredict" },
+
+    onenter = function(inst)
+        inst.Transform:SetEightFaced()
+
+        inst.components.locomotor:Stop()
+        inst.AnimState:PlayAnimation("walk_tf2minigun_pst")
+    end,
+
+    timeline = {},
+
+    events = {
+        EventHandler("animover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end)
+    },
+
+    onexit = function(inst)
+        inst.Transform:SetFourFaced()
+    end,
+})
+
+-------------------------------------------------------------------------------------------
+-- Idle: carry gunlance with range attack form
+AddStategraphState("wilson", State {
+    name = "icey2_gunlance_ranged_idle",
+    tags = { "idle", "canrotate", "notalking" },
+
+    onenter = function(inst)
+        inst.Transform:SetEightFaced()
+        inst.AnimState:PlayAnimation("tf2minigun_shoot_pre", true)
+    end,
+
+    events =
+    {
+        EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("icey2_gunlance_ranged_idle")
+            end
+        end),
+
+        EventHandler("ontalk", function(inst)
+
+        end),
+    },
+
+    onexit = function(inst)
+        inst.Transform:SetFourFaced()
+    end,
+})
+
+-----------------------------------------------------------------------------
+-- attack: gunlance with range attack form
+AddStategraphState("wilson", State {
+    name = "icey2_gunlance_ranged_attack",
+    tags = { "attack", "abouttoattack", "notalking" },
+
+    onenter = function(inst)
+        if inst.components.combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+        local buffaction = inst:GetBufferedAction()
+        local target = buffaction and buffaction.target or nil
+        if target and target:IsValid() then
+            inst:ForceFacePoint(target.Transform:GetWorldPosition())
+            inst.sg.statemem.attacktarget = target
+            inst.sg.statemem.retarget = target
+        end
+
+        -- inst.sg.statemem.chained = inst.AnimState:IsCurrentAnimation("tf2minigun_shoot")
+
+        inst.sg.statemem.chained = (inst.sg.laststate == inst.sg.currentstate)
+
+        inst.Transform:SetEightFaced()
+        if not inst.AnimState:IsCurrentAnimation("tf2minigun_shoot") then
+            inst.AnimState:PlayAnimation("tf2minigun_shoot", true)
+        end
+
+        local timeout = 33
+        if not inst.sg.statemem.chained then
+
+        else
+            timeout = 12
+        end
+
+        inst.components.combat:StartAttack()
+        inst.components.combat:SetTarget(target)
+        inst.components.locomotor:Stop()
+
+        inst.sg:SetTimeout(timeout * FRAMES)
+    end,
+
+    timeline =
+    {
+        -- not chained
+        TimeEvent(1 * FRAMES, function(inst)
+            if not inst.sg.statemem.chained then
+                inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/aim", "aim", nil, true)
+            end
+        end),
+
+        TimeEvent(20 * FRAMES, function(inst)
+            if not inst.sg.statemem.chained then
+                inst:PerformBufferedAction()
+                inst.sg:RemoveStateTag("abouttoattack")
+            end
+        end),
+
+        TimeEvent(21 * FRAMES, function(inst)
+            if not inst.sg.statemem.chained then
+                inst.sg:RemoveStateTag("attack")
+                inst.sg:AddStateTag("idle")
+            end
+        end),
+
+        -- chained
+        TimeEvent(3 * FRAMES, function(inst)
+            if inst.sg.statemem.chained then
+                inst:PerformBufferedAction()
+                inst.sg:RemoveStateTag("abouttoattack")
+            end
+        end),
+
+        TimeEvent(4 * FRAMES, function(inst)
+            if inst.sg.statemem.chained then
+                inst.sg:RemoveStateTag("attack")
+                inst.sg:AddStateTag("idle")
+            end
+        end),
+    },
+
+    ontimeout = function(inst)
+        inst.sg:GoToState("idle")
+    end,
+
+    events =
+    {
+        EventHandler("equip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
+    },
+
+    onexit = function(inst)
+        inst.components.combat:SetTarget(nil)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.components.combat:CancelAttack()
+        end
+        inst.Transform:SetFourFaced()
+
+        inst.SoundEmitter:KillSound("aim")
+    end,
+})
+
+
+-----------------------------------------------------------------------------
+-- attack: gunlance with melee attack form
+AddStategraphState("wilson", State {
+    name = "icey2_gunlance_melee_attack",
+    tags = { "attack", "notalking", "abouttoattack", "autopredict" },
+
+    onenter = function(inst)
+        if inst.components.combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+
+        local buffaction = inst:GetBufferedAction()
+        local target = buffaction ~= nil and buffaction.target or nil
+        local equip = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        inst.components.combat:SetTarget(target)
+        inst.components.combat:StartAttack()
+        inst.components.locomotor:Stop()
+        local cooldown = inst.components.combat.min_attack_period
+
+
+        if equip ~= nil and equip.components.weapon ~= nil and not equip:HasTag("punch") then
+            inst.AnimState:PlayAnimation("atk_pre")
+            inst.AnimState:PushAnimation("atk", false)
+
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon", nil, nil, true)
+
+            cooldown = math.max(cooldown, 17 * FRAMES)
+        end
+
+        inst.sg:SetTimeout(cooldown)
+
+        if target ~= nil then
+            inst.components.combat:BattleCry()
+            if target:IsValid() then
+                inst:FacePoint(target:GetPosition())
+                inst.sg.statemem.attacktarget = target
+                inst.sg.statemem.retarget = target
+            end
+        end
+    end,
 
 
 
+    timeline =
+    {
+        TimeEvent(2 * FRAMES, function(inst)
+            inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/swipe", nil, 0.5, true)
+        end),
+
+        TimeEvent(8 * FRAMES, function(inst)
+            inst:PerformBufferedAction()
+            inst.sg:RemoveStateTag("abouttoattack")
+        end),
+    },
 
 
+    ontimeout = function(inst)
+        inst.sg:RemoveStateTag("attack")
+        inst.sg:AddStateTag("idle")
+    end,
+
+    events =
+    {
+        EventHandler("equip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        inst.components.combat:SetTarget(nil)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.components.combat:CancelAttack()
+        end
+    end,
+})
+
+-----------------------------------------------------------------------------
+-- aoe: flurry_lunge
 AddStategraphState("wilson", State {
     name = "icey2_aoeweapon_flurry_lunge_pre",
     tags = { "aoe", "doing", "busy", "nopredict" },
@@ -335,8 +818,16 @@ AddStategraphState("wilson", State {
     {
         EventHandler("icey2_aoeweapon_flurry_lunge_trigger", function(inst, data)
             local weapon = data.weapon
+
+            if not (weapon and weapon:IsValid()) then
+                inst.sg:GoToState("idle")
+                return
+            end
+
             local search_success = weapon.components.icey2_aoeweapon_flurry_lunge:SearchPossibleTargets(inst,
                 data.target_pos)
+
+            weapon.components.icey2_aoeweapon_flurry_lunge:SpawnFlashFX(inst)
 
             if not search_success then
                 -- inst.sg:GoToState("idle")
@@ -388,12 +879,15 @@ AddStategraphState("wilson", State {
         local weapon = data.weapon
         local target = data.target
         local failed = true
+
         if weapon and target and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) == weapon then
             inst.AnimState:PlayAnimation("lunge_pst")
             inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")
             inst.SoundEmitter:PlaySound("dontstarve/common/lava_arena/fireball")
 
             inst.components.health:SetInvincible(true)
+
+            weapon.components.icey2_aoeweapon_flurry_lunge:SpawnFlashFX(inst)
             weapon.components.icey2_aoeweapon_flurry_lunge:TeleportNearTarget(inst, target)
 
             inst.sg.statemem.weapon = weapon
@@ -426,6 +920,12 @@ AddStategraphState("wilson", State {
 
     ontimeout = function(inst)
         local weapon = inst.sg.statemem.weapon
+
+        if not (weapon and weapon:IsValid()) then
+            inst.sg:GoToState("idle")
+            return
+        end
+
         local target = weapon.components.icey2_aoeweapon_flurry_lunge:PopTarget(inst)
         if target then
             inst.sg:GoToState("icey2_aoeweapon_flurry_lunge", {
@@ -435,6 +935,7 @@ AddStategraphState("wilson", State {
             })
         else
             if inst.sg.statemem.middle_pos then
+                weapon.components.icey2_aoeweapon_flurry_lunge:SpawnFlashFX(inst)
                 inst.Transform:SetPosition(inst.sg.statemem.middle_pos:Get())
                 inst.sg:GoToState("icey2_aoeweapon_flurry_lunge_final", { weapon = weapon })
             else
@@ -474,7 +975,7 @@ AddStategraphState("wilson", State {
     onenter = function(inst, data)
         inst.sg.statemem.weapon = data.weapon
 
-        if not data.weapon then
+        if not (data.weapon and data.weapon:IsValid()) then
             inst.sg:GoToState("idle")
             return
         end
@@ -622,97 +1123,3 @@ AddStategraphState("wilson", State {
         inst.components.health:SetInvincible(false)
     end,
 })
-
-
-
-AddStategraphState("wilson", State {
-    name = "icey2_parry_pre",
-    tags = { "preparrying", "parrying", "busy", "nomorph", "nopredict" },
-
-    onenter = function(inst, data)
-        inst.sg.statemem.isshield = true
-
-        inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation("shieldparry_pre")
-        inst.AnimState:PushAnimation("shieldparry_loop", true)
-
-        inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
-
-        inst.sg.statemem.parrytime = 99999
-        inst.components.combat.redirectdamagefn = function(inst, attacker, damage, weapon, stimuli)
-            return inst.components.icey2_skill_parry
-                and inst.components.icey2_skill_parry:TryParry(attacker, damage, weapon, stimuli)
-        end
-
-        local s = 0.4
-
-        local fxs = {
-            SpawnPrefab("icey2_parry_shield_shining_fx"),
-            SpawnPrefab("icey2_parry_shield_shining_fx"),
-            SpawnPrefab("icey2_parry_shield_shining_fx")
-        }
-
-        for _, fx in pairs(fxs) do
-            fx.entity:AddFollower()
-            fx.Transform:SetScale(s, s, s)
-
-            fx:ListenForEvent("animover", function()
-                if not inst.AnimState:IsCurrentAnimation("shieldparry_pre")
-                    and not inst.AnimState:IsCurrentAnimation("shieldparry_loop")
-                    and not inst.AnimState:IsCurrentAnimation("shieldparry_pst")
-                    and not inst.AnimState:IsCurrentAnimation("shieldparryblock") then
-                    fx:Remove()
-                end
-            end, inst)
-        end
-
-        fxs[1].Follower:FollowSymbol(inst.GUID, "swap_shield", 0, 0, 0, nil, nil, 1)
-        fxs[2].Follower:FollowSymbol(inst.GUID, "swap_shield", 35, -45, 0, nil, nil, 2)
-        fxs[3].Follower:FollowSymbol(inst.GUID, "swap_shield", 59, -30, -0.05, nil, nil, 3)
-    end,
-
-    ontimeout = function(inst)
-        inst.sg.statemem.parrying = true
-        inst.sg:GoToState("parry_idle", {
-            duration = inst.sg.statemem.parrytime,
-            pauseframes = 30,
-            isshield = inst.sg.statemem.isshield
-        })
-    end,
-
-
-    timeline = {
-        TimeEvent(0 * FRAMES, function(inst)
-
-        end),
-    },
-
-    onexit = function(inst)
-        if not inst.sg.statemem.parrying then
-            inst.components.combat.redirectdamagefn = nil
-        end
-    end,
-
-
-})
-
-
-
-AddStategraphState("wilson",
-    State {
-        name = "icey2_funnyidle",
-        tags = { "idle", "canrotate", "nodangle" },
-
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("ready_stance_pre")
-            inst.AnimState:PushAnimation("ready_stance_loop", true)
-
-            inst.sg:SetTimeout(GetRandomMinMax(5, 10))
-        end,
-
-        ontimeout = function(inst)
-            inst.AnimState:PlayAnimation("ready_stance_pst")
-            inst.sg:GoToState("idle", true)
-        end,
-    }
-)

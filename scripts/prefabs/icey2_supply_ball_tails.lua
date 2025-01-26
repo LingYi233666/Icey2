@@ -7,6 +7,7 @@ local COLOUR_ENVELOPE_NAME_TAIL_RED = "icey2_supply_ball_tail_red_colourenvelope
 
 
 local SCALE_ENVELOPE_NAME_TAIL = "icey2_supply_ball_tail_scaleenvelope"
+local SCALE_ENVELOPE_NAME_TAIL_SMALL = "icey2_supply_ball_tail_small_scaleenvelope"
 
 local assets =
 {
@@ -38,6 +39,16 @@ local function InitEnvelope()
     local sparkle_max_scale = .4
     EnvelopeManager:AddVector2Envelope(
         SCALE_ENVELOPE_NAME_TAIL,
+        {
+            { 0, { sparkle_max_scale, sparkle_max_scale } },
+            -- { 0.6, { sparkle_max_scale, sparkle_max_scale } },
+            { 1, { sparkle_max_scale * .1, sparkle_max_scale * .1 } },
+        }
+    )
+
+    sparkle_max_scale = .2
+    EnvelopeManager:AddVector2Envelope(
+        SCALE_ENVELOPE_NAME_TAIL_SMALL,
         {
             { 0, { sparkle_max_scale, sparkle_max_scale } },
             -- { 0.6, { sparkle_max_scale, sparkle_max_scale } },
@@ -100,7 +111,6 @@ local function common_fn()
     effect:SetUVFrameSize(0, .25, 1)
     effect:SetMaxNumParticles(0, 256)
     effect:SetMaxLifetime(0, MAX_LIFETIME)
-    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_TAIL)
     effect:SetBlendMode(0, BLENDMODE.Additive)
     effect:EnableBloomPass(0, true)
     effect:SetSortOrder(0, 0)
@@ -124,6 +134,7 @@ local function common_fn()
     return inst
 end
 
+
 local function blue_fn()
     local inst = common_fn()
 
@@ -133,6 +144,7 @@ local function blue_fn()
     end
 
     inst.VFXEffect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_TAIL_BLUE)
+    inst.VFXEffect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_TAIL)
 
     return inst
 end
@@ -146,9 +158,40 @@ local function red_fn()
     end
 
     inst.VFXEffect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_TAIL_RED)
+    inst.VFXEffect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_TAIL)
+
+    return inst
+end
+
+local function blue_small_fn()
+    local inst = common_fn()
+
+    --Dedicated server does not need to spawn local particle fx
+    if TheNet:IsDedicated() then
+        return inst
+    end
+
+    inst.VFXEffect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_TAIL_BLUE)
+    inst.VFXEffect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_TAIL_SMALL)
+
+    return inst
+end
+
+local function red_small_fn()
+    local inst = common_fn()
+
+    --Dedicated server does not need to spawn local particle fx
+    if TheNet:IsDedicated() then
+        return inst
+    end
+
+    inst.VFXEffect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_TAIL_RED)
+    inst.VFXEffect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_TAIL_SMALL)
 
     return inst
 end
 
 return Prefab("icey2_supply_ball_tail_blue", blue_fn, assets),
-    Prefab("icey2_supply_ball_tail_red", red_fn, assets)
+    Prefab("icey2_supply_ball_tail_red", red_fn, assets),
+    Prefab("icey2_supply_ball_tail_blue_small", blue_small_fn, assets),
+    Prefab("icey2_supply_ball_tail_red_small", red_small_fn, assets)

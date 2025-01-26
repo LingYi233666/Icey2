@@ -6,11 +6,12 @@ local assets =
 
 local LOOTS =
 {
-    nightmarefuel = 1,
-    amulet = 1,
-    gears = 1,
-    redgem = 5,
-    bluegem = 5,
+    -- nightmarefuel = 1,
+    -- amulet = 1,
+    -- gears = 1,
+    -- redgem = 5,
+    -- bluegem = 5,
+    trinket_6 = 1,
 }
 
 local KNOWS_ICEY1_LOOKUP = {

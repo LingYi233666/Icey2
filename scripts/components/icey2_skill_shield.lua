@@ -25,6 +25,8 @@ local Icey2SkillShield = Class(Icey2SkillBase_Passive, function(self, inst)
     inst:DoTaskInTime(1, function()
         self:UpdateReplica()
     end)
+
+    self.use_icey2_reroll_data_handler = true
 end)
 
 function Icey2SkillShield:Enable()
@@ -52,6 +54,10 @@ end
 function Icey2SkillShield:SetVal(current)
     self.current = math.clamp(current, 0, self.max)
     self.inst.replica.icey2_skill_shield:SetVal(self.current)
+end
+
+function Icey2SkillShield:SetMaxDamageAbsorb(val)
+    self.max_damage_absorb = val
 end
 
 function Icey2SkillShield:SetMaxShield(val)
@@ -142,6 +148,7 @@ function Icey2SkillShield:OnSave()
 
     data.current = self.current
     data.max = self.max
+    data.max_damage_absorb = self.max_damage_absorb
 
     return data
 end
@@ -155,6 +162,10 @@ function Icey2SkillShield:OnLoad(data)
 
         if data.current ~= nil then
             self:SetVal(data.current)
+        end
+
+        if data.max_damage_absorb ~= nil then
+            self.max_damage_absorb = data.max_damage_absorb
         end
     end
 end
@@ -174,7 +185,11 @@ function Icey2SkillShield:OnUpdate(dt)
 end
 
 function Icey2SkillShield:GetDebugString()
-    local base = string.format("%d / %d (%.2f%%)", self.current, self.max, 100 * self:GetPercent())
+    local base = string.format("%d / %d (%.2f%%), max damage absorb: %d",
+        self.current,
+        self.max,
+        100 * self:GetPercent(),
+        self.max_damage_absorb)
 
     return base
 end

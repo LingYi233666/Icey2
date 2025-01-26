@@ -10,6 +10,15 @@ local assets = {
 
     Asset("ANIM", "anim/swap_icey2_parry_shield.zip"),
 
+    Asset("ANIM", "anim/icey2_shield_charge_cover.zip"),
+
+
+    -- test bladegun anims
+    Asset("ANIM", "anim/tf2minigun.zip"),
+    Asset("ANIM", "anim/player_actions_tf2minigun_ext.zip"),
+    Asset("ANIM", "anim/player_walk_tf2minigun.zip"),
+    Asset("ANIM", "anim/player_actions_tf2minigun.zip"),
+
     --------------------------------------------------------------
 
     Asset("IMAGE", "images/ui/skill_slot/battle_focus.tex"),
@@ -20,6 +29,9 @@ local assets = {
 
     Asset("IMAGE", "images/ui/skill_slot/force_shield.tex"),
     Asset("ATLAS", "images/ui/skill_slot/force_shield.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/hunger_is_electricity.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/hunger_is_electricity.xml"),
 
     Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_scythe.tex"),
     Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_scythe.xml"),
@@ -38,13 +50,15 @@ local assets = {
 
     Asset("IMAGE", "images/ui/skill_slot/unknown.tex"),
     Asset("ATLAS", "images/ui/skill_slot/unknown.xml"),
+
+
 }
 -- ThePlayer.AnimState:OverrideSymbol("hairpigtails", "hibiki", "hairpigtails")
 local prefabs = {}
 
 -- 初始物品
 local start_inv = {
-    -- "spear" -- 自带一个长矛
+    "leafymeatburger",
 }
 
 
@@ -56,6 +70,10 @@ local function CustomIdleStateFn(inst)
     -- end
 
     return "icey2_funnyidle"
+end
+
+local function OnNewState(inst, data)
+    print(inst, "new state:", data.statename)
 end
 
 local function ParryCallback(inst, data)
@@ -124,6 +142,8 @@ local master_postinit = function(inst)
 
     ----------------------------------------------------------------------
 
+    inst:AddComponent("icey2_status_bonus")
+
     inst:AddComponent("icey2_spdamage_force")
 
     inst:AddComponent("icey2_skiller")
@@ -143,9 +163,14 @@ local master_postinit = function(inst)
     inst:AddComponent("icey2_skill_parry")
     inst.components.icey2_skill_parry.parrycallback = ParryCallback
 
+    -- icey2_reroll_data_handler is added in main/prefabs.lua
+    -- inst:AddComponent("icey2_reroll_data_handler")
+
     -- inst.OnNewSpawn = OnNewSpawn
 
     -- inst:ListenForEvent("playeractivated", OnPlayerSpawn)
+
+    -- inst:ListenForEvent("newstate", OnNewState)
 
     OnPlayerSpawn(inst)
 end

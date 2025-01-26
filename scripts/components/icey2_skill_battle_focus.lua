@@ -28,6 +28,7 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
         local addition = 10
 
         local weapon = data.weapon
+        local target = data.target
         -- projectile or ranged weapon
         if weapon then
             if weapon.components.projectile
@@ -46,9 +47,9 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
             addition = addition * 0
         end
 
-        if not data.target
-            or not data.target.components.combat
-            or (data.target.components.combat:CalcDamage(self.inst) <= 0.01 and data.target.prefab ~= "dummytarget") then
+        if not target
+            or not target.components.combat
+            or (target.components.combat:CalcDamage(self.inst) <= 0.01 and target.prefab ~= "dummytarget") then
             addition = addition * 0
         end
 
@@ -56,51 +57,27 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
             addition = addition * 0
         end
 
-        local supply_chance = {}
+        local ball_data = self:GetSupplyBallData(weapon, target, addition)
+        if ball_data and ball_data.prefabs then
+            local start_pos = target:GetPosition()
+            start_pos.y = start_pos.y + GetRandomMinMax(0.8, 2)
 
-        if addition > 1.1 then
-            if self:GetPercent() >= 0.5 and self.inst.components.icey2_skill_shield then
-                local p = self.inst.components.icey2_skill_shield:GetPercent()
-                if p < 1 then
-                    supply_chance.icey2_supply_ball_shield = 1 - p
-                else
-                    -- supply_chance.icey2_supply_ball_shield = 0.001
+            -- for i = 1, (ball_data.count or 1) do
+            --     SpawnPrefab(ball_data.prefab):Setup(self.inst, start_pos)
+            -- end
+
+            for _, prefab_and_cnt in pairs(ball_data.prefabs) do
+                for i = 1, prefab_and_cnt[2] do
+                    SpawnPrefab(prefab_and_cnt[1]):Setup(self.inst, start_pos)
                 end
             end
 
-            if self:GetPercent() >= 1 and self.inst.components.health then
-                local p = self.inst.components.health:GetPercent()
-                if p < 1 then
-                    supply_chance.icey2_supply_ball_health = (1 - p) * 0.33
-                else
-                    -- supply_chance.icey2_supply_ball_health = 0.001
-                end
-            end
-        end
-
-        local spawn_fx_map = {
-            icey2_supply_ball_shield = "icey2_supply_ball_shield_spawn",
-            icey2_supply_ball_health = "icey2_supply_ball_health_spawn",
-
-            -- icey2_supply_ball_shield = "icey2_focus_hit",
-            -- icey2_supply_ball_health = "icey2_focus_hit",
-
-        }
-
-        if GetTableSize(supply_chance) > 0 then
-            local prefab = weighted_random_choice(supply_chance)
-            if prefab then
-                local start_pos = data.target:GetPosition()
-                start_pos.y = start_pos.y + GetRandomMinMax(0.8, 2)
-
-                SpawnPrefab(prefab):Setup(self.inst, start_pos)
-
-                if spawn_fx_map[prefab] then
-                    local fx = SpawnAt(spawn_fx_map[prefab], start_pos)
-                    fx:FaceAwayFromPoint(self.inst:GetPosition(), true)
-                end
+            if ball_data.fx_prefab then
+                local fx = SpawnAt(ball_data.fx_prefab, start_pos)
+                fx:FaceAwayFromPoint(self.inst:GetPosition(), true)
             end
         end
+
 
         self:RefreshAttackTime()
         self:DoDelta(addition)
@@ -115,6 +92,57 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
         self:SetVal(0)
     end
 end)
+
+function Icey2SkillBattleFocus:GetSupplyBallData(weapon, target, addition)
+    if weapon and weapon.components.icey2_supply_ball_override then
+        return weapon.components.icey2_supply_ball_override:GetData(self.inst, target, addition)
+    end
+
+    if addition < 1.1 then
+        return
+    end
+
+    local supply_chance = {}
+
+    if self:GetPercent() >= 0.5 and self.inst.components.icey2_skill_shield then
+        local p = self.inst.components.icey2_skill_shield:GetPercent()
+        if p < 1 then
+            supply_chance.icey2_supply_ball_shield = 1 - p
+        else
+            -- supply_chance.icey2_supply_ball_shield = 0.001
+        end
+    end
+
+    if self:GetPercent() >= 1 and self.inst.components.health then
+        local p = self.inst.components.health:GetPercent()
+        if p < 1 then
+            supply_chance.icey2_supply_ball_health = (1 - p) * 0.33
+        else
+            -- supply_chance.icey2_supply_ball_health = 0.001
+        end
+    end
+
+    local spawn_fx_map = {
+        icey2_supply_ball_shield = "icey2_supply_ball_shield_spawn",
+        icey2_supply_ball_health = "icey2_supply_ball_health_spawn",
+    }
+
+    if GetTableSize(supply_chance) > 0 then
+        local prefab = weighted_random_choice(supply_chance)
+        -- if prefab then
+        --     return {
+        --         prefab = prefab,
+        --         count = 1,
+        --         fx_prefab = spawn_fx_map[prefab],
+        --     }
+        -- end
+
+        return {
+            prefabs = { { prefab, 1 } },
+            fx_prefab = spawn_fx_map[prefab],
+        }
+    end
+end
 
 function Icey2SkillBattleFocus:Enable()
     Icey2SkillBase_Passive.Enable(self)

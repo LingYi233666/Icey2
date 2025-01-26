@@ -14,6 +14,8 @@ local Icey2Skiller = Class(function(self, inst)
 	-- self.json_data = "{}"
 
 	self:UpdateJsonData()
+
+	self.use_icey2_reroll_data_handler = true
 end, nil, {
 	json_data = onjson_data,
 })

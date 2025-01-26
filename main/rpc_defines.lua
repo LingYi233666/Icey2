@@ -77,3 +77,13 @@ end)
 AddModRPCHandler("icey2_rpc", "update_mouse_position", function(inst, x, z)
     inst.components.icey2_control_key_helper:SetMousePosition(Vector3(x, 0, z))
 end)
+
+AddClientModRPCHandler("icey2_rpc", "push_shield_charge_anim", function()
+    if ThePlayer
+        and ThePlayer.HUD
+        and ThePlayer.HUD.controls
+        and ThePlayer.HUD.controls.secondary_status
+        and ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics then
+        ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics:PushCharge()
+    end
+end)

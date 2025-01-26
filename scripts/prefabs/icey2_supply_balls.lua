@@ -6,25 +6,58 @@ local assets =
 local SCALE_BALL_SHIELD = 0.7
 local SCALE_BALL_HEALTH = 0.7
 
+local SCALE_BALL_SHIELD_SMALL = 0.3
+local SCALE_BALL_HEALTH_SMALL = 0.3
+
 local MULTCOLOUR_SHIELD = { 96 / 255, 249 / 255, 255 / 255, 1 }
 local MULTCOLOUR_HEALTH = { 0.8, 0.1, 0.1, 1 }
 
-local function OnAbsorb_Shield(inst, player)
-    if player and player.components.icey2_skill_shield then
-        player.components.icey2_skill_shield:DoDelta(5)
+-- local function OnAbsorb_Shield(inst, player)
+--     if player and player.components.icey2_skill_shield then
+--         player.components.icey2_skill_shield:DoDelta(5)
+--     end
+--     SpawnAt("icey2_supply_ball_shield_hit", inst)
+--     inst:Remove()
+-- end
+
+-- local function OnAbsorb_Health(inst, player)
+--     if player and player.components.health then
+--         player.components.health:DoDelta(3.75, true)
+--     end
+--     SpawnAt("icey2_supply_ball_health_hit", inst)
+--     inst:Remove()
+-- end
+
+-- local function OnAbsorb_Shield_Small(inst, player)
+--     if player and player.components.icey2_skill_shield then
+--         player.components.icey2_skill_shield:DoDelta(1)
+--     end
+--     SpawnAt("icey2_supply_ball_shield_small_hit", inst)
+--     inst:Remove()
+-- end
+
+-- local function OnAbsorb_Health_Small(inst, player)
+--     if player and player.components.health then
+--         player.components.health:DoDelta(0.5, true)
+--     end
+--     SpawnAt("icey2_supply_ball_health_small_hit", inst)
+--     inst:Remove()
+-- end
+
+local function OnAbsorb(inst, player)
+    if player then
+        if inst.shield_recover and player.components.icey2_skill_shield then
+            player.components.icey2_skill_shield:DoDelta(inst.shield_recover)
+        end
+
+        if inst.health_recover and player.components.health then
+            player.components.health:DoDelta(inst.health_recover, true)
+        end
     end
-    SpawnAt("icey2_supply_ball_shield_hit", inst)
+
+    SpawnAt(inst.prefab .. "_hit", inst)
     inst:Remove()
 end
-
-local function OnAbsorb_Health(inst, player)
-    if player and player.components.health then
-        player.components.health:DoDelta(3.75, true)
-    end
-    SpawnAt("icey2_supply_ball_health_hit", inst)
-    inst:Remove()
-end
-
 
 
 local function OnUpdateFn(inst, dt)
@@ -47,7 +80,7 @@ local function OnUpdateFn(inst, dt)
         return true
     end
 
-    if GetTime() - inst.start_launch_time < 0.5 then
+    if GetTime() - inst.start_launch_time < inst.chase_after_time then
         local vx, vy, vz = (inst.direction * inst.speed):Get()
         inst.Physics:SetVel(vx, vy, vz)
         return true
@@ -57,16 +90,23 @@ local function OnUpdateFn(inst, dt)
 
     local delta_vec = towards:GetNormalized() - inst.direction
 
-    local max_delta_length = 5 * FRAMES
-    if delta_vec:Length() < max_delta_length or inst.locked then
-        inst.locked = true
-        inst.direction = towards:GetNormalized()
-    else
-        inst.direction = inst.direction + delta_vec:GetNormalized() * max_delta_length
-    end
+    -- local max_delta_length = 5 * FRAMES
+    -- if delta_vec:Length() < max_delta_length or inst.locked then
+    --     inst.locked = true
+    --     inst.direction = towards:GetNormalized()
+    -- else
+    --     inst.direction = inst.direction + delta_vec:GetNormalized() * max_delta_length
+    -- end
 
     local cut_angle = Icey2Math.RadiansBetweenVectors(inst.direction, towards) * RADIANS
     local is_inverse_moving = math.abs(cut_angle) > 90
+
+    if math.abs(cut_angle) < 10 or inst.locked then
+        inst.locked = true
+        inst.direction = towards:GetNormalized()
+    else
+        inst.direction = inst.direction + delta_vec:GetNormalized() * 0.14
+    end
 
     local vx, vy, vz = (inst.direction * inst.speed):Get()
     inst.Physics:SetVel(vx, vy, vz)
@@ -97,7 +137,7 @@ local function Setup(inst, player, pos_start)
     local theta_2    = GetRandomMinMax(0, 60) * DEGREES
 
 
-    inst.speed             = 10
+    inst.speed             = GetRandomMinMax(8, 10)
     inst.direction         = vec_out * math.cos(theta_1) * math.cos(theta_2) + vec_up * math.sin(theta_2) +
         vec_z * math.sin(theta_1) * math.cos(theta_2)
     inst.chasing_target    = player
@@ -106,6 +146,14 @@ local function Setup(inst, player, pos_start)
 
     inst.Transform:SetPosition(pos_start:Get())
     inst.Physics:SetVel((inst.direction * inst.speed):Get())
+
+
+    if inst.tail_prefab then
+        inst.vfx = inst:SpawnChild(inst.tail_prefab)
+        inst.vfx.entity:AddFollower()
+        inst.vfx.Follower:FollowSymbol(inst.GUID, "glow_", 0, 0, 0)
+    end
+
     inst.components.updatelooper:AddOnUpdateFn(OnUpdateFn)
 end
 
@@ -135,11 +183,14 @@ local function fn_common()
         return inst
     end
 
+    inst.chase_after_time = GetRandomMinMax(0.4, 0.6)
     inst.target_offset = Vector3FromTheta(math.random() * PI2, 0.4)
     inst.target_offset.y = math.random(1, 1.75)
 
     inst.Setup = Setup
     inst.GetTargetPosition = GetTargetPosition
+    inst.OnAbsordFn = OnAbsorb
+
 
     inst:AddComponent("updatelooper")
 
@@ -171,14 +222,29 @@ local function fn_shield()
         return inst
     end
 
-    inst.OnAbsordFn = OnAbsorb_Shield
+    inst.shield_recover = 5
+    inst.tail_prefab = "icey2_supply_ball_tail_blue"
 
-    inst.vfx = inst:SpawnChild("icey2_supply_ball_tail_blue")
-    inst.vfx.entity:AddFollower()
-    inst.vfx.Follower:FollowSymbol(inst.GUID, "glow_", 0, 0, 0)
+
 
     return inst
 end
+
+local function fn_shield_small()
+    local inst = fn_shield()
+
+    inst.Transform:SetScale(SCALE_BALL_SHIELD_SMALL, SCALE_BALL_SHIELD_SMALL, 1)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.shield_recover = 1
+    inst.tail_prefab = "icey2_supply_ball_tail_blue_small"
+
+    return inst
+end
+
 
 local function fn_health()
     local inst = fn_common()
@@ -200,11 +266,25 @@ local function fn_health()
         return inst
     end
 
-    inst.OnAbsordFn = OnAbsorb_Health
+    inst.health_recover = 3.75
 
-    inst.vfx = inst:SpawnChild("icey2_supply_ball_tail_red")
-    inst.vfx.entity:AddFollower()
-    inst.vfx.Follower:FollowSymbol(inst.GUID, "glow_", 0, 0, 0)
+    inst.tail_prefab = "icey2_supply_ball_tail_red"
+
+    return inst
+end
+
+
+local function fn_health_small()
+    local inst = fn_health()
+
+    inst.Transform:SetScale(SCALE_BALL_HEALTH_SMALL, SCALE_BALL_HEALTH_SMALL, 1)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.health_recover = 0.5
+    inst.tail_prefab = "icey2_supply_ball_tail_red_small"
 
     return inst
 end
@@ -248,6 +328,18 @@ local function fn_shield_hit()
     return inst
 end
 
+local function fn_shield_hit_small()
+    local inst = fn_shield_hit()
+
+    inst.Transform:SetScale(SCALE_BALL_SHIELD_SMALL, SCALE_BALL_SHIELD_SMALL, 1)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    return inst
+end
+
 local function fn_health_hit()
     local inst = CreateEntity()
 
@@ -284,6 +376,19 @@ local function fn_health_hit()
     inst.persists = false
 
     inst:ListenForEvent("animover", inst.Remove)
+
+    return inst
+end
+
+
+local function fn_health_hit_small()
+    local inst = fn_health_hit()
+
+    inst.Transform:SetScale(SCALE_BALL_HEALTH_SMALL, SCALE_BALL_HEALTH_SMALL, 1)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
 
     return inst
 end
@@ -369,7 +474,11 @@ end
 
 return Prefab("icey2_supply_ball_shield", fn_shield, assets),
     Prefab("icey2_supply_ball_health", fn_health, assets),
+    Prefab("icey2_supply_ball_shield_small", fn_shield_small, assets),
+    Prefab("icey2_supply_ball_health_small", fn_health_small, assets),
     Prefab("icey2_supply_ball_shield_hit", fn_shield_hit, assets),
     Prefab("icey2_supply_ball_health_hit", fn_health_hit, assets),
+    Prefab("icey2_supply_ball_shield_small_hit", fn_shield_hit_small, assets),
+    Prefab("icey2_supply_ball_health_small_hit", fn_health_hit_small, assets),
     Prefab("icey2_supply_ball_shield_spawn", fn_shield_spawn, assets),
     Prefab("icey2_supply_ball_health_spawn", fn_health_spawn, assets)

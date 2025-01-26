@@ -63,6 +63,8 @@ local Icey2SkillSummonPactWeapon = Class(Icey2SkillBase_Active, function(self, i
     end)
 
     self:UpdateJsonData()
+
+    self.use_icey2_reroll_data_handler = true
 end)
 
 
@@ -164,50 +166,6 @@ function Icey2SkillSummonPactWeapon:LinkWeapon(weapon)
 
     self:InitEventListeners(weapon)
     self:UpdateJsonData()
-    ---------------------------------------------------------
-
-    -- self._on_linked_weapon_dropped_fn = function(_, data)
-
-
-    --     if data.item == weapon then
-    --         print("Drop pact weapon:", data.item)
-
-    --         if self._regive_weapon_task then
-    --             return
-    --         end
-
-    --         self:StartRegiveTask()
-    --     end
-    -- end
-
-    -- self._on_linked_weapon_pickup_fn = function(_, data)
-    --     if data.item == weapon then
-    --         print("Pickup my pact weapon:", data.item)
-
-    --         self:StopRegiveTask()
-    --     end
-    -- end
-
-    -- self._on_linked_weapon_equipped_fn = function(_, data)
-    --     local owner = weapon.components.inventoryitem.owner
-    --     if owner ~= self.inst then
-    --         print(weapon, "is equipped by someone else !")
-    --         self:StartRegiveTask()
-    --     end
-    -- end
-
-    -- self._on_linked_weapon_removed_fn = function(_, data)
-    --     local prefab = weapon.prefab
-    --     self:UnlinkWeapon()
-    --     self.pact_weapon_savedatas[prefab] = nil
-    -- end
-
-    -- self.inst:ListenForEvent("dropitem", self._on_linked_weapon_dropped_fn)
-    -- self.inst:ListenForEvent("itemget", self._on_linked_weapon_pickup_fn)
-    -- self.inst:ListenForEvent("equipped", self._on_linked_weapon_equipped_fn, weapon)
-    -- self.inst:ListenForEvent("onremove", self._on_linked_weapon_removed_fn, weapon)
-
-    -- self.inst.replica.icey2_skill_summon_pact_weapon:SetLinkedWeapon(weapon)
 end
 
 function Icey2SkillSummonPactWeapon:UnlinkWeapon(weapon_or_prefab, remove_weapon)
@@ -396,9 +354,12 @@ function Icey2SkillSummonPactWeapon:SummonWeapon(prefab, emit_fx)
     end
 end
 
--- function Icey2SkillSummonPactWeapon:Cast(x, y, z, target)
---     Icey2SkillBase_Active.Cast(self, x, y, z, target)
--- end
+function Icey2SkillSummonPactWeapon:SaveForReroll()
+    local data = self:OnSave()
+    data.linked_weapon_prefabs = nil
+
+    return data
+end
 
 function Icey2SkillSummonPactWeapon:OnSave()
     local data = Icey2SkillBase_Active.OnSave(self)
@@ -460,10 +421,6 @@ function Icey2SkillSummonPactWeapon:OnLoad(data)
 
     -- print("Icey2SkillSummonPactWeapon:OnLoad() pact_weapon_savedatas = ")
     -- dumptable(self.pact_weapon_savedatas)
-end
-
-function Icey2SkillSummonPactWeapon:OnUpdate()
-
 end
 
 return Icey2SkillSummonPactWeapon

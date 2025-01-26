@@ -22,3 +22,39 @@ end)
 
 AddStategraphActionHandler("wilson", ActionHandler(ACTIONS.ICEY2_SCYTHE, "scythe"))
 AddStategraphActionHandler("wilson_client", ActionHandler(ACTIONS.ICEY2_SCYTHE, "scythe"))
+
+
+
+AddAction("ICEY2_VERSATILE_WEAPON_CHANGE_FORM", "ICEY2_VERSATILE_WEAPON_CHANGE_FORM", function(act)
+    if act.invobject ~= nil and act.invobject.components.icey2_versatile_weapon then
+        act.invobject.components.icey2_versatile_weapon:SwitchForm()
+        return true
+    end
+
+    return false
+end)
+ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.rmb = true
+ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.do_not_locomote = true
+ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.customarrivecheck = function() return true end
+ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.stroverridefn = function(act)
+    local item = act.invobject
+    if item == nil or STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM[item.prefab:upper()] == nil then
+        return STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.GENERIC
+    end
+
+    local cur_form = act.invobject.replica.icey2_versatile_weapon:GetCurForm()
+    if STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM[item.prefab:upper()][cur_form] == nil then
+        return STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.GENERIC
+    end
+
+    return STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM[item.prefab:upper()][cur_form]
+end
+
+AddComponentAction("POINT", "icey2_versatile_weapon", function(inst, doer, pos, actions, right, target)
+    if right and doer:HasTag("player") then
+        table.insert(actions, ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM)
+    end
+end)
+
+AddStategraphActionHandler("wilson", ActionHandler(ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM, "domediumaction"))
+AddStategraphActionHandler("wilson_client", ActionHandler(ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM, "domediumaction"))

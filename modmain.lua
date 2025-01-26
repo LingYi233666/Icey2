@@ -42,6 +42,17 @@ PrefabFiles = {
     "icey2_parry_shield_shining_fx",
 
     "icey2_shield_break_fxs",
+
+    "icey2_pact_weapon_gunlance",
+    "icey2_fake_projectiles",
+
+    "icey2_dodge_fx",
+    "icey2_melee_hit_vfx",
+    "icey2_skull_pile",
+    "icey2_health_upgrader",
+
+    "icey2_soul_fx_small",
+    "icey2_skull_fx",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的
@@ -108,7 +119,7 @@ PREFAB_SKINS["icey2"] = { -- 修复人物大图显示
 
 local modimport_filenames = {
     "actions", "basic_utils", "math_utils", "weaponskill_utils", "language_chs", "spdamage", "rpc_defines",
-    "skill_defines", "recipes", "components", "input", "stategraphs_server",
+    "skill_defines", "recipes", "components", "prefabs", "input", "stategraphs_server",
     "stategraphs_client", "hud", "debug"
 }
 
@@ -117,6 +128,7 @@ for _, filename in pairs(modimport_filenames) do
 end
 
 AddMinimapAtlas("images/map_icons/icey2.xml") -- 增加小地图图标
+AddMinimapAtlas("images/map_icons/icey2_skull_pile.xml")
 
 -- 增加人物到mod人物列表的里面 性别为机器人（MALE, FEMALE, ROBOT, NEUTRAL, and PLURAL）
 -- 可恶，为什么没有FUTANARI？我要扶她机娘！
@@ -128,7 +140,7 @@ TUNING.ICEY2_HUNGER = 150
 TUNING.ICEY2_SANITY = 150
 
 -- 选人界面初始物品显示
-TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.ICEY2 = {}
+TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.ICEY2 = { "leafymeatburger" }
 
 --[[如果你的初始物品是mod物品需要定义mod物品的图片路径 比如物品是 abc
 

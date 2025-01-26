@@ -17,6 +17,7 @@ local MODIFIED_SPEECH = {
 	},
 
 	-- 战吼
+	-- 老马克肖：艾希在战斗时不会说话
 	BATTLECRY =
 	{
 		-- GENERIC = "我不怕任何敌人！",
@@ -33,7 +34,11 @@ local MODIFIED_SPEECH = {
 		BEARDHAIR = "我长不出这么宏伟的胡须！",
 		BUSHHAT = "不如纸箱实用。",
 
+		CATCOON = "小猫，你可以吃素食堡。",
 		CUTGRASS = "生草。",
+
+		DEERCLOPS = "My deer friend.",
+		DRAGONFLY = "龙飞！",
 
 		-- FIREPIT = {
 		-- 	EMBERS = "I should put something on the fire before it goes out.",
@@ -45,22 +50,34 @@ local MODIFIED_SPEECH = {
 		-- },
 		FLOWER = "幼儿园小班花。",
 		-- FLOWER = "朝雾，你究竟到哪里去了？",
+		FROG =
+		{
+			GENERIC = "它能掌控时间。",
+		},
 
 		GELBLOB = "史莱姆，角色扮演游戏中的经典怪物。",
-		GRASS = {
+		GOLDENPITCHFORK = "我听一位猎魔人说它“在近身战中十分危险”。",
+		GRASS =
+		{
 			GENERIC = "草，一种植物。",
 		},
 
-		LEAFYMEATBURGER = "小猫，你可以吃素食堡。",
+		KNIGHT = "机械马克肖。",
+		KNIGHT_NIGHTMARE = "很老旧的机械马克肖，简称老马克肖。",
+
+		LEAFYMEATBURGER = "比弥城食堂里那些吃剩的汉堡更美味。",
+		LUNARFROG = "刚刚它背上的眼睛是不是眨了一下？",
 
 		OTTER = "兄.....兄弟......",
-		OTTERDEN = {
+		OTTERDEN =
+		{
 			GENERIC = "兄弟的家。",
 			HAS_LOOT = "兄弟...你家好满....",
 		},
 
 		PETALS = "把小班花捧在手心。",
-		-- PETALS_EVIL = "I'm not sure I want to hold those.",
+		PETALS_EVIL = "邪恶的花瓣！",
+		PITCHFORK = "可以用来挖九宫格。",
 		PONDFISH = "比利比利鱼腩。",
 
 		RABBIT =
@@ -76,6 +93,10 @@ local MODIFIED_SPEECH = {
 
 		SHADOWTHRALL_MOUTH = "Snake? Snaaaaaaaaaaaaaaaake!",
 
+		TOADSTOOL =
+		{
+			GENERIC = "它能从凡人身上汲取能量。",
+		},
 		TORCH = "威尔逊毕生科研成果的结晶。",
 
 		WATHGRITHR_SHIELD = "My face is my shield.",
@@ -85,7 +106,90 @@ local MODIFIED_SPEECH = {
 			OPEN = "它想对我做什么呢？",
 		},
 
-		PLAYER = {
+		WILSON =
+		{
+			GENERIC = "看起来平平无奇，但我相信他能用头脑征服这个世界。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
+		},
+		WOLFGANG =
+		{
+			GENERIC = "你  太  超  模  了  ！",
+		},
+		WAXWELL =
+		{
+			GENERIC = "传说黑魔术师有一位弟子...",
+		},
+		WX78 =
+		{
+			GENERIC = "我认为他不是故障机器人。",
+		},
+		WILLOW =
+		{
+			GENERIC = "龙王喷个火！",
+		},
+		WENDY =
+		{
+			GENERIC = "失去至亲的可怜女孩。",
+		},
+		WOODIE =
+		{
+			GENERIC = "%s有些过于无敌了。",
+			GOOSE = "武僧能一跃跳上房顶，你也能！",
+		},
+		WICKERBOTTOM =
+		{
+			GENERIC = "%s是一位博学的女士。",
+		},
+		WES =
+		{
+			GENERIC = "%s不善言辞，但心地善良。",
+		},
+		WEBBER =
+		{
+			GENERIC = "%s毛茸茸的，福瑞控应该会很喜欢他。",
+		},
+		WATHGRITHR =
+		{
+			GENERIC = "你玩过《战神》吗？",
+		},
+		WINONA =
+		{
+			GENERIC = "我期待%s有朝一日能搓出红石。",
+		},
+		WORTOX =
+		{
+			GENERIC = "背负着叛徒之名，抛弃了全部来战斗的男人♫~~~~",
+		},
+		WORMWOOD =
+		{
+			GENERIC = "植物人文汪老师！",
+		},
+		WARLY =
+		{
+			GENERIC = "沃利！就是一......",
+		},
+		WURT =
+		{
+			GENERIC = "这就是你的士兵？一只鱼人！",
+		},
+		WALTER =
+		{
+			GENERIC = "日安, %s！",
+		},
+		WANDA =
+		{
+			GENERIC = "温柔的旺达。",
+		},
+		-- WONKEY =
+		-- {
+		-- 	GENERIC = "It's a monkey.",
+		-- },
+
+		PLAYER =
+		{
 			GENERIC = "嗨，%s!",
 			ATTACKER = "%s，你是个坏人！",
 			MURDERER = "杀人犯！",
@@ -93,16 +197,17 @@ local MODIFIED_SPEECH = {
 			GHOST = "我得给%s一颗心！",
 		},
 
-		SHIYE = {
+		SHIYE =
+		{
 			GENERIC = "你好，皇家守卫%s!",
 			ATTACKER = "你为这个世界带来了混乱！",
 			MURDERER = "面具杀手！",
 			REVIVER = "%s是个好人",
 			GHOST = "我得把%s从虚空之境中拉回来！",
 		},
-
-
 	},
+
+	ANNOUNCE_DEERCLOPS = "我的传感器在震动，这附近一定有大家伙！",
 
 	ANNOUNCE_EAT =
 	{
@@ -132,9 +237,10 @@ local MODIFIED_SPEECH = {
 
 	-- },
 
+	ANNOUNCE_HOT = "我要热宕机了！",
 	ANNOUNCE_HUNGRY = "我快没电了。",
 
-	ANNOUNCE_DAMP = "湿了···",
+	ANNOUNCE_DAMP = "好像有些湿了···",
 	ANNOUNCE_WET = "看来我的衣服并不防水···",
 	ANNOUNCE_WETTER = "再这样下去要短路了！",
 	ANNOUNCE_SOAKED = "啊！走光了！旁白你在看哪里？！！",
