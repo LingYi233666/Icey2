@@ -129,6 +129,57 @@ AddStategraphPostInit("wilson", function(sg)
     end
 end)
 
+-- eat
+AddStategraphPostInit("wilson", function(sg)
+    local old_EAT = sg.actionhandlers[ACTIONS.EAT].deststate
+    sg.actionhandlers[ACTIONS.EAT].deststate = function(inst, action)
+        local old_rets = old_EAT(inst, action)
+
+        local feed = action.invobject
+        if old_rets ~= nil and feed:HasTag("blood_metal") then
+            return "eat"
+        end
+        return old_rets
+    end
+
+
+    local eat_SG = sg.states["eat"]
+    if eat_SG then
+        local old_onenter = eat_SG.onenter
+        local old_onexit = eat_SG.onexit
+
+        eat_SG.onenter = function(inst, ...)
+            old_onenter(inst, ...)
+
+            local feed = inst:GetBufferedAction().invobject
+            if feed:HasTag("blood_metal") then
+                inst.SoundEmitter:PlaySound("dontstarve/wilson/eat", "eating")
+                inst.SoundEmitter:PlaySound("icey2_sfx/prefabs/blood_metal/eat_loop", "electric")
+
+                -- inst.sg.statemem.soulfx = SpawnPrefab("wortox_eat_soul_fx")
+                -- inst.sg.statemem.soulfx.entity:SetParent(inst.entity)
+                -- if inst.components.rider:IsRiding() then
+                --     inst.sg.statemem.soulfx:MakeMounted()
+                -- end
+
+                inst.sg.statemem.elec_vfx = inst:SpawnChild("icey2_eat_metal_blood_vfx")
+                inst.sg.statemem.elec_vfx.entity:AddFollower()
+                inst.sg.statemem.elec_vfx.Follower:FollowSymbol(inst.GUID, "face", 0, 60, 0)
+            end
+        end
+
+        eat_SG.onexit = function(inst, ...)
+            old_onexit(inst, ...)
+            inst.SoundEmitter:KillSound("electric")
+
+            if inst.sg.statemem.elec_vfx and inst.sg.statemem.elec_vfx:IsValid() then
+                inst.sg.statemem.elec_vfx:Remove()
+            end
+        end
+    end
+end)
+
+
 
 -----------------------------------------------------------------------------
 -- Skill: dodge
@@ -649,20 +700,6 @@ AddStategraphState("wilson", State {
             end
         end),
 
-        TimeEvent(20 * FRAMES, function(inst)
-            if not inst.sg.statemem.chained then
-                inst:PerformBufferedAction()
-                inst.sg:RemoveStateTag("abouttoattack")
-            end
-        end),
-
-        TimeEvent(21 * FRAMES, function(inst)
-            if not inst.sg.statemem.chained then
-                inst.sg:RemoveStateTag("attack")
-                inst.sg:AddStateTag("idle")
-            end
-        end),
-
         -- chained
         TimeEvent(3 * FRAMES, function(inst)
             if inst.sg.statemem.chained then
@@ -671,12 +708,31 @@ AddStategraphState("wilson", State {
             end
         end),
 
+        -- chained
         TimeEvent(4 * FRAMES, function(inst)
             if inst.sg.statemem.chained then
                 inst.sg:RemoveStateTag("attack")
                 inst.sg:AddStateTag("idle")
             end
         end),
+
+        -- not chained
+        TimeEvent(20 * FRAMES, function(inst)
+            if not inst.sg.statemem.chained then
+                inst:PerformBufferedAction()
+                inst.sg:RemoveStateTag("abouttoattack")
+            end
+        end),
+
+        -- not chained
+        TimeEvent(21 * FRAMES, function(inst)
+            if not inst.sg.statemem.chained then
+                inst.sg:RemoveStateTag("attack")
+                inst.sg:AddStateTag("idle")
+            end
+        end),
+
+
     },
 
     ontimeout = function(inst)

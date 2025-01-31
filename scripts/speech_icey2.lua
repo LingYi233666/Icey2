@@ -34,7 +34,8 @@ local MODIFIED_SPEECH = {
 		BEARDHAIR = "我长不出这么宏伟的胡须！",
 		BUSHHAT = "不如纸箱实用。",
 
-		CATCOON = "小猫，你可以吃素食堡。",
+		-- CATCOON = "小猫，你可以吃素食堡。",
+		CATCOON = "彼处浣猫与狼共舞。",
 		CUTGRASS = "生草。",
 
 		DEERCLOPS = "My deer friend.",
@@ -66,6 +67,11 @@ local MODIFIED_SPEECH = {
 		KNIGHT_NIGHTMARE = "很老旧的机械马克肖，简称老马克肖。",
 
 		LEAFYMEATBURGER = "比弥城食堂里那些吃剩的汉堡更美味。",
+		LIGHTNING_ROD =
+		{
+			GENERIC = "一人一台，刚巴雷特！",
+			CHARGED = "苍蓝雷霆！",
+		},
 		LUNARFROG = "刚刚它背上的眼睛是不是眨了一下？",
 
 		OTTER = "兄.....兄弟......",
@@ -117,71 +123,139 @@ local MODIFIED_SPEECH = {
 		WOLFGANG =
 		{
 			GENERIC = "你  太  超  模  了  ！",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WAXWELL =
 		{
 			GENERIC = "传说黑魔术师有一位弟子...",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WX78 =
 		{
 			GENERIC = "我认为他不是故障机器人。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WILLOW =
 		{
 			GENERIC = "龙王喷个火！",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WENDY =
 		{
 			GENERIC = "失去至亲的可怜女孩。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WOODIE =
 		{
 			GENERIC = "%s有些过于无敌了。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 			GOOSE = "武僧能一跃跳上房顶，你也能！",
 		},
 		WICKERBOTTOM =
 		{
 			GENERIC = "%s是一位博学的女士。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WES =
 		{
 			GENERIC = "%s不善言辞，但心地善良。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WEBBER =
 		{
 			GENERIC = "%s毛茸茸的，福瑞控应该会很喜欢他。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WATHGRITHR =
 		{
 			GENERIC = "你玩过《战神》吗？",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WINONA =
 		{
 			GENERIC = "我期待%s有朝一日能搓出红石。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WORTOX =
 		{
 			GENERIC = "背负着叛徒之名，抛弃了全部来战斗的男人♫~~~~",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WORMWOOD =
 		{
 			GENERIC = "植物人文汪老师！",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WARLY =
 		{
 			GENERIC = "沃利！就是一......",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WURT =
 		{
 			GENERIC = "这就是你的士兵？一只鱼人！",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WALTER =
 		{
 			GENERIC = "日安, %s！",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		WANDA =
 		{
 			GENERIC = "温柔的旺达。",
+			ATTACKER = "%s，你是个坏人！",
+			MURDERER = "杀人犯！",
+			REVIVER = "%s是鬼魂的好朋友",
+			GHOST = "我得给%s一颗心！",
 		},
 		-- WONKEY =
 		-- {

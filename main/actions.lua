@@ -58,3 +58,22 @@ end)
 
 AddStategraphActionHandler("wilson", ActionHandler(ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM, "domediumaction"))
 AddStategraphActionHandler("wilson_client", ActionHandler(ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM, "domediumaction"))
+
+
+
+AddAction("ICEY2_UPGRADE_SHIELD", "ICEY2_UPGRADE_SHIELD", function(act)
+    if act.invobject ~= nil and act.invobject.components.icey2_shield_upgrader then
+        return act.invobject.components.icey2_shield_upgrader:Use(act.target or act.doer, act.doer)
+    end
+
+    return false
+end)
+
+AddComponentAction("INVENTORY", "icey2_shield_upgrader", function(inst, doer, actions, right)
+    if doer and doer:HasTag("player") and doer:HasTag("icey2") then
+        table.insert(actions, ACTIONS.ICEY2_UPGRADE_SHIELD)
+    end
+end)
+
+AddStategraphActionHandler("wilson", ActionHandler(ACTIONS.ICEY2_UPGRADE_SHIELD, "dolongaction"))
+AddStategraphActionHandler("wilson_client", ActionHandler(ACTIONS.ICEY2_UPGRADE_SHIELD, "dolongaction"))

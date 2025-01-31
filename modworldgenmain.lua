@@ -4,6 +4,7 @@ modimport("main/tiles")
 
 local StaticLayout = require("map/static_layout")
 local Layouts = require("map/layouts").Layouts
+local Tasks = require("map/tasks")
 
 
 local function MyAddStaticLayout(name, path)
@@ -70,4 +71,16 @@ AddLevelPreInitAny(function(level)
 		end
 	end
 end)
--- c_gonext("gale_forest_pillar_tree")
+
+-- local all_tasks_name = Tasks.GetAllTaskNames()
+-- for _, v in pairs(all_tasks_name) do
+-- 	AddTaskPreInit(v, function(task)
+-- 		if task.locks
+-- 			and (table.contains(task.locks, LOCKS.ADVANCED_COMBAT)
+-- 				or table.contains(task.locks, LOCKS.HARD_MONSTERS_DEFEATED)
+-- 				or table.contains(task.locks, LOCKS.SPIDERS_DEFEATED)) then
+
+-- 		end
+-- 	end)
+-- end
+-- AddTaskP

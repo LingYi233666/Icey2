@@ -124,6 +124,20 @@ AddStategraphPostInit("wilson_client", function(sg)
     end
 end)
 
+-- eat
+AddStategraphPostInit("wilson_client", function(sg)
+    local old_EAT = sg.actionhandlers[ACTIONS.EAT].deststate
+    sg.actionhandlers[ACTIONS.EAT].deststate = function(inst, action)
+        local old_rets = old_EAT(inst, action)
+
+        local feed = action.invobject
+        if old_rets ~= nil and feed:HasTag("blood_metal") then
+            return "eat"
+        end
+        return old_rets
+    end
+end)
+
 -------------------------------------------------------------------------------------------
 
 local function DoEquipmentFoleySounds(inst)
@@ -515,20 +529,6 @@ AddStategraphState("wilson_client", State {
             end
         end),
 
-        TimeEvent(20 * FRAMES, function(inst)
-            if not inst.sg.statemem.chained then
-                inst:ClearBufferedAction()
-                inst.sg:RemoveStateTag("abouttoattack")
-            end
-        end),
-
-        TimeEvent(21 * FRAMES, function(inst)
-            if not inst.sg.statemem.chained then
-                inst.sg:RemoveStateTag("attack")
-                inst.sg:AddStateTag("idle")
-            end
-        end),
-
         -- chained
         TimeEvent(3 * FRAMES, function(inst)
             if inst.sg.statemem.chained then
@@ -537,12 +537,32 @@ AddStategraphState("wilson_client", State {
             end
         end),
 
+        -- chained
         TimeEvent(4 * FRAMES, function(inst)
             if inst.sg.statemem.chained then
                 inst.sg:RemoveStateTag("attack")
                 inst.sg:AddStateTag("idle")
             end
         end),
+
+
+        -- not chained
+        TimeEvent(20 * FRAMES, function(inst)
+            if not inst.sg.statemem.chained then
+                inst:ClearBufferedAction()
+                inst.sg:RemoveStateTag("abouttoattack")
+            end
+        end),
+
+        -- not chained
+        TimeEvent(21 * FRAMES, function(inst)
+            if not inst.sg.statemem.chained then
+                inst.sg:RemoveStateTag("attack")
+                inst.sg:AddStateTag("idle")
+            end
+        end),
+
+
     },
 
     ontimeout = function(inst)

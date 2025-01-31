@@ -1,7 +1,8 @@
 local assets       =
 {
     -- Asset("ANIM", "anim/icey2_pact_weapon_gunlance.zip"),
-    -- Asset("ANIM", "anim/swap_icey2_pact_weapon_gunlance.zip"),
+    Asset("ANIM", "anim/swap_icey2_pact_weapon_gunlance.zip"),
+    Asset("ANIM", "anim/swap_icey2_pact_weapon_gunlance_range.zip"),
 
     -- Asset("IMAGE", "images/inventoryimages/icey2_pact_weapon_gunlance.tex"),
     -- Asset("ATLAS", "images/inventoryimages/icey2_pact_weapon_gunlance.xml"),
@@ -10,8 +11,8 @@ local assets       =
 local MELEE_PERIOD = 17 * FRAMES
 
 local function OnEquip(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_object", "swap_spear", "swap_spear")
-    owner.AnimState:OverrideSymbol("swap_minigun", "tf2minigun", "swap_minigun")
+    owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance", "swap_icey2_pact_weapon_gunlance")
+    owner.AnimState:OverrideSymbol("swap_minigun", "swap_icey2_pact_weapon_gunlance_range", "swap_minigun")
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
 

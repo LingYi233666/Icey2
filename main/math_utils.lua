@@ -47,4 +47,11 @@ function Icey2Math.CustomSphereEmitter(radius_min, radius_max, theta_min, theta_
     return fn
 end
 
+function Icey2Math.GetVoxelCellIndex(point, voxel_size)
+    local x = math.floor(point.x / voxel_size)
+    local y = math.floor(point.y / voxel_size)
+    local z = math.floor(point.z / voxel_size)
+    return bit.lshift(x, 42) + bit.lshift(y, 21) + z
+end
+
 GLOBAL.Icey2Math = Icey2Math

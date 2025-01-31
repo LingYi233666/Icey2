@@ -47,3 +47,11 @@ AddPlayerPostInit(function(inst)
         inst.LoadForReroll = GaleLoadForRerollWrapper(inst.LoadForReroll)
     end
 end)
+
+AddPrefabPostInit("forest", function(inst)
+    if not TheWorld.ismastersim then
+        return
+    end
+
+    inst:AddComponent("icey2_skull_pile_spawner")
+end)
