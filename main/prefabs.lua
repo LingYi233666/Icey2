@@ -55,3 +55,26 @@ AddPrefabPostInit("forest", function(inst)
 
     inst:AddComponent("icey2_skull_pile_spawner")
 end)
+
+AddPrefabPostInit("chess_junk", function(inst)
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    if inst.components.lootdropper then
+        inst.components.lootdropper:AddChanceLoot("icey2_blood_metal", 0.05)
+    end
+end)
+
+
+for _, v in pairs({ "knight_nightmare", "bishop_nightmare", "rook_nightmare" }) do
+    AddPrefabPostInit(v, function(inst)
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        if inst.components.lootdropper then
+            inst.components.lootdropper:AddChanceLoot("icey2_blood_metal", 0.01)
+        end
+    end)
+end

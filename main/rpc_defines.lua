@@ -87,3 +87,12 @@ AddClientModRPCHandler("icey2_rpc", "push_shield_charge_anim", function()
         ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics:PushCharge()
     end
 end)
+
+AddClientModRPCHandler("icey2_rpc", "start_soul_absorb_circle", function(skill_name)
+    if ThePlayer
+        and ThePlayer.HUD
+        and ThePlayer.HUD.controls
+        and ThePlayer.HUD.controls.icey2_soul_absorb_circle then
+        ThePlayer.HUD.controls.icey2_soul_absorb_circle:Start()
+    end
+end)

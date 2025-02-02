@@ -88,4 +88,8 @@ function Icey2Basic.GetFaceAngle(inst, target)
     return deltaangle
 end
 
+function Icey2Basic.GetVisualHeight(inst, instant)
+
+end
+
 GLOBAL.Icey2Basic = Icey2Basic

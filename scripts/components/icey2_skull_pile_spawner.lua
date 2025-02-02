@@ -18,13 +18,20 @@ local Icey2SkullPileSpawner = Class(function(self, inst)
     inst:StartUpdatingComponent(self)
 end)
 
-function Icey2SkullPileSpawner:IsUnblockedPos(pos)
+local VOXEL_SIZE = 100
+
+function Icey2SkullPileSpawner:IsValidPos(pos)
     local x, y, z = pos:Get()
 
     if TheWorld.Map:IsOceanTileAtPoint(x, y, z)
         or not TheWorld.Map:IsVisualGroundAtPoint(x, y, z)
         or not TheWorld.Map:IsPassableAtPoint(x, 0, z)
         or TheWorld.Map:GetPlatformAtPoint(x, z) ~= nil then
+        return false
+    end
+
+    local player = FindClosestPlayerInRange(x, y, z, 50)
+    if player ~= nil then
         return false
     end
 
@@ -50,7 +57,7 @@ function Icey2SkullPileSpawner:SpawnCommon(set_count, voxel_size)
     while spawn_count < set_count do
         local pos = Vector3(GetRandomMinMax(-map_x, map_x), 0, GetRandomMinMax(-map_y, map_y))
 
-        if self:IsUnblockedPos(pos) then
+        if self:IsValidPos(pos) then
             local voxel_id = Icey2Math.GetVoxelCellIndex(pos, voxel_size)
 
             if lookup_table[voxel_id] == nil then
@@ -68,13 +75,13 @@ function Icey2SkullPileSpawner:SpawnCommon(set_count, voxel_size)
 end
 
 function Icey2SkullPileSpawner:DoInitSpawn()
-    local skull_piles_this = self:SpawnCommon(20, 100)
+    local skull_piles_this = self:SpawnCommon(15, VOXEL_SIZE)
     print("Init spawn, total skull pile count:", #skull_piles_this)
 end
 
 -- TheWorld.components.icey2_skull_pile_spawner:DoSpawnDuringGame()
 function Icey2SkullPileSpawner:DoSpawnDuringGame()
-    local skull_piles_this = self:SpawnCommon(1, 100)
+    local skull_piles_this = self:SpawnCommon(1, VOXEL_SIZE)
     local skull_piles_near_player = {}
 
     for _, v in pairs(skull_piles_this) do
@@ -83,7 +90,7 @@ function Icey2SkullPileSpawner:DoSpawnDuringGame()
         for _, player in pairs(AllPlayers) do
             if player:IsValid() and not IsEntityDeadOrGhost(player, true) then
                 local dist = math.sqrt(player:GetDistanceSqToInst(v))
-                if dist >= 100 and dist <= 800 then
+                if dist >= 60 and dist <= 800 then
                     table.insert(players, player)
                 end
             end
@@ -159,7 +166,7 @@ end
 --                 or table.contains(task.locks, LOCKS.MEDIUM)
 --                 or table.contains(task.locks, LOCKS.HARD))
 --             and node.type ~= NODE_TYPE.SeparatedRoom
---             and self:IsUnblockedPos(pos) then
+--             and self:IsValidPos(pos) then
 --             if chosen_pos_list[task_name] == nil then
 --                 chosen_pos_list[task_name] = {}
 --             end

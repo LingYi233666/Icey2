@@ -5,6 +5,7 @@ local ImageButton = require "widgets/imagebutton"
 local TEMPLATES = require "widgets/redux/templates"
 local Icey2SkillShieldBadge = require "widgets/icey2_skill_shield_badge"
 local Icey2SkillShieldMetrics = require "widgets/icey2_skill_shield_metrics"
+local Icey2SoulAbsorbCircle = require "widgets/icey2_soul_absorb_circle"
 
 AddClassPostConstruct("widgets/controls", function(self)
     if self.owner:HasTag("icey2") then
@@ -28,6 +29,32 @@ AddClassPostConstruct("widgets/controls", function(self)
         self.Icey2MenuCaller:SetPosition(75, 28)
     end
 end)
+-- ThePlayer.HUD.controls.status.icey2_soul_absorb_circle:Start()
+-- AddClassPostConstruct("widgets/statusdisplays", function(self)
+--     if self.owner:HasTag("icey2") then
+--         self.icey2_soul_absorb_circle = self:AddChild(Icey2SoulAbsorbCircle(self.owner))
+
+--         local pos = self.heart:GetPosition()
+--         self.icey2_soul_absorb_circle:SetPosition(pos)
+--         self.icey2_soul_absorb_circle:MoveToFront()
+--     end
+-- end)
+
+AddClassPostConstruct("widgets/controls", function(self)
+    if self.owner:HasTag("icey2") then
+        self.icey2_soul_absorb_circle = self:AddChild(Icey2SoulAbsorbCircle(self.owner))
+
+        -- local pos_status = self.status:GetPosition()
+        -- local pos_heart = self.status.heart:GetPosition()
+        -- self.icey2_soul_absorb_circle:SetPosition(pos_status + pos_heart)
+
+
+        local pos = self.status.heart:GetWorldPosition()
+        self.icey2_soul_absorb_circle:SetPosition(pos)
+
+        self.icey2_soul_absorb_circle:MoveToFront()
+    end
+end)
 
 
 AddClassPostConstruct("widgets/secondarystatusdisplays", function(self)
@@ -43,7 +70,8 @@ AddPrefabPostInit("player_classified", function(inst)
         if inst._parent
             and inst._parent.HUD
             and inst._parent.HUD.controls
-            and inst._parent.HUD.controls.secondary_status then
+            and inst._parent.HUD.controls.secondary_status
+            and inst._parent.HUD.controls.secondary_status.icey2_skill_shield_metrics then
             if inst.isghostmode:value() then
                 inst._parent.HUD.controls.secondary_status.icey2_skill_shield_metrics:Hide()
             else

@@ -11,7 +11,6 @@ local assets       =
 local MELEE_PERIOD = 17 * FRAMES
 
 local function OnEquip(inst, owner)
-    owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance", "swap_icey2_pact_weapon_gunlance")
     owner.AnimState:OverrideSymbol("swap_minigun", "swap_icey2_pact_weapon_gunlance_range", "swap_minigun")
     owner.AnimState:Show("ARM_carry")
     owner.AnimState:Hide("ARM_normal")
@@ -19,10 +18,18 @@ local function OnEquip(inst, owner)
     owner.AnimState:SetSymbolLightOverride("swap_object", 0.6)
     owner.AnimState:SetSymbolLightOverride("swap_minigun", 0.6)
 
-    if owner.components.combat then
-        if inst.components.icey2_versatile_weapon:GetCurForm() == 1 then
+    if inst.components.icey2_versatile_weapon:GetCurForm() == 1 then
+        owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
+            "swap_icey2_pact_weapon_gunlance")
+
+        if owner.components.combat then
             owner.components.combat:SetAttackPeriod(MELEE_PERIOD)
-        elseif inst.components.icey2_versatile_weapon:GetCurForm() == 2 then
+        end
+    elseif inst.components.icey2_versatile_weapon:GetCurForm() == 2 then
+        owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
+            "swap_icey2_pact_weapon_gunlance_range")
+
+        if owner.components.combat then
             owner.components.combat:SetAttackPeriod(FRAMES)
         end
     end
@@ -56,7 +63,7 @@ local function OnAttackMelee(inst, attacker, target)
 
     local ball_prefabs = {
         { "icey2_supply_ball_shield",       1 },
-        { "icey2_supply_ball_shield_small", math.random(0, 2) },
+        { "icey2_supply_ball_shield_small", math.random(1, 4) },
     }
 
     local sphere_emitter = Icey2Math.CustomSphereEmitter(0, 0.6, 0, PI, 0, PI * 2)
@@ -118,8 +125,13 @@ local function OnFormChange(inst, old_form, new_form, on_load)
 
         inst:RemoveTag("icey2_pact_weapon_gunlance_ranged")
 
-        if owner and owner.components.combat then
-            owner.components.combat:SetAttackPeriod(MELEE_PERIOD)
+        if owner then
+            owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
+                "swap_icey2_pact_weapon_gunlance")
+
+            if owner.components.combat then
+                owner.components.combat:SetAttackPeriod(MELEE_PERIOD)
+            end
         end
     elseif new_form == 2 then
         inst.components.weapon:SetDamage(21.5)
@@ -132,8 +144,13 @@ local function OnFormChange(inst, old_form, new_form, on_load)
 
         inst:AddTag("icey2_pact_weapon_gunlance_ranged")
 
-        if owner and owner.components.combat then
-            owner.components.combat:SetAttackPeriod(FRAMES)
+        if owner then
+            owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
+                "swap_icey2_pact_weapon_gunlance_range")
+
+            if owner.components.combat then
+                owner.components.combat:SetAttackPeriod(FRAMES)
+            end
         end
     end
 

@@ -12,6 +12,8 @@ local assets = {
 
     Asset("ANIM", "anim/icey2_shield_charge_cover.zip"),
 
+    Asset("ANIM", "anim/icey2_soul_absorb_fx.zip"),
+
 
     -- test bladegun anims
     Asset("ANIM", "anim/tf2minigun.zip"),
