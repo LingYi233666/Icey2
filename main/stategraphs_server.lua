@@ -89,12 +89,17 @@ AddStategraphPostInit("wilson", function(sg)
     local old_ATTACK = sg.actionhandlers[ACTIONS.ATTACK].deststate
     sg.actionhandlers[ACTIONS.ATTACK].deststate = function(inst, action)
         local old_rets = old_ATTACK(inst, action)
+        local weapon = inst.components.combat:GetWeapon()
         if old_rets ~= nil
             and not (inst.components.rider and inst.components.rider:IsRiding()) then
             if Icey2Basic.IsCarryingGunlance(inst, true) then
                 return "icey2_gunlance_ranged_attack"
             elseif Icey2Basic.IsCarryingGunlance(inst, false) then
                 return "icey2_gunlance_melee_attack"
+            elseif weapon ~= nil then
+                if weapon.prefab == "icey2_test_shooter" then
+                    return "icey2_test_shoot_stream"
+                end
             end
         end
 
@@ -650,7 +655,7 @@ AddStategraphState("wilson", State {
 -- attack: gunlance with range attack form
 AddStategraphState("wilson", State {
     name = "icey2_gunlance_ranged_attack",
-    tags = { "attack", "abouttoattack", "notalking" },
+    tags = { "attack", "notalking", "abouttoattack", "autopredict" }, -- "autopredict"
 
     onenter = function(inst)
         if inst.components.combat:InCooldown() then
@@ -662,6 +667,10 @@ AddStategraphState("wilson", State {
 
         local buffaction = inst:GetBufferedAction()
         local target = buffaction and buffaction.target or nil
+        inst.components.combat:SetTarget(target)
+        inst.components.combat:StartAttack()
+        inst.components.locomotor:Stop()
+
         if target and target:IsValid() then
             inst:ForceFacePoint(target.Transform:GetWorldPosition())
             inst.sg.statemem.attacktarget = target
@@ -669,8 +678,8 @@ AddStategraphState("wilson", State {
         end
 
         -- inst.sg.statemem.chained = inst.AnimState:IsCurrentAnimation("tf2minigun_shoot")
-
-        inst.sg.statemem.chained = (inst.sg.laststate == inst.sg.currentstate)
+        -- inst.sg.statemem.chained = (inst.sg.laststate == inst.sg.currentstate)
+        inst.sg.statemem.chained = true
 
         inst.Transform:SetEightFaced()
         if not inst.AnimState:IsCurrentAnimation("tf2minigun_shoot") then
@@ -684,10 +693,6 @@ AddStategraphState("wilson", State {
             timeout = 12
         end
 
-        inst.components.combat:StartAttack()
-        inst.components.combat:SetTarget(target)
-        inst.components.locomotor:Stop()
-
         inst.sg:SetTimeout(timeout * FRAMES)
     end,
 
@@ -696,7 +701,7 @@ AddStategraphState("wilson", State {
         -- not chained
         TimeEvent(1 * FRAMES, function(inst)
             if not inst.sg.statemem.chained then
-                inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/aim", "aim", nil, true)
+                -- inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/aim", "aim", nil, true)
             end
         end),
 
@@ -774,21 +779,18 @@ AddStategraphState("wilson", State {
 
         local buffaction = inst:GetBufferedAction()
         local target = buffaction ~= nil and buffaction.target or nil
-        local equip = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
         inst.components.combat:SetTarget(target)
         inst.components.combat:StartAttack()
         inst.components.locomotor:Stop()
         local cooldown = inst.components.combat.min_attack_period
 
 
-        if equip ~= nil and equip.components.weapon ~= nil and not equip:HasTag("punch") then
-            inst.AnimState:PlayAnimation("atk_pre")
-            inst.AnimState:PushAnimation("atk", false)
+        inst.AnimState:PlayAnimation("atk_pre")
+        inst.AnimState:PushAnimation("atk", false)
 
-            inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon", nil, nil, true)
+        inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon", nil, nil, true)
 
-            cooldown = math.max(cooldown, 17 * FRAMES)
-        end
+        cooldown = math.max(cooldown, 17 * FRAMES)
 
         inst.sg:SetTimeout(cooldown)
 
@@ -1177,5 +1179,111 @@ AddStategraphState("wilson", State {
         end
 
         inst.components.health:SetInvincible(false)
+    end,
+})
+
+
+local START_SHOOT_TIME = 10 * FRAMES
+local FREE_TIME = 11 * FRAMES
+local WITHDRAW_GUN_TIME = 15 * FRAMES
+local CHAIN_IN_ADVANCE_TIME = 10 * FRAMES
+
+AddStategraphState("wilson", State {
+    name = "icey2_test_shoot_stream",
+    tags = { "attack", "notalking", "abouttoattack", "autopredict" },
+
+    onenter = function(inst)
+        if inst.components.combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+        local buffaction = inst:GetBufferedAction()
+        local target = buffaction ~= nil and buffaction.target or nil
+        local equip = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        inst.components.combat:SetTarget(target)
+        inst.components.combat:StartAttack()
+        inst.components.locomotor:Stop()
+
+
+        if target ~= nil and target:IsValid() then
+            inst:FacePoint(target.Transform:GetWorldPosition())
+            inst.sg.statemem.attacktarget = target
+            inst.sg.statemem.retarget = target
+        end
+
+        inst.sg.statemem.chained = inst.AnimState:IsCurrentAnimation("hand_shoot")
+        -- inst.sg.statemem.chained = (inst.sg.laststate == inst.sg.currentstate)
+
+        inst.AnimState:PlayAnimation("hand_shoot")
+
+        if inst.sg.statemem.chained then
+            inst.AnimState:SetTime(CHAIN_IN_ADVANCE_TIME)
+        end
+
+        local timeout = inst.components.combat.min_attack_period
+        if not inst.sg.statemem.chained then
+            timeout = math.max(timeout, FREE_TIME)
+        else
+            timeout = math.max(timeout, FREE_TIME - CHAIN_IN_ADVANCE_TIME)
+        end
+
+        inst.sg:SetTimeout(timeout)
+    end,
+
+
+    ontimeout = function(inst)
+        inst.sg:RemoveStateTag("attack")
+        inst.sg:AddStateTag("idle")
+    end,
+
+    timeline =
+    {
+        TimeEvent(START_SHOOT_TIME - CHAIN_IN_ADVANCE_TIME, function(inst)
+            if inst.sg.statemem.chained then
+                inst:PerformBufferedAction()
+                inst.sg:RemoveStateTag("abouttoattack")
+            end
+        end),
+
+        TimeEvent(WITHDRAW_GUN_TIME - CHAIN_IN_ADVANCE_TIME, function(inst)
+            if inst.sg.statemem.chained then
+                inst.AnimState:SetTime(27 * FRAMES)
+            end
+        end),
+
+        TimeEvent(START_SHOOT_TIME, function(inst)
+            if not inst.sg.statemem.chained then
+                inst:PerformBufferedAction()
+                inst.sg:RemoveStateTag("abouttoattack")
+            end
+        end),
+
+        TimeEvent(WITHDRAW_GUN_TIME, function(inst)
+            if not inst.sg.statemem.chained then
+                inst.AnimState:SetTime(27 * FRAMES)
+            end
+        end),
+    },
+
+    events =
+    {
+        EventHandler("equip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+
+    onexit = function(inst)
+        inst.components.combat:SetTarget(nil)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.components.combat:CancelAttack()
+        end
     end,
 })

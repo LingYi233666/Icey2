@@ -14,6 +14,11 @@ local assets = {
 
     Asset("ANIM", "anim/icey2_soul_absorb_fx.zip"),
 
+    Asset("ANIM", "anim/player_pistol.zip"),
+
+    Asset("ANIM", "anim/wx_upgrade.zip"),
+
+
 
     -- test bladegun anims
     Asset("ANIM", "anim/tf2minigun.zip"),
@@ -86,6 +91,17 @@ local function ParryCallback(inst, data)
         inst.components.icey2_skill_battle_focus:RefreshAttackTime()
         inst.components.icey2_skill_battle_focus:DoDelta(100)
     end
+
+    local attacker = data.attacker
+    if attacker and inst.components.combat:CanTarget(attacker) and not inst.components.combat:IsAlly(attacker) then
+        local damage = 34
+        local spdamage = {
+            icey2_spdamage_force = 34
+        }
+        attacker.components.combat:GetAttacked(inst, damage, nil, "electric", spdamage)
+
+        SpawnAt("electrichitsparks", attacker):AlignToTarget(attacker, inst, true)
+    end
 end
 
 local function OnPlayerSpawn(inst)
@@ -104,13 +120,43 @@ local common_postinit = function(inst)
     -- Minimap icon
     inst.MiniMapEntity:SetIcon("icey2.tex")
 
+    inst.AnimState:AddOverrideBuild("wx_upgrade")
+
     inst:AddTag("icey2")
+    for i = 1, 5 do
+        inst:AddTag("icey2_dodge_charge_chip_" .. i .. "_builder")
+    end
 
     if not inst.components.updatelooper then
         inst:AddComponent("updatelooper")
     end
 
     inst:AddComponent("icey2_control_key_helper")
+end
+
+local function OnSave(inst, data)
+    for i = 1, 5 do
+        local tag = "icey2_dodge_charge_chip_" .. i .. "_builder"
+        local index = "has_" .. tag
+        data[index] = inst:HasTag(tag)
+    end
+end
+
+local function OnLoad(inst, data)
+    if data ~= nil then
+        for i = 1, 5 do
+            local tag = "icey2_dodge_charge_chip_" .. i .. "_builder"
+            local index = "has_" .. tag
+
+            if data[index] ~= nil then
+                if data[index] then
+                    inst:AddTag(tag)
+                else
+                    inst:RemoveTag(tag)
+                end
+            end
+        end
+    end
 end
 
 -- 这里的的函数只在主机执行  一般组件之类的都写在这里
@@ -173,6 +219,9 @@ local master_postinit = function(inst)
     -- inst:ListenForEvent("playeractivated", OnPlayerSpawn)
 
     -- inst:ListenForEvent("newstate", OnNewState)
+
+    inst.OnSave = OnSave
+    inst.OnLoad = OnLoad
 
     OnPlayerSpawn(inst)
 end

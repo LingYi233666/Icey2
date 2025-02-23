@@ -45,7 +45,7 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
     self.parry_start_time = nil
     self.parry_degree = 120
     self.good_parry_time_threshold = 0.33
-    self.shield_consume_factors = { 0.1, 0.5 }
+    self.shield_consume_factors = { 0.4, 0.5 }
     self.parry_history = {}
 
     self.parrytestfn = DefaultParryTestFnWrapper(self)
@@ -86,7 +86,7 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
                 -- inst.SoundEmitter:PlaySound("icey2_sfx/skill/parry/shield_break2")
 
 
-                -- TODO: Spawn shield break shards
+                -- Spawn shield break shards
                 local shard_fx = inst:SpawnChild("icey2_shield_break_shard_vfx")
                 -- shard_fx.Transform:SetPosition(1, 0, 0)
                 shard_fx:DoTaskInTime(0, shard_fx.Remove)
@@ -119,6 +119,11 @@ function Icey2SkillParry:CanStartParry(x, y, z, target)
     local success, reason = Icey2SkillBase_Active.CanCast(self, x, y, z, target)
     if not success then
         return false, reason
+    end
+
+    local equip = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+    if equip and equip:HasTag("NO_ICEY2_PARRY") then
+        return false, "EQUIP_SPECIAL_TAG"
     end
 
     if not (self.inst.components.icey2_skill_shield and self.inst.components.icey2_skill_shield.current > 0) then

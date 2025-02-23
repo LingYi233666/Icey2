@@ -37,56 +37,52 @@ local Icey2SkillShieldMetrics = Class(Widget, function(self, owner)
     self.bg:SetScale(0.5)
 
 
+    -- Init chips
+    self.chips = {}
+    self.num_chips = 0
+    self.max_num_chips = 0
+
+    local chip_x = -8
+    local chip_y = -35
+    local y_delta = 25
+    for i = 1, 5 do
+        local chip = self:AddChild(UIAnim())
+        chip:GetAnimState():SetBank("status_wx")
+        chip:GetAnimState():SetBuild("status_wx")
+        chip:GetAnimState():PlayAnimation("chip_idle")
+        chip:SetPosition(chip_x, chip_y)
+        chip:SetScale(0.6)
+        chip:MoveToBack()
+        chip_y = chip_y + y_delta
+
+        table.insert(self.chips, chip)
+    end
+
+    self.inst:DoTaskInTime(1, function()
+        local cmp_dodge = self.owner.replica.icey2_skill_dodge
+        self:SetMaxNumChips(cmp_dodge:GetMaxCharge())
+        self:SetNumChips(cmp_dodge:GetCharge())
+    end)
+
+    self.inst:ListenForEvent("Icey2SkillDodge._dodge_charge", function()
+        local cmp_dodge = self.owner.replica.icey2_skill_dodge
+        self:SetNumChips(math.floor(cmp_dodge:GetCharge()))
+    end, self.owner)
 
 
+    self.inst:ListenForEvent("Icey2SkillDodge._max_dodge_charge", function()
+        local cmp_dodge = self.owner.replica.icey2_skill_dodge
+        self:SetMaxNumChips(cmp_dodge:GetMaxCharge())
+    end, self.owner)
 
-    -- self.inst:ListenForEvent("isghostmodedirty", function()
-    --     print("isghostmodedirty", owner.player_classified.isghostmode:value())
-    --     if owner.player_classified and owner.player_classified.isghostmode:value() then
-    --         self:Hide()
-    --     else
-    --         self:Show()
-    --     end
-    -- end, owner)
 
-    -- self.inst:DoP
 
     self:StartUpdating()
 end)
 
-local function RGBA(r, g, b, a)
-    return { r = r, g = g, b = b, a = a, }
-end
-
-function Icey2SkillShieldMetrics:PushCharge()
-    -- TheFocalPoint.SoundEmitter:PlaySound("icey2_bgm/bgm/icey1_mound")
-    -- local r, g, b, a = self.charge_cover:GetAnimState():GetMultColour()
-    -- -- self.charge_cover:GetAnimState():SetMultColour(1, 1, 1, 1)
 
 
-    -- self.charge_cover:CancelTintTo()
-    -- self.charge_cover:TintTo(RGBA(r, g, b, a), RGBA(1, 1, 1, 1), 0.1, function()
-    --     self.charge_cover:TintTo(RGBA(1, 1, 1, 1), RGBA(1, 1, 1, 1), 1,function ()
-    --         self.charge_cover:TintTo(RGBA(r, g, b, a), RGBA(1, 1, 1, 1), 1)
-    --     end)
-    -- end)
-
-
-
-
-    -- self.charge_cover:CancelTintTo()
-    -- if self.cancel_charge_task then
-    --     self.cancel_charge_task:Cancel()
-    --     self.cancel_charge_task = nil
-    -- end
-
-
-    -- self.charge_cover:GetAnimState():SetMultColour(1, 1, 1, 1)
-    -- self.cancel_charge_task = self.inst:DoTaskInTime(0.5, function()
-    --     self.charge_cover:TintTo(RGBA(1, 1, 1, 1), RGBA(0, 0, 0, 0), 0.5)
-    --     self.cancel_charge_task = nil
-    -- end)
-
+function Icey2SkillShieldMetrics:PushChargeShield()
     TheFocalPoint.SoundEmitter:PlaySound("icey2_sfx/hud/shield_charge")
     self.charge_cover:GetAnimState():SetMultColour(1, 1, 1, 1)
 
@@ -134,6 +130,8 @@ function Icey2SkillShieldMetrics:EmitSpark()
     spark:GetAnimState():PlayAnimation("spark")
     spark:GetAnimState():SetMultColour(150 / 255, 250 / 255, 250 / 255, 1)
     spark:SetPosition(x, y)
+    spark:SetClickable(false)
+
 
     local live_time = 0.67
     local start_fadeout_time = 0.33
@@ -194,37 +192,62 @@ function Icey2SkillShieldMetrics:SetMetrics(cur_value, max_value)
     self.bar:GetAnimState():SetPercent("bar", cur_value / max_value)
 
     self.bar:SetTooltip(STRINGS.ICEY2_UI.SHIELD_METRICS.TIP:format(cur_value, max_value))
+    self.bg:SetTooltip(STRINGS.ICEY2_UI.SHIELD_METRICS.TIP:format(cur_value, max_value))
+end
+
+function Icey2SkillShieldMetrics:SetNumChips(val)
+    self.num_chips = val
+    for i = 1, #self.chips do
+        if i <= val then
+            self.chips[i]:GetAnimState():Show("plug_on")
+        else
+            self.chips[i]:GetAnimState():Hide("plug_on")
+        end
+
+        self.chips[i]:SetTooltip(STRINGS.ICEY2_UI.SHIELD_METRICS.DODGE_CHARGE:format(self.num_chips, self.max_num_chips))
+    end
+end
+
+function Icey2SkillShieldMetrics:SetMaxNumChips(val)
+    local is_init = (self.max_num_chips == 0)
+    local should_play_sound = false
+    self.max_num_chips = val
+    for i = 1, #self.chips do
+        if i <= val then
+            if not is_init and not self.chips[i].shown then
+                self.chips[i]:GetAnimState():PlayAnimation("plug")
+                self.chips[i]:GetAnimState():PushAnimation("chip_idle", false)
+                should_play_sound = true
+            end
+            self.chips[i]:Show()
+        else
+            self.chips[i]:Hide()
+        end
+
+        self.chips[i]:SetTooltip(STRINGS.ICEY2_UI.SHIELD_METRICS.DODGE_CHARGE:format(self.num_chips, self.max_num_chips))
+    end
+
+    if should_play_sound then
+        -- self.inst:DoTaskInTime(10 * FRAMES, function()
+        TheFocalPoint.SoundEmitter:PlaySound("icey2_sfx/hud/install_dodge_charge_chip", nil, 0.8)
+        -- end)
+    end
+end
+
+function Icey2SkillShieldMetrics:PlayChipInstallAnim()
+    local chip = self.chips[self.max_num_chips]
+    chip:GetAnimState():PlayAnimation("plug")
+    chip:GetAnimState():PushAnimation("chip_idle", false)
+
+    chip.inst:DoTaskInTime(10 * FRAMES, function()
+        TheFocalPoint.SoundEmitter:PlaySound("icey2_sfx/hud/install_dodge_charge_chip")
+    end)
 end
 
 function Icey2SkillShieldMetrics:OnUpdate(dt)
-    local cmp = self.owner.replica.icey2_skill_shield
-    self:SetMetrics(cmp:GetCurrent(), cmp:GetMax())
+    local cmp_shield = self.owner.replica.icey2_skill_shield
 
-
-    -- Tint speed
-
-    -- if self.target_charge_cover_rgba ~= nil then
-    --     local speed = 1
-
-    --     local r, g, b, a = self.charge_cover:GetAnimState():GetMultColour()
-    --     local target_r, target_g, target_b, target_a = unpack(self.target_charge_cover_rgba)
-
-    --     local delta_r = (target_r - r) * dt * speed
-    --     local delta_g = (target_g - g) * dt * speed
-    --     local delta_b = (target_b - b) * dt * speed
-    --     local delta_a = (target_a - a) * dt * speed
-
-    --     self.charge_cover:GetAnimState():SetMultColour(r + delta_r, g + delta_g, b + delta_b, a + delta_a)
-
-    --     if math.abs(delta_r) < 1e-6
-    --         and math.abs(delta_g) < 1e-6
-    --         and math.abs(delta_b) < 1e-6
-    --         and math.abs(delta_a) < 1e-6 then
-    --         self.charge_cover:GetAnimState():SetMultColour(delta_r, delta_g, delta_b, delta_a)
-
-    --         self.target_charge_cover_rgba = nil
-    --     end
-    -- end
+    self:SetMetrics(cmp_shield:GetCurrent(), cmp_shield:GetMax())
 end
 
 return Icey2SkillShieldMetrics

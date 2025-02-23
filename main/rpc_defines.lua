@@ -84,15 +84,25 @@ AddClientModRPCHandler("icey2_rpc", "push_shield_charge_anim", function()
         and ThePlayer.HUD.controls
         and ThePlayer.HUD.controls.secondary_status
         and ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics then
-        ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics:PushCharge()
+        ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics:PushChargeShield()
     end
 end)
 
-AddClientModRPCHandler("icey2_rpc", "start_soul_absorb_circle", function(skill_name)
+AddClientModRPCHandler("icey2_rpc", "start_soul_absorb_circle", function()
     if ThePlayer
         and ThePlayer.HUD
         and ThePlayer.HUD.controls
         and ThePlayer.HUD.controls.icey2_soul_absorb_circle then
         ThePlayer.HUD.controls.icey2_soul_absorb_circle:Start()
+    end
+end)
+
+AddClientModRPCHandler("icey2_rpc", "play_install_dodge_charge_chip_anim", function()
+    if ThePlayer
+        and ThePlayer.HUD
+        and ThePlayer.HUD.controls
+        and ThePlayer.HUD.controls.secondary_status
+        and ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics then
+        ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics:PlayChipInstallAnim()
     end
 end)

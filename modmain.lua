@@ -57,6 +57,13 @@ PrefabFiles = {
     "icey2_fire_explode_fx",
     "icey2_eat_metal_blood_vfx",
     "icey2_wagstaff_npc",
+
+    "icey2_blue_arrow_projectile",
+    "icey2_test_shooter",
+    "icey2_dodge_charge_chip",
+    "icey2_skull_projectile",
+    "icey2_skull_tail_vfx",
+    "icey2_pact_weapon_gunlance_openfire_vfx",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的

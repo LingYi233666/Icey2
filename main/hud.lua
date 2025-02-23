@@ -43,7 +43,7 @@ end)
 AddClassPostConstruct("widgets/controls", function(self)
     if self.owner:HasTag("icey2") then
         self.icey2_soul_absorb_circle = self:AddChild(Icey2SoulAbsorbCircle(self.owner))
-
+        self.icey2_soul_absorb_circle:SetClickable(false)
         -- local pos_status = self.status:GetPosition()
         -- local pos_heart = self.status.heart:GetPosition()
         -- self.icey2_soul_absorb_circle:SetPosition(pos_status + pos_heart)

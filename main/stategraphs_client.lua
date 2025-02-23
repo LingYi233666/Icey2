@@ -23,7 +23,7 @@ AddStategraphPostInit("wilson_client", function(sg)
         elseif not inst.entity:CanPredictMovement() then
 
         elseif is_moving and not should_move then
-            if not (inst.components.rider and inst.components.rider:IsRiding()) then
+            if not (inst.replica.rider and inst.replica.rider:IsRiding()) then
                 if inst:HasTag("icey2_skill_unarmoured_movement") then
                     handle_by_old = false
                     inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
@@ -33,7 +33,7 @@ AddStategraphPostInit("wilson_client", function(sg)
                 end
             end
         elseif not is_moving and should_move then
-            if not (inst.components.rider and inst.components.rider:IsRiding()) then
+            if not (inst.replica.rider and inst.replica.rider:IsRiding()) then
                 if data and data.dir then
                     if inst.components.locomotor then
                         inst.components.locomotor:SetMoveDir(data.dir)
@@ -87,10 +87,19 @@ AddStategraphPostInit("wilson_client", function(sg)
     local old_ATTACK = sg.actionhandlers[ACTIONS.ATTACK].deststate
     sg.actionhandlers[ACTIONS.ATTACK].deststate = function(inst, action)
         local old_rets = old_ATTACK(inst, action)
-        if old_rets ~= nil
-            and not (inst.components.rider and inst.components.rider:IsRiding())
-            and Icey2Basic.IsCarryingGunlance(inst, true) then
-            return "icey2_gunlance_ranged_attack"
+        local weapon = inst.replica.combat:GetWeapon()
+        if old_rets ~= nil and not (inst.replica.rider and inst.replica.rider:IsRiding()) then
+            if Icey2Basic.IsCarryingGunlance(inst, true) then
+                return "icey2_gunlance_ranged_attack"
+                -- inst:PerformPreviewBufferedAction()
+                -- return
+            elseif Icey2Basic.IsCarryingGunlance(inst, false) then
+                return "icey2_gunlance_melee_attack"
+            elseif weapon ~= nil then
+                if weapon.prefab == "icey2_test_shooter" then
+                    return "icey2_test_shoot_stream"
+                end
+            end
         end
 
         return old_rets
@@ -106,7 +115,7 @@ AddStategraphPostInit("wilson_client", function(sg)
         state.onenter = function(inst, pushanim, ...)
             local ret = old_onenter(inst, pushanim, ...)
             if pushanim ~= "noanim"
-                and not (inst.components.rider and inst.components.rider:IsRiding())
+                and not (inst.replica.rider and inst.replica.rider:IsRiding())
                 and Icey2Basic.IsCarryingGunlance(inst, true) then
                 inst.sg:GoToState("icey2_gunlance_ranged_idle")
             end
@@ -182,8 +191,11 @@ local function DoMountSound(inst, mount, sound)
     end
 end
 
-
-
+local function ClearCachedServerState(inst)
+    if inst.player_classified ~= nil then
+        inst.player_classified.currentstate:set_local(0)
+    end
+end
 
 -------------------------------------------------------------------------------------------
 -- Locomote: unarmored movement
@@ -475,7 +487,8 @@ AddStategraphState("wilson_client", State {
 -- attack: gunlance with range attack form
 AddStategraphState("wilson_client", State {
     name = "icey2_gunlance_ranged_attack",
-    tags = { "attack", "notalking", "abouttoattack" },
+    tags = { "attack", "notalking", },
+    -- server_states = { "icey2_gunlance_ranged_attack" },
 
     onenter = function(inst)
         local combat = inst.replica.combat
@@ -490,7 +503,9 @@ AddStategraphState("wilson_client", State {
 
         inst.components.locomotor:Stop()
 
-        inst.sg.statemem.chained = (inst.sg.laststate == inst.sg.currentstate)
+        -- inst.sg.statemem.chained = inst.AnimState:IsCurrentAnimation("tf2minigun_shoot")
+        -- inst.sg.statemem.chained = (inst.sg.laststate == inst.sg.currentstate)
+        inst.sg.statemem.chained = true
 
 
         inst.Transform:SetEightFaced()
@@ -500,13 +515,13 @@ AddStategraphState("wilson_client", State {
 
         local buffaction = inst:GetBufferedAction()
         if buffaction ~= nil then
-            inst:PerformPreviewBufferedAction()
-
             if buffaction.target ~= nil and buffaction.target:IsValid() then
                 inst:FacePoint(buffaction.target:GetPosition())
                 inst.sg.statemem.attacktarget = buffaction.target
                 inst.sg.statemem.retarget = buffaction.target
             end
+
+            inst:PerformPreviewBufferedAction()
         end
 
         local timeout = 33
@@ -525,7 +540,7 @@ AddStategraphState("wilson_client", State {
         -- not chained
         TimeEvent(1 * FRAMES, function(inst)
             if not inst.sg.statemem.chained then
-                inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/aim", "aim", nil, true)
+                -- inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/aim", "aim", nil, true)
             end
         end),
 
@@ -561,9 +576,70 @@ AddStategraphState("wilson_client", State {
                 inst.sg:AddStateTag("idle")
             end
         end),
-
-
     },
+
+    -- onupdate = function(inst)
+    --     -- if inst.sg:HasStateTag("idle") then
+    --     --     if inst.sg:HasStateTag("attack") and not (inst:HasTag("attack") and inst.sg:ServerStateMatches()) then
+    --     --         local equip = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+    --     --         if equip == nil then
+    --     --             inst.sg:GoToState("idle", "noanim")
+    --     --         else
+    --     --             inst.sg:RemoveStateTag("attack")
+    --     --         end
+    --     --     end
+    --     -- elseif inst.sg:ServerStateMatches() then
+    --     --     if inst.entity:FlattenMovementPrediction() then
+    --     --         inst.sg:AddStateTag("idle")
+    --     --         inst.sg:AddStateTag("canrotate")
+    --     --         inst.entity:SetIsPredictingMovement(false) -- so the animation will come across
+    --     --         ClearCachedServerState(inst)
+    --     --     end
+    --     -- elseif inst.bufferedaction == nil then
+    --     --     inst.sg:GoToState("idle")
+    --     -- end
+
+    --     -- if inst.sg:HasStateTag("idle") then
+    --     --     if inst.sg:HasStateTag("attack") and not inst:HasTag("attack") then
+    --     --         local equip = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+    --     --         if equip == nil then
+    --     --             inst.sg:GoToState("idle", "noanim")
+    --     --         else
+    --     --             inst.sg:RemoveStateTag("attack")
+    --     --         end
+    --     --     end
+    --     -- elseif inst.sg:ServerStateMatches() then
+    --     --     if inst.entity:FlattenMovementPrediction() then
+    --     --         inst.sg:AddStateTag("idle")
+    --     --         inst.sg:AddStateTag("canrotate")
+    --     --         inst.entity:SetIsPredictingMovement(false) -- so the animation will come across
+    --     --         ClearCachedServerState(inst)
+    --     --     end
+    --     -- elseif inst.bufferedaction == nil then
+    --     --     inst.sg:GoToState("idle")
+    --     -- end
+
+
+    --     -- if inst.sg:ServerStateMatches() then
+    --     --     if inst.entity:FlattenMovementPrediction() and not inst:HasTag("attack") then
+    --     --         inst.sg:AddStateTag("idle")
+    --     --         inst.sg:RemoveStateTag("attack")
+    --     --         inst.entity:SetIsPredictingMovement(false) -- so the animation will come across
+    --     --         ClearCachedServerState(inst)
+    --     --     end
+    --     -- elseif inst.bufferedaction == nil then
+    --     --     inst.sg:GoToState("idle")
+    --     -- end
+    -- end,
+
+    -- ontimeout = function(inst)
+    --     if inst.sg:HasStateTag("idle") then
+    --         inst.sg:GoToState("idle", "noanim")
+    --     else
+    --         inst:ClearBufferedAction()
+    --         inst.sg:GoToState("idle")
+    --     end
+    -- end,
 
     ontimeout = function(inst)
         inst.sg:GoToState("idle")
@@ -582,5 +658,167 @@ AddStategraphState("wilson_client", State {
         inst.Transform:SetFourFaced()
 
         inst.SoundEmitter:KillSound("aim")
+
+        -- inst.entity:SetIsPredictingMovement(true)
+    end,
+})
+
+AddStategraphState("wilson_client", State {
+    name = "icey2_gunlance_melee_attack",
+    tags = { "attack", "notalking", "abouttoattack", },
+
+    onenter = function(inst)
+        local combat = inst.replica.combat
+        if combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+        local cooldown = combat:MinAttackPeriod()
+
+        combat:StartAttack()
+        inst.components.locomotor:Stop()
+        local equip = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+
+        inst.AnimState:PlayAnimation("atk_pre")
+        inst.AnimState:PushAnimation("atk", false)
+
+        inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon", nil, nil, true)
+
+        cooldown = math.max(cooldown, 17 * FRAMES)
+
+        local buffaction = inst:GetBufferedAction()
+        if buffaction ~= nil then
+            inst:PerformPreviewBufferedAction()
+
+            if buffaction.target ~= nil and buffaction.target:IsValid() then
+                inst:FacePoint(buffaction.target:GetPosition())
+                inst.sg.statemem.attacktarget = buffaction.target
+                inst.sg.statemem.retarget = buffaction.target
+            end
+        end
+
+        inst.sg:SetTimeout(cooldown)
+    end,
+
+    timeline =
+    {
+        TimeEvent(2 * FRAMES, function(inst)
+            inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/swipe", nil, 0.5, true)
+        end),
+
+        TimeEvent(8 * FRAMES, function(inst)
+            inst:ClearBufferedAction()
+            inst.sg:RemoveStateTag("abouttoattack")
+        end),
+    },
+
+
+    ontimeout = function(inst)
+        inst.sg:RemoveStateTag("attack")
+        inst.sg:AddStateTag("idle")
+    end,
+
+    events =
+    {
+        EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.replica.combat:CancelAttack()
+        end
+    end,
+})
+
+
+local START_SHOOT_TIME = 10 * FRAMES
+local FREE_TIME = 11 * FRAMES
+local WITHDRAW_GUN_TIME = 15 * FRAMES
+local CHAIN_IN_ADVANCE_TIME = 10 * FRAMES
+
+
+AddStategraphState("wilson_client", State {
+    name = "icey2_test_shoot_stream",
+    tags = { "attack" },
+    server_states = { "icey2_test_shoot_stream" },
+
+    onenter = function(inst)
+        inst.components.locomotor:Stop()
+
+        inst.sg.statemem.chained = inst.AnimState:IsCurrentAnimation("hand_shoot")
+        inst.AnimState:PlayAnimation("hand_shoot")
+
+        if inst.sg.statemem.chained then
+            inst.AnimState:SetTime(CHAIN_IN_ADVANCE_TIME)
+        end
+
+        local buffaction = inst:GetBufferedAction()
+        if buffaction ~= nil then
+            inst:PerformPreviewBufferedAction()
+
+            if buffaction.target and buffaction.target:IsValid() then
+                inst:FacePoint(buffaction.target:GetPosition())
+                inst.sg.statemem.attacktarget = buffaction.target
+                inst.sg.statemem.retarget = buffaction.target
+            end
+        end
+
+        inst.sg:SetTimeout(2)
+    end,
+
+    onupdate = function(inst)
+        if inst.sg:HasStateTag("idle") then
+            if inst.sg:HasStateTag("attack") and not (inst:HasTag("attack") and inst.sg:ServerStateMatches()) then
+                local equip = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+                if equip == nil then
+                    inst.sg:GoToState("idle", "noanim")
+                else
+                    inst.sg:RemoveStateTag("attack")
+                end
+            end
+        elseif inst.sg:ServerStateMatches() then
+            if inst.entity:FlattenMovementPrediction() then
+                inst.sg:AddStateTag("idle")
+                inst.sg:AddStateTag("canrotate")
+                inst.entity:SetIsPredictingMovement(false) -- so the animation will come across
+                --ClearCachedServerState(inst) --don't clear, we polling this in the above "idle" code
+            end
+        elseif inst.bufferedaction == nil then
+            inst.sg:GoToState("idle")
+        end
+    end,
+
+    ontimeout = function(inst)
+        if not inst.sg:HasStateTag("idle") then
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle")
+        end
+    end,
+
+    timeline =
+    {
+        TimeEvent(WITHDRAW_GUN_TIME - CHAIN_IN_ADVANCE_TIME, function(inst)
+            if inst.sg.statemem.chained then
+                inst.AnimState:SetTime(27 * FRAMES)
+            end
+        end),
+
+        TimeEvent(WITHDRAW_GUN_TIME, function(inst)
+            if not inst.sg.statemem.chained then
+                inst.AnimState:SetTime(27 * FRAMES)
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        inst.entity:SetIsPredictingMovement(true)
     end,
 })

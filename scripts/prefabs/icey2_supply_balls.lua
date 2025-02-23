@@ -222,7 +222,7 @@ local function fn_shield()
         return inst
     end
 
-    inst.shield_recover = 5
+    inst.shield_recover = 3
     inst.tail_prefab = "icey2_supply_ball_tail_blue"
 
 

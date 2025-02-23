@@ -104,7 +104,7 @@ function Icey2SkillBattleFocus:GetSupplyBallData(weapon, target, addition)
 
     local supply_chance = {}
 
-    if self:GetPercent() >= 0.5 and self.inst.components.icey2_skill_shield then
+    if self:GetPercent() >= 1 and self.inst.components.icey2_skill_shield then
         local p = self.inst.components.icey2_skill_shield:GetPercent()
         if p < 1 then
             supply_chance.icey2_supply_ball_shield = 1 - p

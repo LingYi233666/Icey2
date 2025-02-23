@@ -34,19 +34,19 @@ local function AddRecipeWithManyIngredients(name, list_ingredients, tech, config
 end
 
 
-Icey2ModAddRecipe2(
-    "icey2_blood_metal",
-    {
-        Ingredient(CHARACTER_INGREDIENT.HEALTH, 245),
-        Ingredient("transistor", 2),
-        Ingredient("gears", 1),
-    },
-    TECH.NONE,
-    {
-        builder_tag = "icey2"
-    },
-    { "CHARACTER", }
-)
+-- Icey2ModAddRecipe2(
+--     "icey2_blood_metal",
+--     {
+--         Ingredient(CHARACTER_INGREDIENT.HEALTH, 245),
+--         Ingredient("transistor", 2),
+--         Ingredient("gears", 1),
+--     },
+--     TECH.NONE,
+--     {
+--         builder_tag = "icey2"
+--     },
+--     { "CHARACTER", }
+-- )
 
 AddRecipeWithManyIngredients(
     "icey2_energy_tank",
@@ -64,6 +64,46 @@ AddRecipeWithManyIngredients(
     { "CHARACTER", }
 )
 
+
+---------------- Dodge charge upgrade ----------------
+
+local dodge_charge_upgrade_chips_recipe = {
+    { Ingredient("wintersfeastfuel", 3),    Ingredient("crumbs", 12), Ingredient("gears", 1),        Ingredient("wagpunk_bits", 3), },
+    { Ingredient("rabbitkingspear", 1),     Ingredient("gears", 1),   Ingredient("wagpunk_bits", 3), },
+    { Ingredient("goose_feather", 8),       Ingredient("gears", 1),   Ingredient("wagpunk_bits", 3), },
+    { Ingredient("townportaltalisman", 12), Ingredient("gears", 1),   Ingredient("wagpunk_bits", 3), },
+    { Ingredient("walrus_tusk", 2),         Ingredient("gears", 1),   Ingredient("wagpunk_bits", 3), },
+}
+
+for i, recipe in pairs(dodge_charge_upgrade_chips_recipe) do
+    local builder_tag = "icey2_dodge_charge_chip_" .. i .. "_builder"
+    Icey2ModAddRecipe2(
+        "icey2_dodge_charge_chip_" .. i,
+        recipe,
+        TECH.NONE,
+        {
+            builder_tag = builder_tag,
+            image = "wx78module_movespeed2.tex",
+            sg_state = "applyupgrademodule",
+            canbuild = function(inst, builder)
+                if not builder:HasTag(builder_tag) then
+                    return false, "DODGE_CHARGE_CHIP_ONLY_ONCE"
+                end
+
+                if not builder.components.icey2_skill_dodge then
+                    return false, nil
+                end
+
+                if builder.components.icey2_skill_dodge.max_dodge_charge >= 4 then
+                    return false, "MAX_DODGE_CHARGE"
+                end
+
+                return true
+            end,
+        },
+        { "CHARACTER", }
+    )
+end
 
 ---------------- Add skill builder recipes --------------------
 

@@ -16,14 +16,26 @@ local Icey2SkillDodge = Class(Icey2SkillBase_Active, function(self, inst)
     self.max_dodge_charge = 1
     self.dodge_charge = 1
     self.recharge_rate = 3
+
+    self:SetMaxCharge(self.max_dodge_charge)
 end)
 
 function Icey2SkillDodge:DoDeltaCharge(delta)
     self.dodge_charge = math.clamp(self.dodge_charge + delta, 0, self.max_dodge_charge)
+    self.inst.replica.icey2_skill_dodge:SetCharge(math.floor(self.dodge_charge))
 end
 
+-- print( ThePlayer.components.icey2_skill_dodge.dodge_charge)
+-- ThePlayer.components.icey2_skill_dodge:SetMaxCharge(3)
 function Icey2SkillDodge:SetMaxCharge(c)
     self.max_dodge_charge = c
+    self.inst.replica.icey2_skill_dodge:SetMaxCharge(c)
+
+    self:DoDeltaCharge(0)
+
+    if self.max_dodge_charge > self.dodge_charge then
+        self:StartRecharge()
+    end
 end
 
 function Icey2SkillDodge:RechageTask()
@@ -144,7 +156,9 @@ function Icey2SkillDodge:CanCast(x, y, z, target)
     local success, reason = Icey2SkillBase_Active.CanCast(self, x, y, z, target)
     if not success then return false, reason end
 
-    if self.dodge_charge < 1 then return false, "NOT_ENOUGH_DODGE_CHARGE" end
+    if self.dodge_charge < 1 then
+        return false, "NOT_ENOUGH_DODGE_CHARGE"
+    end
 
     return true
 end
@@ -153,8 +167,31 @@ function Icey2SkillDodge:Cast(x, y, z, target)
     Icey2SkillBase_Active.Cast(self, x, y, z, target)
 
     self:DoDeltaCharge(-1)
-    if self.dodge_charge < self.max_dodge_charge then self:StartRecharge(0.5) end
+    if self.dodge_charge < self.max_dodge_charge then
+        self:StartRecharge(0.5)
+    end
     self.inst.sg:GoToState("icey2_dodge", { pos = Vector3(x, y, z) })
+end
+
+function Icey2SkillDodge:OnSave()
+    local data = Icey2SkillBase_Active.OnSave(self)
+
+    data.dodge_charge = self.dodge_charge
+    data.max_dodge_charge = self.max_dodge_charge
+
+    return data
+end
+
+function Icey2SkillDodge:OnLoad(data)
+    Icey2SkillBase_Active.OnLoad(self, data)
+
+    if data.dodge_charge ~= nil then
+        self.dodge_charge = data.dodge_charge
+    end
+
+    if data.max_dodge_charge ~= nil then
+        self:SetMaxCharge(data.max_dodge_charge)
+    end
 end
 
 return Icey2SkillDodge

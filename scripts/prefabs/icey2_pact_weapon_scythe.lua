@@ -188,7 +188,8 @@ local function ProjectileOnThrown(inst, thrower)
     inst.launch_time = GetTime()
 
     -- inst.AnimState:PlayAnimation("spin_loop", true)
-    inst.AnimState:SetPercent("height_controller", 110 / 1000)
+    -- inst.AnimState:SetPercent("height_controller", 110 / 1000)
+    inst.AnimState:SetPercent("height_controller", 0)
 
     inst.rolling_fx = inst:SpawnChild("icey2_pact_weapon_scythe_rolling")
     inst.tail_vfx = inst:SpawnChild("icey2_scythe_tail_vfx")
@@ -200,7 +201,7 @@ local function ProjectileOnThrown(inst, thrower)
     if not inst.tail_vfx.Follower then
         inst.tail_vfx.entity:AddFollower()
     end
-    inst.tail_vfx.Follower:FollowSymbol(inst.GUID, "swap_rolling_fx", 0, 0, 0)
+    inst.tail_vfx.Follower:FollowSymbol(inst.GUID, "swap_rolling_fx", 0, -110, 0)
 
     inst.SoundEmitter:PlaySound("wilson_rework/torch/torch_spin", "spin_loop")
 

@@ -15,7 +15,7 @@ local Icey2SoulAbsorbCircle = Class(Widget, function(self)
 end)
 
 function Icey2SoulAbsorbCircle:Start(duration)
-    duration = duration or 3
+    duration = duration or 3.5
 
     self:Stop()
 

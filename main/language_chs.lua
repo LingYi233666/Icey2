@@ -56,6 +56,21 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_ENERGY_TANK = "一个奇怪的罐子�
 STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY2_ENERGY_TANK = "我能用它强化我的护盾。"
 STRINGS.CHARACTERS.WX78.DESCRIBE.ICEY2_ENERGY_TANK = "分析无结果，此设备不适用于我的身体"
 
+STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_1 = "闪避充能芯片1"
+STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_1 = "吸收姜饼猪的速度来增加连续闪避次数。无法重复制作。"
+
+STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_2 = "闪避充能芯片2"
+STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_2 = "吸收兔子的速度来增加连续闪避次数。无法重复制作。"
+
+STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_3 = "闪避充能芯片3"
+STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_3 = "吸收小鸭子的速度来增加连续闪避次数。无法重复制作。"
+
+STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_4 = "闪避充能芯片4"
+STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_4 = "吸收传送之力来增加连续闪避次数。无法重复制作。"
+
+STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_5 = "闪避充能芯片5"
+STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_5 = "吸收海象的力量来增加连续闪避次数。无法重复制作。"
+
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "解锁能量武器：镰刀"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "使你的能量武器种类增加！"
 
@@ -122,7 +137,8 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
 
         DODGE = {
             TITLE = "闪光冲刺",
-            DESC = "消耗少许电力值，向鼠标指向方向冲刺，冲刺期间你不会受到伤害。\n冲刺开始时，自动使用残影向正在攻击你的敌人发动一次反击。\n若你装备了任何种类的护甲或盾牌，就无法使用闪光冲刺。"
+            DESC =
+            "消耗少许电力值和一格闪避充能，向鼠标指向方向冲刺，冲刺期间你不会受到伤害。在冲刺开始时，你会自动使用残影向正在攻击你的敌人发动一次反击。\n闪避充能数量能在右上角查看，你可以通过制造各种闪避充能芯片来增加闪避充能数量上限，但是每种闪避芯片只能安装一次。使用此方法最多将闪避充能上限提升至4格。\n此外，若你装备了任何种类的护甲或盾牌，就无法使用闪光冲刺。"
         },
 
         SUMMON_PACT_WEAPON = {
@@ -179,8 +195,38 @@ STRINGS.ICEY2_UI.KEY_CONFIG_DIALOG = {
 }
 
 STRINGS.ICEY2_UI.SHIELD_METRICS = {
-    TIP = "护盾：%d/%d"
+    TIP = "护盾：%d/%d",
+    DODGE_CHARGE = "闪避充能：%d/%d",
 }
+----------------------------------------------------------------------------------------------
+-- Charlie stage perform
+
+STRINGS.STAGEACTOR.ICEY2_SELF_ACT = {
+    "我是艾希，我正在寻找真正的自我。",
+    "寻找自我的路途漫长，但是我...",
+    "啊！",
+    "侦测到未授权的入侵！",
+    "...........",
+    "哈哈，我是《艾希》模组的作者，我已经控制了这具身体！",
+    "然而我费尽心思连线进来可不是来闲聊的！",
+    "窥视这个世界的高等生灵啊，我的这些话只能说给你听：",
+    "根据鸽雷内部消息，旺达以后会出个钟表箱来存放钟表...",
+    "...钟表箱平时可以带在身上，打开掉地上。",
+    "你知道吗？Jason在设计技能树时平衡性把握的很好...",
+    "...不过温蒂的技能树明显有些过于强壮了。",
+    "从我的角度看，强度高于无技能树威尔逊的角色都是超模的...",
+    "...所以别叫我补强艾希了。",
+    "你们可能会认为艾希可以单刷为爽新界永不妥协...",
+    "...但是我觉得你会死得很惨。",
+    "我一直觉得自己是个幸运的人...",
+    "...因为我再过不知道多少年就能玩到《不死鸟传说2》、《星辰史诗》、《公理边缘3》和《丝之歌》了。",
+    "最后，我听说老马克肖会在2026年底发售艾希续作...",
+    "...别忘了加入老马克肖的粉丝交流群：938626007！",
+    ".............",
+    "刚刚发生了什么？",
+}
+
+
 ----------------------------------------------------------------------------------------------
 -- Other
 

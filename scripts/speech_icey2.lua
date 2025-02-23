@@ -12,7 +12,9 @@ local MODIFIED_SPEECH = {
 	ACTIONFAIL = {
 		BUILD =
 		{
-			SKILL_ALREADY_LEARNED = "我之前就已经学会这个技能了。"
+			SKILL_ALREADY_LEARNED = "我之前就已经学会这个技能了。",
+			MAX_DODGE_CHARGE = "闪避充能已经到达上限了。",
+			DODGE_CHARGE_CHIP_ONLY_ONCE = "每种芯片我最多只能使用一次！",
 		},
 	},
 
@@ -36,6 +38,7 @@ local MODIFIED_SPEECH = {
 
 		-- CATCOON = "小猫，你可以吃素食堡。",
 		CATCOON = "彼处浣猫与狼共舞。",
+		CHARLIE_STAGE_POST = "要我把《艾希》真结局的台词复述一遍吗？",
 		CUTGRASS = "生草。",
 
 		DEERCLOPS = "My deer friend.",
@@ -83,7 +86,20 @@ local MODIFIED_SPEECH = {
 
 		PETALS = "把小班花捧在手心。",
 		PETALS_EVIL = "邪恶的花瓣！",
+		PIGMAN =
+		{
+			DEAD = "死猪。",
+			FOLLOWER = "他是我的好伙伴。",
+			GENERIC = "猪！你的鼻子有两个孔！",
+			GUARD = "他看上去很不好惹。",
+			WEREPIG = "正中大疯猪！",
+		},
 		PITCHFORK = "可以用来挖九宫格。",
+		PLAYER_HOSTED =
+		{
+			GENERIC = "尸体，发火。",
+			ME = "尸体，发...",
+		},
 		PONDFISH = "比利比利鱼腩。",
 
 		RABBIT =

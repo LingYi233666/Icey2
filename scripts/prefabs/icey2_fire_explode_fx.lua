@@ -8,8 +8,14 @@ local REVEAL_SHADER = "shaders/vfx_particle_reveal.ksh"
 
 local COLOUR_ENVELOPE_NAME_SMOKE_RED = "icey2_fire_explode_fx_colourenvelope_smoke_red"
 local COLOUR_ENVELOPE_NAME_SMOKE_YELLOW = "icey2_fire_explode_fx_colourenvelope_smoke_yellow"
+local COLOUR_ENVELOPE_NAME_SMOKE_BLUE = "icey2_fire_explode_fx_colourenvelope_smoke_blue"
+local COLOUR_ENVELOPE_NAME_SMOKE_WHITE = "icey2_fire_explode_fx_colourenvelope_smoke_white"
+
 local SCALE_ENVELOPE_NAME_SMOKE_THIN = "icey2_fire_explode_fx_scaleenvelope_smoke_thin"
 local SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN = "icey2_fire_explode_fx_scaleenvelope_smoke_very_thin"
+
+local SCALE_ENVELOPE_NAME_SMOKE_THIN2 = "icey2_fire_explode_fx_scaleenvelope_smoke_thin2"
+local SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN2 = "icey2_fire_explode_fx_scaleenvelope_smoke_very_thin2"
 
 
 local assets =
@@ -49,6 +55,24 @@ local function InitEnvelope()
         { 1,  IntColour(255, 0, 0, 0) },
     })
 
+    EnvelopeManager:AddColourEnvelope(COLOUR_ENVELOPE_NAME_SMOKE_BLUE, {
+        { 0,  IntColour(0, 100, 200, 0) },
+        { .2, IntColour(0, 100, 200, 240) },
+        { .3, IntColour(0, 100, 200, 180) },
+        { .6, IntColour(0, 100, 200, 150) },
+        { .9, IntColour(0, 100, 200, 110) },
+        { 1,  IntColour(0, 100, 200, 0) },
+    })
+
+    EnvelopeManager:AddColourEnvelope(COLOUR_ENVELOPE_NAME_SMOKE_WHITE, {
+        { 0,  IntColour(200, 200, 200, 0) },
+        { .2, IntColour(200, 200, 200, 240) },
+        { .3, IntColour(200, 200, 200, 180) },
+        { .6, IntColour(200, 200, 200, 150) },
+        { .9, IntColour(200, 200, 200, 110) },
+        { 1,  IntColour(200, 200, 200, 0) },
+    })
+
 
 
     local scale_factor = 1.2
@@ -65,6 +89,27 @@ local function InitEnvelope()
     scale_factor = 1.0
     EnvelopeManager:AddVector2Envelope(
         SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN,
+        {
+            { 0,   { scale_factor * 0.07, scale_factor } },
+            { 0.2, { scale_factor * 0.07, scale_factor } },
+            { 1,   { scale_factor * .01, scale_factor * 0.6 } },
+        }
+    )
+
+    scale_factor = 1
+    EnvelopeManager:AddVector2Envelope(
+        SCALE_ENVELOPE_NAME_SMOKE_THIN2,
+        {
+            { 0,   { scale_factor * 0.07, scale_factor } },
+            { 0.2, { scale_factor * 0.07, scale_factor } },
+            { 1,   { scale_factor * .005, scale_factor * 0.6 } },
+        }
+    )
+
+
+    scale_factor = 0.6
+    EnvelopeManager:AddVector2Envelope(
+        SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN2,
         {
             { 0,   { scale_factor * 0.07, scale_factor } },
             { 0.2, { scale_factor * 0.07, scale_factor } },
@@ -104,7 +149,7 @@ local function emit_line(effect, pos, velocity)
     )
 end
 
-local function explode_vfx_fn()
+local function common_vfx_fn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -152,6 +197,21 @@ local function explode_vfx_fn()
     effect:SetRadius(1, 1)
     effect:SetSortOffset(1, 0)
 
+
+
+    return inst
+end
+
+local function explode_vfx_fn()
+    local inst = common_vfx_fn()
+
+    if TheNet:IsDedicated() then
+        return inst
+    end
+
+
+    local effect = inst.VFXEffect
+
     -----------------------------------------------------
     local norm_sphere_emitter = CreateSphereEmitter(1)
     local remain_time = FRAMES * 3
@@ -168,6 +228,54 @@ local function explode_vfx_fn()
             remain_time = remain_time - FRAMES
         end
     end)
+
+    return inst
+end
+
+
+local function explode_blue_vfx_fn()
+    local inst = common_vfx_fn()
+
+
+    inst._can_emit = net_bool(inst.GUID, "inst._can_emit")
+    inst._can_emit:set(false)
+
+    if TheNet:IsDedicated() then
+        return inst
+    end
+
+    local effect = inst.VFXEffect
+
+    effect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_SMOKE_WHITE)
+    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN2)
+    effect:SetBlendMode(0, BLENDMODE.AlphaAdditive)
+    effect:SetMaxNumParticles(0, 16)
+    effect:SetSortOrder(0, 2)
+
+    effect:SetColourEnvelope(1, COLOUR_ENVELOPE_NAME_SMOKE_BLUE)
+    effect:SetScaleEnvelope(1, SCALE_ENVELOPE_NAME_SMOKE_THIN2)
+    effect:SetBlendMode(1, BLENDMODE.AlphaAdditive)
+    effect:SetMaxNumParticles(0, 16)
+    effect:SetSortOrder(1, 2)
+
+    -----------------------------------------------------
+    local norm_sphere_emitter = CreateSphereEmitter(1)
+    local num_to_emit = 2
+    EmitterManager:AddEmitter(inst, nil, function()
+        local parent = inst.entity:GetParent()
+        if parent and inst._can_emit:value() and num_to_emit > 0 then
+            for i = 1, 8 do
+                local velocity = Vector3(norm_sphere_emitter()) * 0.1
+                -- velocity.y = math.abs(velocity.y)
+                -- local pos = Vector3(line_sphere_emitter())
+                local pos = velocity:GetNormalized() * 0.66
+                emit_line_thin(effect, pos, velocity)
+                emit_line(effect, pos, velocity)
+            end
+            num_to_emit = num_to_emit - 1
+        end
+    end)
+
 
     return inst
 end
@@ -209,4 +317,5 @@ end
 
 
 return Prefab("icey2_fire_explode_vfx", explode_vfx_fn, assets),
+    Prefab("icey2_blue_fire_explode_vfx", explode_blue_vfx_fn, assets),
     Prefab("icey2_fire_explode_fx", explode_fx_fn, assets)
