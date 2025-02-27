@@ -1,13 +1,16 @@
 local assets               =
 {
-    -- Asset("ANIM", "anim/icey2_pact_weapon_gunlance.zip"),
+    Asset("ANIM", "anim/icey2_pact_weapon_gunlance.zip"),
     Asset("ANIM", "anim/swap_icey2_pact_weapon_gunlance.zip"),
     Asset("ANIM", "anim/swap_icey2_pact_weapon_gunlance_range.zip"),
 
     Asset("ANIM", "anim/icey2_advance_height_controler.zip"),
 
-    -- Asset("IMAGE", "images/inventoryimages/icey2_pact_weapon_gunlance.tex"),
-    -- Asset("ATLAS", "images/inventoryimages/icey2_pact_weapon_gunlance.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_pact_weapon_gunlance.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_pact_weapon_gunlance.xml"),
+
+    Asset("IMAGE", "images/inventoryimages/icey2_pact_weapon_gunlance_range.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_pact_weapon_gunlance_range.xml"),
 }
 
 local MELEE_PERIOD         = 17 * FRAMES
@@ -161,6 +164,11 @@ local function OnFormChange(inst, old_form, new_form, on_load)
     local owner = inst.components.inventoryitem:GetGrandOwner()
 
     if new_form == 1 then
+        inst.AnimState:PlayAnimation("idle")
+
+        inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance.xml"
+        inst.components.inventoryitem:ChangeImageName("icey2_pact_weapon_gunlance")
+
         inst.components.weapon:SetDamage(17)
         inst.components.weapon:SetRange(0)
         inst.components.weapon:SetProjectile(nil)
@@ -169,7 +177,7 @@ local function OnFormChange(inst, old_form, new_form, on_load)
 
         inst.components.icey2_spdamage_force:SetBaseDamage(34)
 
-        inst:RemoveTag("icey2_pact_weapon_gunlance_ranged")
+        inst:RemoveTag("icey2_pact_weapon_gunlance_range")
         inst:RemoveTag("NO_ICEY2_PARRY")
 
         if owner then
@@ -185,6 +193,11 @@ local function OnFormChange(inst, old_form, new_form, on_load)
             end
         end
     elseif new_form == 2 then
+        inst.AnimState:PlayAnimation("idle_range")
+
+        inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance_range.xml"
+        inst.components.inventoryitem:ChangeImageName("icey2_pact_weapon_gunlance_range")
+
         inst.components.weapon:SetDamage(21.5)
         inst.components.weapon:SetRange(20, 30)
         inst.components.weapon:SetProjectile("icey2_fake_projectile")
@@ -193,7 +206,7 @@ local function OnFormChange(inst, old_form, new_form, on_load)
 
         inst.components.icey2_spdamage_force:SetBaseDamage(21.5)
 
-        inst:AddTag("icey2_pact_weapon_gunlance_ranged")
+        inst:AddTag("icey2_pact_weapon_gunlance_range")
         inst:AddTag("NO_ICEY2_PARRY")
 
         if owner then
@@ -226,15 +239,14 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("spear")
-    inst.AnimState:SetBuild("swap_spear")
+    inst.AnimState:SetBank("icey2_pact_weapon_gunlance")
+    inst.AnimState:SetBuild("icey2_pact_weapon_gunlance")
     inst.AnimState:PlayAnimation("idle")
 
     inst.AnimState:SetLightOverride(0.6)
 
-    inst:AddTag("sharp")
-    inst:AddTag("pointy")
     inst:AddTag("allow_action_on_impassable")
+    inst:AddTag("icey2_pact_weapon")
 
     MakeInventoryFloatable(inst, "med", 0.05, { 1.1, 0.5, 1.1 }, true, -9)
 
@@ -251,8 +263,6 @@ local function fn()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem.imagename = "icey2_skill_builder_battle_focus"
-    inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_skill_builder_battle_focus.xml"
     inst.components.inventoryitem.canonlygoinpocket = true
 
     inst:AddComponent("equippable")
@@ -452,5 +462,5 @@ local function projectile_fn()
     return inst
 end
 
-return Prefab("icey2_pact_weapon_gunlance", fn, assets),
-    Prefab("icey2_pact_weapon_gunlance_projectile", projectile_fn, assets)
+return Prefab("icey2_pact_weapon_gunlance", fn, assets)
+-- Prefab("icey2_pact_weapon_gunlance_projectile", projectile_fn, assets)

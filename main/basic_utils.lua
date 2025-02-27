@@ -59,14 +59,14 @@ function Icey2Basic.IsCarryingGunlance(inst, is_ranged)
     if is_ranged == true then
         return hand_inv
             and hand_inv.prefab == "icey2_pact_weapon_gunlance"
-            and hand_inv:HasTag("icey2_pact_weapon_gunlance_ranged")
+            and hand_inv:HasTag("icey2_pact_weapon_gunlance_range")
     end
 
 
 
     return hand_inv
         and hand_inv.prefab == "icey2_pact_weapon_gunlance"
-        and not hand_inv:HasTag("icey2_pact_weapon_gunlance_ranged")
+        and not hand_inv:HasTag("icey2_pact_weapon_gunlance_range")
 end
 
 function Icey2Basic.GetFaceVector(inst)

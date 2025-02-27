@@ -34,7 +34,8 @@ local function Projectile_OnHit(inst, attacker, target)
         -- fx:FaceAwayFromPoint(attacker:GetPosition(), true)
         -- fx:SpawnChild("icey2_blue_fire_explode_vfx")
 
-        SpawnAt("icey2_skull_projectile_hitfx", inst:GetPosition())
+        local fx = SpawnAt("icey2_skull_projectile_hitfx", inst)
+        fx.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/hit")
     end
 
 
@@ -216,6 +217,7 @@ local function hitfx_fn()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
     inst:AddTag("FX")

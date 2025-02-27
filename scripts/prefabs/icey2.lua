@@ -40,8 +40,17 @@ local assets = {
     Asset("IMAGE", "images/ui/skill_slot/hunger_is_electricity.tex"),
     Asset("ATLAS", "images/ui/skill_slot/hunger_is_electricity.xml"),
 
+    Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_chainsaw.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_chainsaw.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_gunlance.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_gunlance.xml"),
+
     Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_scythe.tex"),
     Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_scythe.xml"),
+
+    Asset("IMAGE", "images/ui/skill_slot/parry.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/parry.xml"),
 
     Asset("IMAGE", "images/ui/skill_slot/phantom_sword.tex"),
     Asset("ATLAS", "images/ui/skill_slot/phantom_sword.xml"),
@@ -51,9 +60,6 @@ local assets = {
 
     Asset("IMAGE", "images/ui/skill_slot/summon_pact_weapon.tex"),
     Asset("ATLAS", "images/ui/skill_slot/summon_pact_weapon.xml"),
-
-    Asset("IMAGE", "images/ui/skill_slot/parry.tex"),
-    Asset("ATLAS", "images/ui/skill_slot/parry.xml"),
 
     Asset("IMAGE", "images/ui/skill_slot/unknown.tex"),
     Asset("ATLAS", "images/ui/skill_slot/unknown.xml"),

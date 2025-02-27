@@ -231,9 +231,13 @@ local function OnProjectileHit(inst, attacker, target)
         --         attacker.components.combat:DoAttack(v, inst, inst, nil, nil, 99999, inst:GetPosition())
         --     end
         -- end
-        if target then
-            attacker.components.combat:DoAttack(target, inst, inst, nil, nil, 99999, inst:GetPosition())
-        end
+        -- if target then
+        --     attacker.components.combat:DoAttack(target, inst, inst, nil, nil, 99999, inst:GetPosition())
+        -- end
+        local spdamage = {
+            icey2_spdamage_force = Icey2Math.SumDices(1, 4) + 1,
+        }
+        target.components.combat:GetAttacked(attacker, 0, nil, nil, spdamage)
     end
 
     inst:Remove()
@@ -426,11 +430,11 @@ local function projectilefn()
         return inst
     end
 
-    inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(0)
+    -- inst:AddComponent("weapon")
+    -- inst.components.weapon:SetDamage(0)
 
-    inst:AddComponent("icey2_spdamage_force")
-    inst.components.icey2_spdamage_force:SetBaseDamage(Icey2Math.SumDices(1, 4) + 1)
+    -- inst:AddComponent("icey2_spdamage_force")
+    -- inst.components.icey2_spdamage_force:SetBaseDamage(Icey2Math.SumDices(1, 4) + 1)
 
     inst:AddComponent("complexprojectile")
     inst.components.complexprojectile:SetOnHit(OnProjectileHit)

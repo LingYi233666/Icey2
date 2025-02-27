@@ -109,6 +109,21 @@ ICEY2_SKILL_DEFINES = {
         Tech = TECH.MAGIC_TWO,
     },
 
+
+    NEW_PACT_WEAPON_GUNLANCE = {
+        OnLearned = function(inst, is_onload)
+            inst.components.icey2_skill_summon_pact_weapon:AddWeaponPrefab("icey2_pact_weapon_gunlance")
+        end,
+
+        OnForget = function(inst)
+            inst.components.icey2_skill_summon_pact_weapon:RemoveWeaponPrefab("icey2_pact_weapon_gunlance")
+        end,
+
+        -- Root = true,
+        Ingredients = { Ingredient("flint", 3), Ingredient("twigs", 1), Ingredient(CHARACTER_INGREDIENT.SANITY, 50) },
+        Tech = TECH.MAGIC_TWO,
+    },
+
     PHANTOM_SWORD = {
         OnLearned = function(inst, is_onload) end,
 

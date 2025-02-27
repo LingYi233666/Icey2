@@ -373,7 +373,7 @@ local function fn()
 
     inst.AnimState:SetSymbolMultColour("swap_rolling_fx", 0, 0, 0, 0)
 
-
+    inst:AddTag("icey2_pact_weapon")
     inst:AddTag("special_action_toss")
     inst:AddTag("throw_line")
 

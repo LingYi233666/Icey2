@@ -24,6 +24,12 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_RAPIER = "这是某种...�
 STRINGS.NAMES.ICEY2_PACT_WEAPON_SCYTHE = "能量镰刀"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_SCYTHE = "这是某种...武器。"
 
+STRINGS.NAMES.ICEY2_PACT_WEAPON_GUNLANCE = "能量刃枪"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_GUNLANCE = "这是某种...武器。"
+
+STRINGS.NAMES.ICEY2_PACT_WEAPON_CHAINSAW = "能量电锯"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_CHAINSAW = "这是某种...武器。"
+
 STRINGS.NAMES.ICEY1_BLUEROSE = "高频切割刃"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY1_BLUEROSE = "已经很旧了。"
 STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY1_BLUEROSE = "看起来很眼熟。"
@@ -73,6 +79,12 @@ STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_5 = "吸收海象的力量来增加�
 
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "解锁能量武器：镰刀"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "使你的能量武器种类增加！"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_GUNLANCE = "解锁能量武器：刃枪"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_GUNLANCE = "使你的能量武器种类增加！"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_CHAINSAW = "解锁能量武器：电锯"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_CHAINSAW = "使你的能量武器种类增加！"
 
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "解锁战意聚焦"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "不受伤的连续攻击可以恢复属性。"
@@ -127,7 +139,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         BATTLE_FOCUS = {
             TITLE = "战意聚焦",
             DESC =
-            "在你不装备任何护甲或盾牌时，在闪光冲刺中反击或者使用近战武器进行普通攻击会使你逐渐进入战斗专注状态，提高力场伤害、恐惧抵抗与移动速度。在此状态下，你可以从敌人的生命中撕扯出精华，回复护盾或者生命值。\n受到攻击会让战斗专注效果中断。",
+            "在你不装备任何护甲或盾牌时，徒手攻击、在闪光冲刺中反击或者使用能量武器进行普通近战攻击会使你逐渐进入战斗专注状态，提高力场伤害、恐惧抵抗与移动速度。在此状态下，你可以从敌人的生命中撕扯出精华，回复护盾或者生命值。\n受到攻击会让战斗专注效果中断。",
         },
 
         PHANTOM_SWORD = {
@@ -144,7 +156,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         SUMMON_PACT_WEAPON = {
             TITLE = "创造能量武器",
             DESC =
-            "在你手中凭空创造出1把能量刺剑。\n你不能丢弃以此技能制造的武器，其他生物也不能将其打落。当你不需要它时，可以再次释放此技能将其销毁。\n能量刺剑能同时造成物理和力场伤害，武器战技如下：\n战技·迭影：\n对鼠标指向地点周围的敌人连续发动攻击。",
+            "在你手中凭空创造出1把能量刺剑。\n你不能丢弃以此技能制造的武器，其他生物也不能将其打落。如果能量武器因意外而与你距离过远，则它会自动消失。当你不需要它时，也可以再次释放此技能将其销毁。\n能量刺剑能同时造成物理和力场伤害，武器战技如下：\n战技·迭影：\n对鼠标指向地点周围的敌人连续发动攻击。",
             DESC_TIP_MORE_WEAPON = "*某些技能可以让你召唤更多种类的能量武器。",
             DESC_CURRENT_WEAPON = "除了能量刺剑，你现在还有以下武器可选：%s。",
 
@@ -165,13 +177,18 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         NEW_PACT_WEAPON_GUNLANCE = {
             TITLE = "能量武器：刃枪",
             DESC =
-            "“创造能量武器”技能新增武器种类：能量刃枪。能量刃枪是一种两用武器，近战攻击能从受害者身上汲取大量能量。远程攻击能连续不断地发射强大的苦痛灵魂。点击鼠标右键可以切换近战、远程模式。能量刃枪的远程攻击需要消耗护盾能量和电力值。\n此外，能量刃枪十分笨重，装备它会让你无法使用闪光冲刺。",
+            "“创造能量武器”技能新增武器种类：能量刃枪。能量刃枪是一把两用武器，其等离子刀刃能从受害者身上汲取大量能量，远程攻击则能连续不断地发射强大的苦痛灵魂。点击鼠标右键可以切换近战、远程模式。能量刃枪的远程攻击需要同时消耗护盾能量和电力值。",
+        },
+
+        NEW_PACT_WEAPON_CHAINSAW = {
+            TITLE = "能量武器：电锯",
+            DESC = "未定义。",
         },
 
         PARRY = {
             TITLE = "聚能盾牌",
             DESC =
-            "将力场护盾的全部能量输出集中在你的手中，形成一面能够吸收正前方攻击的坚固盾牌。\n在你不装备任何护甲或盾牌时，如果你在举起盾牌后短时间内格挡了一次攻击，且你已经掌握“战意聚焦”技能，你会立刻进入战斗专注状态，",
+            "将力场护盾的全部能量输出集中在你的手中，形成一面能够吸收正前方攻击的坚固盾牌（你必须至少有一只空出来的手来举起此盾牌）。击中盾牌的敌人将受电击与力场伤害折磨。\n在你不装备任何护甲或其他盾牌时，如果你在举起此盾牌后短时间内格挡了一次攻击，且你已经掌握“战意聚焦”技能，你会立刻进入战斗专注状态，",
         },
 
         UNKNOWN = {

@@ -67,8 +67,7 @@ local function fn()
     inst.AnimState:SetLightOverride(0.6)
 
 
-    inst:AddTag("sharp")
-    inst:AddTag("pointy")
+    inst:AddTag("icey2_pact_weapon")
 
     MakeInventoryFloatable(inst, "med", 0.05, { 1.1, 0.5, 1.1 }, true, -9)
 

@@ -39,7 +39,30 @@ end
 function Icey2SkillSummonPactWeapon:CreateWheelItems()
     self.wheel_items = {}
 
+    local manual_sort = {
+        "icey2_pact_weapon_rapier",
+        "icey2_pact_weapon_scythe",
+        "icey2_pact_weapon_gunlance",
+        "icey2_pact_weapon_chainsaw",
+    }
+
+    local function GetIndex(prefab)
+        for k, v in pairs(manual_sort) do
+            if v == prefab then
+                return k
+            end
+        end
+
+        return #manual_sort + 1
+    end
+
+    local function cmp_fn(p1, p2)
+        return GetIndex(p1:lower()) < GetIndex(p2:lower())
+    end
+
     local options = deepcopy(self.pact_weapon_options)
+    table.sort(options, cmp_fn)
+
     if #self.exists_weapon_prefabs > 0 then
         table.insert(options, "remove_all")
     end

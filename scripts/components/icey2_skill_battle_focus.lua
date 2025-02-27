@@ -31,7 +31,8 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
         local target = data.target
         -- projectile or ranged weapon
         if weapon then
-            if weapon.components.projectile
+            if not weapon:HasTag("icey2_pact_weapon")
+                or weapon.components.projectile
                 or weapon.components.complexprojectile
                 or weapon.components.weapon:CanRangedAttack() then
                 addition = addition * 0
