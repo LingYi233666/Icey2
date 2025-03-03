@@ -1,6 +1,6 @@
 local function OnBuiltFn(inst, builder)
     if inst.skill_name
-        and ICEY2_SKILL_DEFINES[inst.skill_name]
+        and Icey2Basic.GetSkillDefine(inst.skill_name)
         and builder.components.icey2_skiller then
         if builder.components.icey2_skiller:IsLearned(inst.skill_name) then
 
@@ -57,9 +57,9 @@ end
 
 local bundle = {}
 
-for skill_name, data in pairs(ICEY2_SKILL_DEFINES) do
+for _, data in pairs(ICEY2_SKILL_DEFINES) do
     if data.Ingredients then
-        table.insert(bundle, MakeSkillBuilder(skill_name))
+        table.insert(bundle, MakeSkillBuilder(data.Name))
     end
 end
 

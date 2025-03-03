@@ -74,6 +74,8 @@ AddStategraphPostInit("wilson", function(sg)
             if can_cast then
                 if weapon.prefab == "icey2_pact_weapon_rapier" then
                     return "icey2_aoeweapon_flurry_lunge_pre"
+                elseif weapon.prefab == "icey2_pact_weapon_chainsaw" then
+                    return "attack"
                 end
             else
                 return
@@ -91,15 +93,16 @@ AddStategraphPostInit("wilson", function(sg)
         local old_rets = old_ATTACK(inst, action)
         local weapon = inst.components.combat:GetWeapon()
         if old_rets ~= nil
+            and weapon
             and not (inst.components.rider and inst.components.rider:IsRiding()) then
             if Icey2Basic.IsCarryingGunlance(inst, true) then
                 return "icey2_gunlance_ranged_attack"
             elseif Icey2Basic.IsCarryingGunlance(inst, false) then
                 return "icey2_gunlance_melee_attack"
-            elseif weapon ~= nil then
-                if weapon.prefab == "icey2_test_shooter" then
-                    return "icey2_test_shoot_stream"
-                end
+            elseif weapon.prefab == "icey2_pact_weapon_chainsaw" and not weapon:HasTag("without_pan") then
+                return "icey2_chainsaw_attack"
+            elseif weapon.prefab == "icey2_test_shooter" then
+                return "icey2_test_shoot_stream"
             end
         end
 
@@ -809,7 +812,7 @@ AddStategraphState("wilson", State {
     timeline =
     {
         TimeEvent(2 * FRAMES, function(inst)
-            inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/swipe", nil, 0.5, true)
+            inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/swipe", nil, 0.4, true)
         end),
 
         TimeEvent(8 * FRAMES, function(inst)
@@ -842,6 +845,106 @@ AddStategraphState("wilson", State {
         end
     end,
 })
+
+
+-----------------------------------------------------------------------------
+--- chainsaw attack
+AddStategraphState("wilson", State {
+    name = "icey2_chainsaw_attack",
+    tags = { "attack", "notalking", "abouttoattack", "autopredict" },
+
+    onenter = function(inst)
+        if inst.components.combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+        local buffaction = inst:GetBufferedAction()
+        local target = buffaction ~= nil and buffaction.target or nil
+        local weapon = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        inst.components.combat:SetTarget(target)
+        inst.components.combat:StartAttack()
+        inst.components.locomotor:Stop()
+        local cooldown = inst.components.combat.min_attack_period
+
+        inst.AnimState:PlayAnimation("atk_pre")
+        inst.AnimState:PushAnimation("atk", false)
+
+        if weapon and weapon:IsValid()
+            and weapon.components.icey2_aoeweapon_launch_chainsaw
+            and not weapon.components.icey2_aoeweapon_launch_chainsaw:GetProjectile() then
+            inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/swipe", nil, nil, true)
+        else
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon", nil, nil, true)
+        end
+        cooldown = math.max(cooldown, 17 * FRAMES)
+
+        inst.sg:SetTimeout(cooldown)
+
+        if target ~= nil then
+            inst.components.combat:BattleCry()
+            if target:IsValid() then
+                inst:FacePoint(target:GetPosition())
+                inst.sg.statemem.attacktarget = target
+                inst.sg.statemem.retarget = target
+            end
+        end
+
+        inst.sg.statemem.weapon = weapon
+    end,
+
+    timeline =
+    {
+        TimeEvent(8 * FRAMES, function(inst)
+            inst.sg.statemem.emit_fx = true
+            inst:PerformBufferedAction()
+            inst.sg.statemem.emit_fx = false
+            inst.sg:RemoveStateTag("abouttoattack")
+        end),
+        TimeEvent(9 * FRAMES, function(inst)
+            local weapon = inst.sg.statemem.weapon
+            if weapon and weapon:IsValid()
+                and weapon.components.icey2_aoeweapon_launch_chainsaw
+                and not weapon.components.icey2_aoeweapon_launch_chainsaw:GetProjectile() then
+                inst.components.combat:DoAttack(inst.sg.statemem.attacktarget, nil, nil, nil, 0.5)
+            end
+        end),
+        TimeEvent(10 * FRAMES, function(inst)
+            local weapon = inst.sg.statemem.weapon
+            if weapon and weapon:IsValid()
+                and weapon.components.icey2_aoeweapon_launch_chainsaw
+                and not weapon.components.icey2_aoeweapon_launch_chainsaw:GetProjectile() then
+                inst.components.combat:DoAttack(inst.sg.statemem.attacktarget, nil, nil, nil, 0.5)
+            end
+        end),
+    },
+
+    ontimeout = function(inst)
+        inst.sg:RemoveStateTag("attack")
+        inst.sg:AddStateTag("idle")
+    end,
+
+    events =
+    {
+        EventHandler("equip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        inst.components.combat:SetTarget(nil)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.components.combat:CancelAttack()
+        end
+    end,
+})
+
 
 -----------------------------------------------------------------------------
 -- aoe: flurry_lunge

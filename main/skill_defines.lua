@@ -48,14 +48,14 @@ local function PassiveSkillOnForgetWrapper(cmp_name)
     return fn
 end
 
-
 ICEY2_SKILL_DEFINES = {
-
-    HUNGER_IS_ELECTRICITY = {
+    {
+        Name = "hunger_is_electricity",
         Root = true,
     },
 
-    FORCE_SHIELD = {
+    {
+        Name = "force_shield",
         OnLearned = PassiveSkillOnLearnedWrapper("icey2_skill_shield"),
 
         OnForget = PassiveSkillOnForgetWrapper("icey2_skill_shield"),
@@ -63,7 +63,8 @@ ICEY2_SKILL_DEFINES = {
         Root = true,
     },
 
-    DODGE = {
+    {
+        Name = "dodge",
         OnLearned = function(inst, is_onload) end,
 
         OnForget = function(inst) end,
@@ -73,7 +74,8 @@ ICEY2_SKILL_DEFINES = {
         Root = true,
     },
 
-    SUMMON_PACT_WEAPON = {
+    {
+        Name = "summon_pact_weapon",
         OnLearned = function(inst, is_onload) end,
 
         OnForget = function(inst) end,
@@ -91,11 +93,41 @@ ICEY2_SKILL_DEFINES = {
                 "\n\n" .. STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.SUMMON_PACT_WEAPON.DESC_TIP_MORE_WEAPON
         end,
 
-
         Root = true,
     },
 
-    NEW_PACT_WEAPON_SCYTHE = {
+    {
+        Name = "upgrade_pact_weapon_rapier_1",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "summon_pact_weapon" },
+        Ingredients = { Ingredient("icey2_blood_metal", 3), },
+    },
+
+    {
+        Name = "upgrade_pact_weapon_rapier_2",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "upgrade_pact_weapon_rapier_1" },
+        Ingredients = { Ingredient("icey2_blood_metal", 5), },
+    },
+
+    {
+        Name = "upgrade_pact_weapon_rapier_3",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "upgrade_pact_weapon_rapier_2" },
+        Ingredients = { Ingredient("icey2_blood_metal", 7), },
+    },
+
+    {
+        Name = "new_pact_weapon_scythe",
         OnLearned = function(inst, is_onload)
             inst.components.icey2_skill_summon_pact_weapon:AddWeaponPrefab("icey2_pact_weapon_scythe")
         end,
@@ -105,12 +137,50 @@ ICEY2_SKILL_DEFINES = {
         end,
 
         -- Root = true,
-        Ingredients = { Ingredient("flint", 3), Ingredient("twigs", 1), Ingredient(CHARACTER_INGREDIENT.SANITY, 50) },
-        Tech = TECH.MAGIC_TWO,
+        Ingredients = {
+            Ingredient("flint", 3),
+            Ingredient("twigs", 1),
+            Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
+        },
+        Tech = TECH.SCIENCE_TWO,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_scythe_1",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "new_pact_weapon_scythe" },
+        Ingredients = { Ingredient("icey2_blood_metal", 3), },
+        Tech = TECH.SCIENCE_TWO,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_scythe_2",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "upgrade_pact_weapon_scythe_1" },
+        Ingredients = { Ingredient("icey2_blood_metal", 5), },
+        Tech = TECH.SCIENCE_TWO,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_scythe_3",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "upgrade_pact_weapon_scythe_2" },
+        Ingredients = { Ingredient("icey2_blood_metal", 7), },
+        Tech = TECH.SCIENCE_TWO,
     },
 
 
-    NEW_PACT_WEAPON_GUNLANCE = {
+    {
+        Name = "new_pact_weapon_gunlance",
         OnLearned = function(inst, is_onload)
             inst.components.icey2_skill_summon_pact_weapon:AddWeaponPrefab("icey2_pact_weapon_gunlance")
         end,
@@ -120,11 +190,101 @@ ICEY2_SKILL_DEFINES = {
         end,
 
         -- Root = true,
-        Ingredients = { Ingredient("flint", 3), Ingredient("twigs", 1), Ingredient(CHARACTER_INGREDIENT.SANITY, 50) },
+        Ingredients = {
+            Ingredient("blowdart_pipe", 6),
+            Ingredient("boards", 4),
+            Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
+        },
         Tech = TECH.MAGIC_TWO,
     },
 
-    PHANTOM_SWORD = {
+    {
+        Name = "upgrade_pact_weapon_gunlance_1",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "new_pact_weapon_gunlance" },
+        Ingredients = { Ingredient("icey2_blood_metal", 3), },
+        Tech = TECH.MAGIC_TWO,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_gunlance_2",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "upgrade_pact_weapon_gunlance_1" },
+        Ingredients = { Ingredient("icey2_blood_metal", 5), },
+        Tech = TECH.MAGIC_TWO,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_gunlance_3",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "upgrade_pact_weapon_gunlance_2" },
+        Ingredients = { Ingredient("icey2_blood_metal", 7), },
+        Tech = TECH.MAGIC_TWO,
+    },
+
+    {
+        Name = "new_pact_weapon_chainsaw",
+        OnLearned = function(inst, is_onload)
+            inst.components.icey2_skill_summon_pact_weapon:AddWeaponPrefab("icey2_pact_weapon_chainsaw")
+        end,
+
+        OnForget = function(inst)
+            inst.components.icey2_skill_summon_pact_weapon:RemoveWeaponPrefab("icey2_pact_weapon_chainsaw")
+        end,
+
+        -- Root = true,
+        Ingredients = {
+            Ingredient("boards", 4),
+            Ingredient("flint", 4),
+            Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
+        },
+        Tech = TECH.MAGIC_THREE,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_chainsaw_1",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "new_pact_weapon_chainsaw" },
+        Ingredients = { Ingredient("icey2_blood_metal", 3), },
+        Tech = TECH.MAGIC_THREE,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_chainsaw_2",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "upgrade_pact_weapon_chainsaw_1" },
+        Ingredients = { Ingredient("icey2_blood_metal", 5), },
+        Tech = TECH.MAGIC_THREE,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_chainsaw_3",
+        OnLearned = function(inst, is_onload) end,
+
+        OnForget = function(inst) end,
+
+        RequiredSkills = { "upgrade_pact_weapon_chainsaw_2" },
+        Ingredients = { Ingredient("icey2_blood_metal", 7), },
+        Tech = TECH.MAGIC_THREE,
+    },
+
+    {
+        Name = "phantom_sword",
         OnLearned = function(inst, is_onload) end,
 
         OnForget = function(inst) end,
@@ -135,7 +295,8 @@ ICEY2_SKILL_DEFINES = {
         Ingredients = { Ingredient("moonrocknugget", 5), },
     },
 
-    BATTLE_FOCUS = {
+    {
+        Name = "battle_focus",
         OnLearned = PassiveSkillOnLearnedWrapper("icey2_skill_battle_focus"),
 
         OnForget = PassiveSkillOnForgetWrapper("icey2_skill_battle_focus"),
@@ -147,7 +308,8 @@ ICEY2_SKILL_DEFINES = {
     },
 
 
-    PARRY = {
+    {
+        Name = "parry",
         OnLearned = function(inst, is_onload) end,
 
         OnForget = function(inst) end,
@@ -178,5 +340,13 @@ ICEY2_SKILL_DEFINES = {
         -- Root = true,
     },
 }
+
+-- Check if has duplicate skill names
+local exists_skill_names = {}
+for _, data in pairs(ICEY2_SKILL_DEFINES) do
+    assert(exists_skill_names[data.Name] ~= true)
+
+    exists_skill_names[data.Name] = true
+end
 
 GLOBAL.ICEY2_SKILL_DEFINES = ICEY2_SKILL_DEFINES

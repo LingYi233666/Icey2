@@ -73,6 +73,8 @@ AddStategraphPostInit("wilson_client", function(sg)
                 if weapon.prefab == "icey2_pact_weapon_rapier" then
                     inst:PerformPreviewBufferedAction()
                     return
+                elseif weapon.prefab == "icey2_pact_weapon_chainsaw" then
+                    return "attack"
                 end
             else
                 return
@@ -707,7 +709,8 @@ AddStategraphState("wilson_client", State {
     timeline =
     {
         TimeEvent(2 * FRAMES, function(inst)
-            inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/swipe", nil, 0.5, true)
+            -- inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/swipe", nil, 0.5, true)
+            inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/swipe", nil, 0.4, true)
         end),
 
         TimeEvent(8 * FRAMES, function(inst)

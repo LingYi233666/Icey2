@@ -35,7 +35,7 @@ local function Projectile_OnHit(inst, attacker, target)
         -- fx:SpawnChild("icey2_blue_fire_explode_vfx")
 
         local fx = SpawnAt("icey2_skull_projectile_hitfx", inst)
-        fx.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/hit")
+        fx.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/hit3", nil, 0.5)
     end
 
 
@@ -59,7 +59,7 @@ local function Projectile_OnUpdateFn(inst, dt)
 
     inst.Physics:SetMotorVel(inst.components.complexprojectile.horizontalSpeed, 0, 0)
 
-    for k, v in pairs(TheSim:FindEntities(x, y, z, 4, { "_combat" })) do
+    for k, v in pairs(TheSim:FindEntities(x, y, z, 4, { "_combat" }, { "INLIMBO" })) do
         local rad = 0.5
 
         if self.attacker.components.combat:CanTarget(v) and not self.attacker.components.combat:IsAlly(v) then

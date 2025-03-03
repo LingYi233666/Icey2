@@ -38,7 +38,10 @@ ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.do_not_locomote = true
 ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.customarrivecheck = function() return true end
 ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.stroverridefn = function(act)
     local item = act.invobject
-    if item == nil or STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM[item.prefab:upper()] == nil then
+    if item == nil
+        or not item:IsValid()
+        or not (act.invobject.replica and act.invobject.replica.icey2_versatile_weapon)
+        or STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM[item.prefab:upper()] == nil then
         return STRINGS.ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.GENERIC
     end
 

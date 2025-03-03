@@ -107,7 +107,8 @@ end
 
 ---------------- Add skill builder recipes --------------------
 
-for skill_name, data in pairs(ICEY2_SKILL_DEFINES) do
+for _, data in pairs(ICEY2_SKILL_DEFINES) do
+    local skill_name = data.Name
     if data.Ingredients then
         Icey2ModAddRecipe2(
             "icey2_skill_builder_" .. skill_name:lower(),
@@ -122,6 +123,14 @@ for skill_name, data in pairs(ICEY2_SKILL_DEFINES) do
 
                     if builder.components.icey2_skiller:IsLearned(skill_name) then
                         return false, "SKILL_ALREADY_LEARNED"
+                    end
+
+                    if data.RequiredSkills then
+                        for _, v in pairs(data.RequiredSkills) do
+                            if not builder.components.icey2_skiller:IsLearned(v) then
+                                return false, "PRE_SKILL_REQUIRED"
+                            end
+                        end
                     end
 
                     return true

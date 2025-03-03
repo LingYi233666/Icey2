@@ -1,7 +1,7 @@
 local Icey2MainMenu = require("screens/icey2_main_menu")
 
 AddModRPCHandler("icey2_rpc", "cast_skill", function(inst, name, pressed, x, y, z, ent)
-    local data = ICEY2_SKILL_DEFINES[name]
+    local data = Icey2Basic.GetSkillDefine(name)
     local is_learned = inst.components.icey2_skiller:IsLearned(name)
 
 

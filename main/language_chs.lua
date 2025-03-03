@@ -77,14 +77,50 @@ STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_4 = "吸收传送之力来增加连�
 STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_5 = "闪避充能芯片5"
 STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_5 = "吸收海象的力量来增加连续闪避次数。无法重复制作。"
 
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_RAPIER_1 = "能量刺剑初级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_RAPIER_1 = "强化你的能量刺剑。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_RAPIER_2 = "能量刺剑中级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_RAPIER_2 = "强化你的能量刺剑。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_RAPIER_3 = "能量刺剑高级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_RAPIER_3 = "强化你的能量刺剑。"
+
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "解锁能量武器：镰刀"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_SCYTHE = "使你的能量武器种类增加！"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_SCYTHE_1 = "能量镰刀初级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_SCYTHE_1 = "强化你的能量镰刀。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_SCYTHE_2 = "能量镰刀中级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_SCYTHE_2 = "强化你的能量镰刀。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_SCYTHE_3 = "能量镰刀高级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_SCYTHE_3 = "强化你的能量镰刀。"
 
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_GUNLANCE = "解锁能量武器：刃枪"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_GUNLANCE = "使你的能量武器种类增加！"
 
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_GUNLANCE_1 = "能量刃枪初级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_GUNLANCE_1 = "强化你的能量刃枪。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_GUNLANCE_2 = "能量刃枪中级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_GUNLANCE_2 = "强化你的能量刃枪。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_GUNLANCE_3 = "能量刃枪高级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_GUNLANCE_3 = "强化你的能量刃枪。"
+
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_CHAINSAW = "解锁能量武器：电锯"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_CHAINSAW = "使你的能量武器种类增加！"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_1 = "能量电锯初级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_1 = "强化你的能量电锯。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_2 = "能量电锯中级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_2 = "强化你的能量电锯。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_3 = "能量电锯高级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_3 = "强化你的能量电锯。"
 
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "解锁战意聚焦"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "不受伤的连续攻击可以恢复属性。"
@@ -100,6 +136,7 @@ STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_PARRY = "制造盾牌格挡面前的攻�
 
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_RAPIER = "迭影"
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_SCYTHE = "掷镰"
+STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_CHAINSAW = "回旋刀刃"
 STRINGS.ACTIONS.CASTAOE.ICEY1_BLUEROSE = "突围冲击"
 
 STRINGS.ACTIONS.ICEY2_SCYTHE = "收割"
@@ -168,10 +205,40 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
             },
         },
 
+        UPGRADE_PACT_WEAPON_RAPIER_1 = {
+            TITLE = "能量刺剑初级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
+        UPGRADE_PACT_WEAPON_RAPIER_2 = {
+            TITLE = "能量刺剑中级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
+        UPGRADE_PACT_WEAPON_RAPIER_3 = {
+            TITLE = "能量刺剑高级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
         NEW_PACT_WEAPON_SCYTHE = {
             TITLE = "能量武器：镰刀",
             DESC =
             "“创造能量武器”技能新增武器种类：能量镰刀。能量镰刀可以用于战斗，或是用来收割农作物，武器战技如下：\n战技·掷镰：\n向鼠标方向投掷镰刀，对一条直线上的敌人造成伤害，并在落地点形成一道能够增加你伤害的力幕。",
+        },
+
+        UPGRADE_PACT_WEAPON_SCYTHE_1 = {
+            TITLE = "能量镰刀初级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
+        UPGRADE_PACT_WEAPON_SCYTHE_2 = {
+            TITLE = "能量镰刀中级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
+        UPGRADE_PACT_WEAPON_SCYTHE_3 = {
+            TITLE = "能量镰刀高级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
         },
 
         NEW_PACT_WEAPON_GUNLANCE = {
@@ -180,9 +247,40 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
             "“创造能量武器”技能新增武器种类：能量刃枪。能量刃枪是一把两用武器，其等离子刀刃能从受害者身上汲取大量能量，远程攻击则能连续不断地发射强大的苦痛灵魂。点击鼠标右键可以切换近战、远程模式。能量刃枪的远程攻击需要同时消耗护盾能量和电力值。",
         },
 
+        UPGRADE_PACT_WEAPON_GUNLANCE_1 = {
+            TITLE = "能量刃枪初级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
+        UPGRADE_PACT_WEAPON_GUNLANCE_2 = {
+            TITLE = "能量刃枪中级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
+        UPGRADE_PACT_WEAPON_GUNLANCE_3 = {
+            TITLE = "能量刃枪高级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
         NEW_PACT_WEAPON_CHAINSAW = {
             TITLE = "能量武器：电锯",
-            DESC = "未定义。",
+            DESC =
+            "“创造能量武器”技能新增武器种类：能量电锯。电锯能够高速切割受害者，在一次近战中造成多段伤害，但它无法在战斗聚集中汲取敌人的精华。武器战技如下：\n战技·回旋刀刃：\n消耗些许电力值，向鼠标方向发射电锯锯片，锯片随后会在你周身环绕，切开接触到的敌人或者树木。",
+        },
+
+        UPGRADE_PACT_WEAPON_CHAINSAW_1 = {
+            TITLE = "能量电锯初级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
+        UPGRADE_PACT_WEAPON_CHAINSAW_2 = {
+            TITLE = "能量电锯中级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
+        },
+
+        UPGRADE_PACT_WEAPON_CHAINSAW_3 = {
+            TITLE = "能量电锯高级强化",
+            DESC = "技能未实装，暂时没有任何效果。",
         },
 
         PARRY = {
@@ -194,7 +292,12 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         UNKNOWN = {
             TITLE = "未知技能",
             DESC = "有些东西需要靠你自己去发现。"
-        }
+        },
+
+        NEED_CRAFT = {
+            TITLE = "未知技能",
+            DESC = "需要在制作栏解锁。"
+        },
     },
 
     KEY_CONFIG = "设置键位",

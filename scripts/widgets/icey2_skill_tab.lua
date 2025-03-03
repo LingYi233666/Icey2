@@ -79,10 +79,10 @@ local Icey2SkillTab = Class(Widget, function(self, owner, config)
 end)
 
 local function IsCastByButton(name)
-    local data = ICEY2_SKILL_DEFINES[name]
-    return data and
-        (data.OnPressed or data.OnReleased or data.OnPressed_Client or
-            data.OnReleased_Client)
+    local skill_define = Icey2Basic.GetSkillDefine(name)
+    return skill_define and
+        (skill_define.OnPressed or skill_define.OnReleased or skill_define.OnPressed_Client or
+            skill_define.OnReleased_Client)
 end
 
 function Icey2SkillTab:ModifySlideBar()
@@ -97,16 +97,16 @@ end
 function Icey2SkillTab:FreshData(new_data)
     if new_data == nil then
         self.data = {}
-        for name, v in pairs(ICEY2_SKILL_DEFINES) do
-            table.insert(self.data, { name = name })
+        for _, skill_define in pairs(ICEY2_SKILL_DEFINES) do
+            table.insert(self.data, { name = skill_define.Name })
         end
-        table.sort(self.data, function(a, b)
-            -- local a_cast_value = IsCastByButton(a.name) and 1 or 0
-            -- local b_cast_value = IsCastByButton(b.name) and 1 or 0
+        -- table.sort(self.data, function(a, b)
+        --     -- local a_cast_value = IsCastByButton(a.name) and 1 or 0
+        --     -- local b_cast_value = IsCastByButton(b.name) and 1 or 0
 
-            -- return a_cast_value > b_cast_value or a.name < b.name
-            return a.name > b.name
-        end)
+        --     -- return a_cast_value > b_cast_value or a.name < b.name
+        --     return a.name > b.name
+        -- end)
     else
         self.data = new_data
     end
@@ -130,25 +130,32 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
     self.current_skill_name = widget and widget.skill_name
 
     if self.current_skill_name then
+        local skill_define = Icey2Basic.GetSkillDefine(self.current_skill_name)
         local is_learned = self.owner.replica.icey2_skiller:IsLearned(self.current_skill_name)
 
         self.skill_title:Show()
-        if is_learned then
-            self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name].TITLE)
-        else
-            self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNOWN.TITLE)
-        end
+        -- if is_learned then
+        --     self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name:upper()].TITLE)
+        -- elseif skill_define.Ingredients ~= nil then
+        --     self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.NEED_CRAFT.TITLE)
+        -- else
+        --     self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNOWN.TITLE)
+        -- end
+        self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name:upper()].TITLE)
 
         self.skill_desc:Show()
         if is_learned then
             local desc = ""
-            if ICEY2_SKILL_DEFINES[widget.skill_name].DescFn then
-                desc = ICEY2_SKILL_DEFINES[widget.skill_name].DescFn(self.owner)
+            local skill_define = Icey2Basic.GetSkillDefine(widget.skill_name)
+            if skill_define.DescFn then
+                desc = skill_define.DescFn(self.owner)
             else
-                desc = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name].DESC
+                desc = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name:upper()].DESC
             end
 
             self:UpdateSkillDesc(desc)
+        elseif skill_define.Ingredients ~= nil then
+            self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.NEED_CRAFT.DESC)
         else
             self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNOWN.DESC)
         end

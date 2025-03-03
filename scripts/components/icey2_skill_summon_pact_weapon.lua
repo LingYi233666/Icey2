@@ -413,7 +413,7 @@ function Icey2SkillSummonPactWeapon:OnLoad(data)
 
         print("Loading data.linked_weapon_prefabs")
         if data.linked_weapon_prefabs ~= nil then
-            self.linked_weapon_prefabs_tmp = shallowcopy(data.linked_weapon_prefabs)
+            self.linked_weapon_prefabs_tmp = deepcopy(data.linked_weapon_prefabs)
         end
         dumptable(data.linked_weapon_prefabs)
         dumptable(self.linked_weapon_prefabs_tmp)

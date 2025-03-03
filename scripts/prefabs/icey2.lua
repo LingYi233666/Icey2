@@ -27,42 +27,55 @@ local assets = {
     Asset("ANIM", "anim/player_actions_tf2minigun.zip"),
 
     --------------------------------------------------------------
-
+    -- Skills
     Asset("IMAGE", "images/ui/skill_slot/battle_focus.tex"),
     Asset("ATLAS", "images/ui/skill_slot/battle_focus.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/dodge.tex"),
     Asset("ATLAS", "images/ui/skill_slot/dodge.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/force_shield.tex"),
     Asset("ATLAS", "images/ui/skill_slot/force_shield.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/hunger_is_electricity.tex"),
     Asset("ATLAS", "images/ui/skill_slot/hunger_is_electricity.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_chainsaw.tex"),
     Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_chainsaw.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_gunlance.tex"),
     Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_gunlance.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_scythe.tex"),
     Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_scythe.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/parry.tex"),
     Asset("ATLAS", "images/ui/skill_slot/parry.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/phantom_sword.tex"),
     Asset("ATLAS", "images/ui/skill_slot/phantom_sword.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/sample.tex"),
     Asset("ATLAS", "images/ui/skill_slot/sample.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/summon_pact_weapon.tex"),
     Asset("ATLAS", "images/ui/skill_slot/summon_pact_weapon.xml"),
-
     Asset("IMAGE", "images/ui/skill_slot/unknown.tex"),
     Asset("ATLAS", "images/ui/skill_slot/unknown.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_chainsaw_1.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_chainsaw_1.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_chainsaw_2.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_chainsaw_2.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_chainsaw_3.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_chainsaw_3.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_1.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_1.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_2.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_2.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_3.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_3.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_rapier_1.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_rapier_1.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_rapier_2.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_rapier_2.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_rapier_3.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_rapier_3.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_scythe_1.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_scythe_1.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_scythe_2.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_scythe_2.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_scythe_3.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_scythe_3.xml"),
 
 
 }
@@ -111,10 +124,10 @@ local function ParryCallback(inst, data)
 end
 
 local function OnPlayerSpawn(inst)
-    for name, v in pairs(ICEY2_SKILL_DEFINES) do
+    for _, v in pairs(ICEY2_SKILL_DEFINES) do
         if v.Root then
-            if not inst.components.icey2_skiller:IsLearned(name) then
-                inst.components.icey2_skiller:Learn(name)
+            if not inst.components.icey2_skiller:IsLearned(v.Name) then
+                inst.components.icey2_skiller:Learn(v.Name)
             end
         end
     end

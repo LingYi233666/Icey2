@@ -92,4 +92,14 @@ function Icey2Basic.GetVisualHeight(inst, instant)
 
 end
 
+function Icey2Basic.GetSkillDefine(name)
+    name = name:lower()
+
+    for _, data in pairs(ICEY2_SKILL_DEFINES) do
+        if data.Name == name then
+            return data
+        end
+    end
+end
+
 GLOBAL.Icey2Basic = Icey2Basic

@@ -30,7 +30,9 @@ end)
 
 function Icey2SkillSlot:SetSkillName(skill_name)
     assert(skill_name ~= nil)
-    assert(ICEY2_SKILL_DEFINES[skill_name] ~= nil)
+    assert(Icey2Basic.GetSkillDefine(skill_name) ~= nil)
+
+
 
     self.skill_name = skill_name
 

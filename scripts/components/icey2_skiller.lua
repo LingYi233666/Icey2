@@ -28,7 +28,7 @@ function Icey2Skiller:Learn(name, is_onload)
 		return
 	end
 
-	local data = ICEY2_SKILL_DEFINES[name]
+	local data = Icey2Basic.GetSkillDefine(name)
 	if data then
 		self.learned_skill[name] = true
 		if data.OnLearned then
@@ -54,7 +54,7 @@ function Icey2Skiller:Forget(name)
 	end
 
 	self.learned_skill[name] = nil
-	local data = ICEY2_SKILL_DEFINES[name]
+	local data = Icey2Basic.GetSkillDefine(name)
 	if data then
 		if data.OnForget then
 			data.OnForget(self.inst)

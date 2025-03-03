@@ -13,6 +13,7 @@ local MODIFIED_SPEECH = {
 		BUILD =
 		{
 			SKILL_ALREADY_LEARNED = "我之前就已经学会这个技能了。",
+			PRE_SKILL_REQUIRED = "我必须解锁前一项升级。",
 			MAX_DODGE_CHARGE = "闪避充能已经到达上限了。",
 			DODGE_CHARGE_CHIP_ONLY_ONCE = "每种芯片我最多只能使用一次！",
 		},

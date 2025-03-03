@@ -75,10 +75,6 @@ local function OnUnequip(inst, owner)
 end
 
 local function OnAttackMelee(inst, attacker, target)
-    if Icey2Basic.IsWearingArmor(attacker) then
-        return
-    end
-
     local start_pos = target:GetPosition()
     start_pos.y = start_pos.y + GetRandomMinMax(0.8, 2)
 
@@ -86,7 +82,11 @@ local function OnAttackMelee(inst, attacker, target)
     fx:FaceAwayFromPoint(attacker:GetPosition(), true)
     fx:SpawnChild("icey2_melee_hit_vfx")
 
-    attacker.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/melee_hit", nil, 0.6)
+    if Icey2Basic.IsWearingArmor(attacker) then
+        return
+    end
+
+    attacker.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/melee_hit", nil, 0.3)
 
     local ball_prefabs = {
         { "icey2_supply_ball_shield",       1 },
