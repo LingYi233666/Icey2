@@ -35,8 +35,6 @@ local function OnEquip(inst, owner)
     owner.AnimState:SetSymbolLightOverride("swap_object", 0.6)
     owner.AnimState:SetSymbolLightOverride("swap_minigun", 0.6)
 
-
-
     if inst.components.icey2_versatile_weapon:GetCurForm() == 1 then
         owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
             "swap_icey2_pact_weapon_gunlance")
@@ -142,13 +140,6 @@ local function OnProjectileLaunched(inst, attacker, target, proj)
         local openfire_fx = SpawnAt("icey2_pact_weapon_gunlance_openfire_fx", attacker:GetPosition() + delta_pos * 0.8)
         openfire_fx.Transform:SetRotation(attacker.Transform:GetRotation())
         openfire_fx:Emit()
-
-        -- Test duration between two shootings
-        -- local t = GetTime()
-        -- if inst.last_shoot_time ~= nil then
-        --     print("Between shoot:", t - inst.last_shoot_time)
-        -- end
-        -- inst.last_shoot_time = t
     else
         if attacker.SoundEmitter then
             attacker.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/empty")
@@ -169,13 +160,11 @@ local function OnFormChange(inst, old_form, new_form, on_load)
         inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance.xml"
         inst.components.inventoryitem:ChangeImageName("icey2_pact_weapon_gunlance")
 
-        inst.components.weapon:SetDamage(17)
+        inst.components.weapon:SetDamage(42.5)
         inst.components.weapon:SetRange(0)
         inst.components.weapon:SetProjectile(nil)
         inst.components.weapon:SetOnAttack(OnAttackMelee)
         inst.components.weapon:SetOnProjectileLaunched(nil)
-
-        inst.components.icey2_spdamage_force:SetBaseDamage(34)
 
         inst:RemoveTag("icey2_pact_weapon_gunlance_range")
         inst:RemoveTag("NO_ICEY2_PARRY")
@@ -198,13 +187,11 @@ local function OnFormChange(inst, old_form, new_form, on_load)
         inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance_range.xml"
         inst.components.inventoryitem:ChangeImageName("icey2_pact_weapon_gunlance_range")
 
-        inst.components.weapon:SetDamage(21.5)
+        inst.components.weapon:SetDamage(27.5)
         inst.components.weapon:SetRange(20, 30)
         inst.components.weapon:SetProjectile("icey2_fake_projectile")
         inst.components.weapon:SetOnAttack(nil)
         inst.components.weapon:SetOnProjectileLaunched(OnProjectileLaunched)
-
-        inst.components.icey2_spdamage_force:SetBaseDamage(21.5)
 
         inst:AddTag("icey2_pact_weapon_gunlance_range")
         inst:AddTag("NO_ICEY2_PARRY")
@@ -222,6 +209,7 @@ local function OnFormChange(inst, old_form, new_form, on_load)
         end
     end
 
+    inst.components.icey2_upgradable:CheckSkill()
 
     if owner then
         if not on_load and owner.SoundEmitter then
@@ -229,6 +217,36 @@ local function OnFormChange(inst, old_form, new_form, on_load)
         end
     end
 end
+
+
+local function ApplyLevelFn(inst, new_level, old_level)
+    if new_level >= 1 then
+        inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_GUNLANCE .. "+" .. tostring(new_level))
+    else
+        inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_GUNLANCE)
+    end
+
+    local current_form = inst.components.icey2_versatile_weapon:GetCurForm()
+
+    if current_form == 1 then
+        inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 5)
+    elseif current_form == 2 then
+        inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 2)
+    end
+
+    if new_level >= 3 then
+        inst.components.planardamage:SetBaseDamage(1)
+    else
+        inst.components.planardamage:SetBaseDamage(0)
+    end
+end
+
+local SKILL_TAB = {
+    upgrade_pact_weapon_gunlance_1 = 1,
+    upgrade_pact_weapon_gunlance_2 = 2,
+    upgrade_pact_weapon_gunlance_3 = 3,
+}
+
 
 local function fn()
     local inst = CreateEntity()
@@ -260,7 +278,11 @@ local function fn()
 
     inst:AddComponent("icey2_spdamage_force")
 
+    inst:AddComponent("planardamage")
+
     inst:AddComponent("inspectable")
+
+    inst:AddComponent("named")
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.canonlygoinpocket = true
@@ -275,6 +297,11 @@ local function fn()
     inst.components.icey2_versatile_weapon.onformchange = OnFormChange
 
     inst:AddComponent("icey2_supply_ball_override")
+
+    inst:AddComponent("icey2_upgradable")
+    inst.components.icey2_upgradable:SetApplyFn(ApplyLevelFn)
+    inst.components.icey2_upgradable:SetSkillTab(SKILL_TAB)
+    inst.components.icey2_upgradable:SetLevel(0)
 
     MakeHauntableLaunch(inst)
 

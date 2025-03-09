@@ -1,6 +1,7 @@
 local assets =
 {
     Asset("ANIM", "anim/deer_ice_charge.zip"),
+    Asset("ANIM", "anim/deer_fire_charge.zip"),
 }
 
 local SCALE_BALL_SHIELD = 0.7

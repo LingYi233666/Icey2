@@ -92,7 +92,6 @@ function Icey2BonusArea:OnUpdate(dt)
         return
     end
 
-
     local x, y, z = self.inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, self.radius, nil, { "INLIMBO", "FX" })
 

@@ -77,6 +77,15 @@ STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_4 = "吸收传送之力来增加连�
 STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_5 = "闪避充能芯片5"
 STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_5 = "吸收海象的力量来增加连续闪避次数。无法重复制作。"
 
+-- root skill
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_HUNGER_IS_ELECTRICITY = "电能驱动"
+-- root skill
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_FORCE_SHIELD = "力场护盾"
+-- root skill
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_DODGE = "闪光冲刺"
+-- root skill
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_SUMMON_PACT_WEAPON = "创造能量武器"
+
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_RAPIER_1 = "能量刺剑初级强化"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_RAPIER_1 = "强化你的能量刺剑。"
 
@@ -207,38 +216,38 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
 
         UPGRADE_PACT_WEAPON_RAPIER_1 = {
             TITLE = "能量刺剑初级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你使用了金属血强化了你的能量刺剑，现在它获得以下永久增益：\n*力场攻击力上升。\n*武器战技冷却时间下降。",
         },
 
         UPGRADE_PACT_WEAPON_RAPIER_2 = {
             TITLE = "能量刺剑中级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你进一步强化了你的能量刺剑，现在它获得以下永久增益：\n*力场攻击力上升。\n*武器战技冷却时间下降。",
         },
 
         UPGRADE_PACT_WEAPON_RAPIER_3 = {
             TITLE = "能量刺剑高级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你将你的能量刺剑强化至顶峰，现在它获得以下永久增益：\n*力场攻击力上升。\n*位面攻击力上升。\n*武器战技冷却时间下降。",
         },
 
         NEW_PACT_WEAPON_SCYTHE = {
             TITLE = "能量武器：镰刀",
             DESC =
-            "“创造能量武器”技能新增武器种类：能量镰刀。能量镰刀可以用于战斗，或是用来收割农作物，武器战技如下：\n战技·掷镰：\n向鼠标方向投掷镰刀，对一条直线上的敌人造成伤害，并在落地点形成一道能够增加你伤害的力幕。",
+            "“创造能量武器”技能新增武器种类：能量镰刀。能量镰刀可以用于战斗，或是用来收割农作物，武器战技如下：\n战技·掷镰：\n向鼠标方向投掷镰刀，对一条直线上的敌人造成伤害，并在落地点形成一道能够增加你和盟友伤害的力幕。",
         },
 
         UPGRADE_PACT_WEAPON_SCYTHE_1 = {
             TITLE = "能量镰刀初级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你使用了金属血强化了你的能量镰刀，现在它获得以下永久增益：\n*力场攻击力上升。\n*力幕伤害增幅上升。\n*收割时自动获得收割所得产物，无需再拾取。",
         },
 
         UPGRADE_PACT_WEAPON_SCYTHE_2 = {
             TITLE = "能量镰刀中级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你进一步强化了你的能量镰刀，现在它获得以下永久增益：\n*力场攻击力上升。\n*力幕伤害增幅上升。",
         },
 
         UPGRADE_PACT_WEAPON_SCYTHE_3 = {
             TITLE = "能量镰刀高级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你将你的能量镰刀强化至顶峰，现在它获得以下永久增益：\n*力场攻击力上升。\n*位面攻击力上升。\n*力幕伤害增幅上升。",
         },
 
         NEW_PACT_WEAPON_GUNLANCE = {
@@ -249,44 +258,44 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
 
         UPGRADE_PACT_WEAPON_GUNLANCE_1 = {
             TITLE = "能量刃枪初级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你使用了金属血强化了你的能量刃枪，现在它获得以下永久增益：\n*力场攻击力上升。",
         },
 
         UPGRADE_PACT_WEAPON_GUNLANCE_2 = {
             TITLE = "能量刃枪中级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你进一步强化了你的能量刃枪，现在它获得以下永久增益：\n*力场攻击力上升。",
         },
 
         UPGRADE_PACT_WEAPON_GUNLANCE_3 = {
             TITLE = "能量刃枪高级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你将你的能量刃枪强化至顶峰，现在它获得以下永久增益：\n*力场攻击力上升。\n*位面攻击力上升。",
         },
 
         NEW_PACT_WEAPON_CHAINSAW = {
             TITLE = "能量武器：电锯",
             DESC =
-            "“创造能量武器”技能新增武器种类：能量电锯。电锯能够高速切割受害者，在一次近战中造成多段伤害，但它无法在战斗聚集中汲取敌人的精华。武器战技如下：\n战技·回旋刀刃：\n消耗些许电力值，向鼠标方向发射电锯锯片，锯片随后会在你周身环绕，切开接触到的敌人或者树木。",
+            "“创造能量武器”技能新增武器种类：能量电锯。电锯能够高速切割受害者，在一次近战中造成多段伤害，但它无法在战斗聚集中汲取敌人的精华。武器战技如下：\n战技·回旋刀刃：\n消耗些许电力值，向鼠标方向发射回旋刀刃，回旋刀刃随后会在你周身环绕，切开接触到的敌人或者树木。\n你需要专注来维持回旋刀刃，受伤可能打破专注被并让回旋刀刃自毁。",
         },
 
         UPGRADE_PACT_WEAPON_CHAINSAW_1 = {
             TITLE = "能量电锯初级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你使用了金属血强化了你的能量电锯，现在它获得以下永久增益：\n*力场攻击力上升。\n*回旋刀刃自动飞向你砍伐的树木。",
         },
 
         UPGRADE_PACT_WEAPON_CHAINSAW_2 = {
             TITLE = "能量电锯中级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你进一步强化了你的能量电锯，现在它获得以下永久增益：\n*力场攻击力上升。\n*回旋刀刃自动飞向你攻击的敌人。",
         },
 
         UPGRADE_PACT_WEAPON_CHAINSAW_3 = {
             TITLE = "能量电锯高级强化",
-            DESC = "技能未实装，暂时没有任何效果。",
+            DESC = "你将你的能量电锯强化至顶峰，现在它获得以下永久增益：\n*力场攻击力上升。\n*位面攻击力上升。\n*你在维持回旋刀刃的专注时具有优势。",
         },
 
         PARRY = {
             TITLE = "聚能盾牌",
             DESC =
-            "将力场护盾的全部能量输出集中在你的手中，形成一面能够吸收正前方攻击的坚固盾牌（你必须至少有一只空出来的手来举起此盾牌）。击中盾牌的敌人将受电击与力场伤害折磨。\n在你不装备任何护甲或其他盾牌时，如果你在举起此盾牌后短时间内格挡了一次攻击，且你已经掌握“战意聚焦”技能，你会立刻进入战斗专注状态，",
+            "将力场护盾的全部能量输出集中在你的手中，形成一面能够吸收正前方攻击的坚固盾牌（你必须至少有一只空出来的手来举起此盾牌）。击中盾牌的敌人将受电击与力场伤害折磨。\n在你不装备任何护甲或其他盾牌时，如果你在举起此盾牌后短时间内格挡了一次攻击，且你已经掌握“战意聚焦”技能，你会立刻进入战斗专注状态。",
         },
 
         UNKNOWN = {
@@ -302,6 +311,10 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
 
     KEY_CONFIG = "设置键位",
 }
+
+-- for name, data in pairs(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC) do
+--     STRINGS.NAMES[name:upper()] = data.TITLE
+-- end
 
 STRINGS.ICEY2_UI.KEY_CONFIG_DIALOG = {
     TITLE = "设置键位",

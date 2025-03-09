@@ -27,7 +27,7 @@ local assets = {
     Asset("ANIM", "anim/player_actions_tf2minigun.zip"),
 
     --------------------------------------------------------------
-    -- Skills
+    -- Skills ui
     Asset("IMAGE", "images/ui/skill_slot/battle_focus.tex"),
     Asset("ATLAS", "images/ui/skill_slot/battle_focus.xml"),
     Asset("IMAGE", "images/ui/skill_slot/dodge.tex"),
@@ -77,7 +77,56 @@ local assets = {
     Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_scythe_3.tex"),
     Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_scythe_3.xml"),
 
-
+    ----------------------------------------------
+    -- skills builder
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_battle_focus.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_battle_focus.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_dodge.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_dodge.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_force_shield.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_force_shield.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_hunger_is_electricity.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_hunger_is_electricity.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_chainsaw.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_chainsaw.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_gunlance.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_gunlance.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_scythe.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_scythe.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_parry.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_parry.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_phantom_sword.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_phantom_sword.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_sample.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_sample.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_summon_pact_weapon.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_summon_pact_weapon.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_unknown.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_unknown.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_chainsaw_1.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_chainsaw_1.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_chainsaw_2.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_chainsaw_2.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_chainsaw_3.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_chainsaw_3.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_1.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_1.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_2.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_2.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_3.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_3.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_1.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_1.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_2.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_2.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_3.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_3.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_scythe_1.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_scythe_1.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_scythe_2.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_scythe_2.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_scythe_3.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_scythe_3.xml"),
 }
 -- ThePlayer.AnimState:OverrideSymbol("hairpigtails", "hibiki", "hairpigtails")
 local prefabs = {}

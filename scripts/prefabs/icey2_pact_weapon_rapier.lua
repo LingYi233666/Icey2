@@ -47,9 +47,31 @@ local function SpellFn(inst, doer, pos)
     if Icey2Basic.IsWearingArmor(doer) then
         inst.components.rechargeable:Discharge(15)
     else
-        inst.components.rechargeable:Discharge(5)
+        local level = inst.components.icey2_upgradable:GetLevel()
+        inst.components.rechargeable:Discharge(math.max(0.1, 5 - level))
     end
 end
+
+local function ApplyLevelFn(inst, new_level, old_level)
+    if new_level >= 1 then
+        inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_RAPIER .. "+" .. tostring(new_level))
+    else
+        inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_RAPIER)
+    end
+
+    inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 5)
+    if new_level >= 3 then
+        inst.components.planardamage:SetBaseDamage(1)
+    else
+        inst.components.planardamage:SetBaseDamage(0)
+    end
+end
+
+local SKILL_TAB = {
+    upgrade_pact_weapon_rapier_1 = 1,
+    upgrade_pact_weapon_rapier_2 = 2,
+    upgrade_pact_weapon_rapier_3 = 3,
+}
 
 local function fn()
     local inst = CreateEntity()
@@ -66,11 +88,9 @@ local function fn()
 
     inst.AnimState:SetLightOverride(0.6)
 
-
     inst:AddTag("icey2_pact_weapon")
 
     MakeInventoryFloatable(inst, "med", 0.05, { 1.1, 0.5, 1.1 }, true, -9)
-
 
     Icey2WeaponSkill.AddAoetargetingClient(inst, "point", nil, 12)
     inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe_1_6"
@@ -83,12 +103,15 @@ local function fn()
     end
 
     inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(17)
+    inst.components.weapon:SetDamage(34)
 
     inst:AddComponent("icey2_spdamage_force")
-    inst.components.icey2_spdamage_force:SetBaseDamage(17)
+
+    inst:AddComponent("planardamage")
 
     inst:AddComponent("inspectable")
+
+    inst:AddComponent("named")
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.imagename = "icey2_pact_weapon_rapier"
@@ -102,10 +125,15 @@ local function fn()
     inst:AddComponent("icey2_aoeweapon_flurry_lunge")
     inst.components.icey2_aoeweapon_flurry_lunge:SetOnHitFn(OnSpellHit)
 
+    inst:AddComponent("icey2_upgradable")
+    inst.components.icey2_upgradable:SetApplyFn(ApplyLevelFn)
+    inst.components.icey2_upgradable:SetSkillTab(SKILL_TAB)
+    inst.components.icey2_upgradable:SetLevel(0)
 
     Icey2WeaponSkill.AddAoetargetingServer(inst, SpellFn)
 
     MakeHauntableLaunch(inst)
+
 
     return inst
 end

@@ -97,3 +97,12 @@ end)
 --         return old_ret
 --     end
 -- end)
+
+AddClassPostConstruct("widgets/ingredientui",
+    function(self, atlas, image, quantity, on_hand, has_enough, name, owner, recipe_type, quant_text_scale,
+             ingredient_recipe)
+        if IsIcey2SkillIngredient(recipe_type) then
+            self.quant:Hide()
+        end
+    end
+)

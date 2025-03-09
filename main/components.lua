@@ -151,3 +151,42 @@ AddComponentPostInit("stageactingprop", function(self)
         self:AddGeneralScript(script_name, script_data)
     end
 end)
+
+AddComponentPostInit("builder", function(self)
+    local old_HasCharacterIngredient = self.HasCharacterIngredient
+
+    self.HasCharacterIngredient = function(self, ingredient, ...)
+        for _, data in pairs(ICEY2_SKILL_DEFINES) do
+            local name = data.Name
+
+            if ingredient.type == "icey2_skill_builder_" .. name then
+                if self.inst.components.icey2_skiller and self.inst.components.icey2_skiller:IsLearned(name) then
+                    return true, 1
+                else
+                    return false, 0
+                end
+            end
+        end
+        return old_HasCharacterIngredient(self, ingredient, ...)
+    end
+end)
+
+AddClassPostConstruct("components/builder_replica", function(self)
+    print("AddClassPostConstruct builder_replica success !", self.inst)
+
+    local old_HasCharacterIngredient = self.HasCharacterIngredient
+
+    self.HasCharacterIngredient = function(self, ingredient, ...)
+        for _, data in pairs(ICEY2_SKILL_DEFINES) do
+            local name = data.Name
+            if ingredient.type == "icey2_skill_builder_" .. name then
+                if self.inst.replica.icey2_skiller and self.inst.replica.icey2_skiller:IsLearned(name) then
+                    return true, 1
+                else
+                    return false, 0
+                end
+            end
+        end
+        return old_HasCharacterIngredient(self, ingredient, ...)
+    end
+end)

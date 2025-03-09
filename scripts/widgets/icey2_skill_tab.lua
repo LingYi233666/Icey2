@@ -134,13 +134,6 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
         local is_learned = self.owner.replica.icey2_skiller:IsLearned(self.current_skill_name)
 
         self.skill_title:Show()
-        -- if is_learned then
-        --     self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name:upper()].TITLE)
-        -- elseif skill_define.Ingredients ~= nil then
-        --     self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.NEED_CRAFT.TITLE)
-        -- else
-        --     self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNOWN.TITLE)
-        -- end
         self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name:upper()].TITLE)
 
         self.skill_desc:Show()
@@ -155,7 +148,21 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
 
             self:UpdateSkillDesc(desc)
         elseif skill_define.Ingredients ~= nil then
-            self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.NEED_CRAFT.DESC)
+            if skill_define.Tech == nil or skill_define.Tech == TECH.NONE then
+                self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.NEED_CRAFT.DESC)
+            else
+                local text_map = {
+                    [TECH.SCIENCE_ONE] = "NEEDSCIENCEMACHINE",
+                    [TECH.SCIENCE_TWO] = "NEEDALCHEMYENGINE",
+                    [TECH.MAGIC_TWO] = "NEEDPRESTIHATITATOR",
+                    [TECH.MAGIC_THREE] = "NEEDSHADOWMANIPULATOR",
+                }
+
+                local str = STRINGS.UI.CRAFTING[text_map[skill_define.Tech]] or
+                    STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.NEED_CRAFT.DESC
+
+                self:UpdateSkillDesc(str)
+            end
         else
             self:UpdateSkillDesc(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC.UNKNOWN.DESC)
         end

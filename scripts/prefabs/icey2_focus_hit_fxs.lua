@@ -6,6 +6,7 @@ local ADD_SHADER = "shaders/vfx_particle_add.ksh"
 
 local COLOUR_ENVELOPE_NAME_ARROW_BLUE = "icey2_focus_hit_vfx_arrow_blue_colourenvelope"
 local COLOUR_ENVELOPE_NAME_ARROW_RED = "icey2_focus_hit_vfx_arrow_red_colourenvelope"
+local COLOUR_ENVELOPE_NAME_ARROW_YELLOW = "icey2_focus_hit_vfx_arrow_yellow_colourenvelope"
 local SCALE_ENVELOPE_NAME_ARROW = "icey2_focus_hit_vfx_arrow_scaleenvelope"
 
 local COLOUR_ENVELOPE_NAME_SPARKLE_BLUE = "icey2_focus_hit_vfx_sparkle_blue_colourenvelope"
@@ -43,20 +44,25 @@ local function InitEnvelope()
     EnvelopeManager:AddColourEnvelope(
         COLOUR_ENVELOPE_NAME_ARROW_RED,
         {
-            -- { 0,  IntColour(200, 100, 26, 180) },
-            -- { .2, IntColour(210, 100, 26, 255) },
-            -- { .6, IntColour(210, 100, 26, 175) },
-            -- { 1,  IntColour(200, 100, 26, 0) },
-
-            -- { 0,  IntColour(200, 26, 26, 180) },
-            -- { .2, IntColour(210, 26, 26, 255) },
-            -- { .6, IntColour(210, 26, 26, 175) },
-            -- { 1,  IntColour(200, 26, 26, 0) },
-
             { 0,  IntColour(200, 0, 0, 180) },
             { .2, IntColour(210, 0, 0, 255) },
             { .6, IntColour(210, 0, 0, 175) },
             { 1,  IntColour(200, 0, 0, 0) },
+        }
+    )
+
+    EnvelopeManager:AddColourEnvelope(
+        COLOUR_ENVELOPE_NAME_ARROW_YELLOW,
+        {
+            -- { 0,  IntColour(200, 200, 0, 180) },
+            -- { .2, IntColour(210, 210, 0, 255) },
+            -- { .6, IntColour(210, 210, 0, 175) },
+            -- { 1,  IntColour(200, 200, 0, 0) },
+
+            { 0,  IntColour(255, 255, 255, 180) },
+            { .2, IntColour(255, 253, 245, 255) },
+            { .6, IntColour(255, 226, 110, 255) },
+            { 1,  IntColour(0, 0, 0, 0) },
         }
     )
 
@@ -316,5 +322,30 @@ local function red_vfx_fn()
     return inst
 end
 
+
+local function yellow_vfx_fn()
+    local inst = common_fn()
+
+    if TheNet:IsDedicated() then
+        return inst
+    end
+
+    inst.direction_emitter_1 = Icey2Math.CustomSphereEmitter(0.3,
+        0.4,
+        0,
+        PI,
+        0,
+        PI)
+
+    inst.num_emit_arrow = math.random(7, 8)
+    inst.num_emit_sparkle = 0
+
+    inst.VFXEffect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_ARROW_YELLOW)
+
+    return inst
+end
+
+
 return Prefab("icey2_focus_hit_vfx_blue", blue_vfx_fn, assets),
-    Prefab("icey2_focus_hit_vfx_red", red_vfx_fn, assets)
+    Prefab("icey2_focus_hit_vfx_red", red_vfx_fn, assets),
+    Prefab("icey2_focus_hit_vfx_yellow", yellow_vfx_fn, assets)

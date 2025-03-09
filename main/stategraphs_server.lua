@@ -193,7 +193,7 @@ end)
 -- Skill: dodge
 AddStategraphState("wilson", State {
     name = "icey2_dodge",
-    tags = { "busy", "evade", "dodge", "no_stun", "nopredict", "nointerrupt" },
+    tags = { "busy", "evade", "dodge", "noattack", "no_stun", "nopredict", "nointerrupt" },
 
     onenter = function(inst, data)
         -- inst.AnimState:PlayAnimation("atk_leap_pre")
@@ -899,11 +899,13 @@ AddStategraphState("wilson", State {
     {
         TimeEvent(8 * FRAMES, function(inst)
             inst.sg.statemem.emit_fx = true
+            inst.sg.statemem.fx_height = 1.5
             inst:PerformBufferedAction()
             inst.sg.statemem.emit_fx = false
             inst.sg:RemoveStateTag("abouttoattack")
         end),
         TimeEvent(9 * FRAMES, function(inst)
+            inst.sg.statemem.fx_height = 1.3
             local weapon = inst.sg.statemem.weapon
             if weapon and weapon:IsValid()
                 and weapon.components.icey2_aoeweapon_launch_chainsaw
@@ -912,6 +914,7 @@ AddStategraphState("wilson", State {
             end
         end),
         TimeEvent(10 * FRAMES, function(inst)
+            inst.sg.statemem.fx_height = 1
             local weapon = inst.sg.statemem.weapon
             if weapon and weapon:IsValid()
                 and weapon.components.icey2_aoeweapon_launch_chainsaw

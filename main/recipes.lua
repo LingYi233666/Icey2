@@ -33,6 +33,34 @@ local function AddRecipeWithManyIngredients(name, list_ingredients, tech, config
     end
 end
 
+---------------- Modify CHARACTER_INGREDIENT ----------------
+-- seems no need for this code, because we can handle it in hack of "IsCharacterIngredient"
+-- for _, data in pairs(ICEY2_SKILL_DEFINES) do
+--     local name = data.Name
+--     GLOBAL.CHARACTER_INGREDIENT[name] = name
+-- end
+
+local is_icey2_skill_ingredient = nil
+function IsIcey2SkillIngredient(ingredienttype)
+    if is_icey2_skill_ingredient == nil then
+        is_icey2_skill_ingredient = {}
+        for _, data in pairs(ICEY2_SKILL_DEFINES) do
+            local name = "icey2_skill_builder_" .. data.Name
+            is_icey2_skill_ingredient[name] = true
+        end
+    end
+
+    return ingredienttype ~= nil and is_icey2_skill_ingredient[ingredienttype]
+end
+
+GLOBAL.IsIcey2SkillIngredient = IsIcey2SkillIngredient
+
+local old_IsCharacterIngredient = GLOBAL.IsCharacterIngredient
+function GLOBAL.IsCharacterIngredient(ingredienttype)
+    return IsIcey2SkillIngredient(ingredienttype) or old_IsCharacterIngredient(ingredienttype)
+end
+
+-------------------------------------------------------------
 
 -- Icey2ModAddRecipe2(
 --     "icey2_blood_metal",
@@ -125,13 +153,13 @@ for _, data in pairs(ICEY2_SKILL_DEFINES) do
                         return false, "SKILL_ALREADY_LEARNED"
                     end
 
-                    if data.RequiredSkills then
-                        for _, v in pairs(data.RequiredSkills) do
-                            if not builder.components.icey2_skiller:IsLearned(v) then
-                                return false, "PRE_SKILL_REQUIRED"
-                            end
-                        end
-                    end
+                    -- if data.RequiredSkills then
+                    --     for _, v in pairs(data.RequiredSkills) do
+                    --         if not builder.components.icey2_skiller:IsLearned(v) then
+                    --             return false, "PRE_SKILL_REQUIRED"
+                    --         end
+                    --     end
+                    -- end
 
                     return true
                 end,

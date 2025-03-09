@@ -218,7 +218,7 @@ local function OnProjectileHit(inst, attacker, target)
     fx.SoundEmitter:PlaySound("icey2_sfx/skill/phantom_sword/hit3")
 
 
-    if attacker and attacker:IsValid() then
+    if attacker and attacker:IsValid() and target then
         -- local x, y, z = inst:GetPosition():Get()
         -- local ents = TheSim:FindEntities(x, y, z, 1.5, { "_combat", "_health" }, { "INLIMBO" })
         -- if target then
@@ -237,7 +237,7 @@ local function OnProjectileHit(inst, attacker, target)
         local spdamage = {
             icey2_spdamage_force = Icey2Math.SumDices(1, 4) + 1,
         }
-        target.components.combat:GetAttacked(attacker, 0, nil, nil, spdamage)
+        target.components.combat:GetAttacked(attacker, 0, inst, nil, spdamage)
     end
 
     inst:Remove()
@@ -381,30 +381,18 @@ local function OnUpdate(inst)
     speed = math.clamp(speed, 10, 60)
     inst.components.complexprojectile:SetHorizontalSpeed(speed)
 
-    if inst.target and inst.target:IsValid() then
-        -- local height = 0.3
-        -- if inst.target:HasTag("smallcreature") then
-        --     height = 0.3
-        -- elseif inst.target:HasTag("character") then
-        --     height = 1
-        -- elseif inst.target:HasTag("largecreature") then
-        --     height = 3
-        -- end
 
-        -- local plannar_dist = math.sqrt(towards.x * towards.x + towards.z * towards.z)
-        -- if plannar_dist < inst.target:GetPhysicsRadius(0) + 1 and towards.y <= 0 and -towards.y < height then
-        if (inst:GetPosition() - inst.target:GetPosition()):Length() < 1 then
+    local attacker = inst.components.complexprojectile.attacker
+    if attacker
+        and attacker:IsValid()
+        and attacker.components.combat
+        and attacker.components.combat:CanTarget(inst.target) then
+        if (inst:GetPosition() - inst.target:GetPosition()):Length() < 1 or towards:Length() < 1 then
             inst.components.complexprojectile:Hit(inst.target)
-
-            return true
         end
+    else
+        inst.components.complexprojectile:Hit()
     end
-
-    if towards:Length() < 1 then
-        inst.components.complexprojectile:Hit(inst.target)
-        return true
-    end
-
 
     return true
 end
@@ -430,8 +418,8 @@ local function projectilefn()
         return inst
     end
 
-    -- inst:AddComponent("weapon")
-    -- inst.components.weapon:SetDamage(0)
+    inst:AddComponent("weapon")
+    inst.components.weapon:SetDamage(0)
 
     -- inst:AddComponent("icey2_spdamage_force")
     -- inst.components.icey2_spdamage_force:SetBaseDamage(Icey2Math.SumDices(1, 4) + 1)

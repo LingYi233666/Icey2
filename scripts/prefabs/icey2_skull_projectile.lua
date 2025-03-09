@@ -35,7 +35,7 @@ local function Projectile_OnHit(inst, attacker, target)
         -- fx:SpawnChild("icey2_blue_fire_explode_vfx")
 
         local fx = SpawnAt("icey2_skull_projectile_hitfx", inst)
-        fx.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/hit3", nil, 0.5)
+        -- fx.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/hit3", nil, 0.5)
     end
 
 

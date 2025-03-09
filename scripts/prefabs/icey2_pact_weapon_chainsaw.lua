@@ -75,8 +75,15 @@ local function OnEquip(inst, owner)
     end
 
     inst._attacked_callback = function(_, data)
-        if data.damage / 100 > math.random() then
-            if inst.components.icey2_aoeweapon_launch_chainsaw:GetProjectile() then
+        if inst.components.icey2_aoeweapon_launch_chainsaw:GetProjectile() then
+            local rand_value = math.random()
+
+            local level      = inst.components.icey2_upgradable:GetLevel()
+            if level >= 3 then
+                rand_value = math.max(rand_value, math.random())
+            end
+
+            if Icey2Basic.IsWearingArmor(owner) or math.max(0.5, data.damage / 100) > rand_value then
                 inst.components.icey2_aoeweapon_launch_chainsaw:Return()
                 inst.components.rechargeable:Discharge(1)
             end
@@ -107,9 +114,8 @@ local function OnAttackMelee(inst, attacker, target)
         local start_pos = target:GetPosition()
         start_pos.y = start_pos.y + GetRandomMinMax(0.8, 2)
 
-        local fx = SpawnAt("icey2_supply_ball_shield_spawn", start_pos)
+        local fx = SpawnAt("icey2_chainsaw_hit_fx", start_pos)
         fx:FaceAwayFromPoint(attacker:GetPosition(), true)
-        fx:SpawnChild("icey2_melee_hit_vfx")
 
         -- attacker.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/hit")
     end
@@ -141,6 +147,64 @@ local function OnLaunch(inst, doer, target_pos)
             owner.components.combat:SetAttackPeriod(TUNING.WILSON_ATTACK_PERIOD)
         end
     end
+
+    inst.components.icey2_upgradable:CheckSkill()
+
+    inst._on_owner_chop = function(_, data)
+        local action = data.action
+        if not (action and action.action == ACTIONS.CHOP) then
+            return
+        end
+
+        local target = action.target
+        if not (target and target:IsValid()) then
+            return
+        end
+
+        local proj = inst.components.icey2_aoeweapon_launch_chainsaw:GetProjectile()
+        if proj == nil then
+            return
+        end
+
+        local level = inst.components.icey2_upgradable:GetLevel()
+        if level < 1 then
+            return
+        end
+
+        if inst.last_rotate_time == nil or GetTime() - inst.last_rotate_time > 1 then
+            proj:SetEmergencyDestination(target:GetPosition())
+            inst.last_rotate_time = GetTime()
+        end
+    end
+
+    inst._on_owner_attack = function(_, data)
+        local target = data.target
+        if not (target and target:IsValid()) then
+            return
+        end
+
+        local proj = inst.components.icey2_aoeweapon_launch_chainsaw:GetProjectile()
+        if proj == nil then
+            return
+        end
+
+        if data.weapon == proj then
+            return
+        end
+
+        local level = inst.components.icey2_upgradable:GetLevel()
+        if level < 2 then
+            return
+        end
+
+        if inst.last_rotate_time == nil or GetTime() - inst.last_rotate_time > 1 then
+            proj:SetEmergencyDestination(target:GetPosition())
+            inst.last_rotate_time = GetTime()
+        end
+    end
+
+    inst:ListenForEvent("performaction", inst._on_owner_chop, doer)
+    inst:ListenForEvent("onhitother", inst._on_owner_attack, doer)
 end
 
 local function OnReturn(inst, doer, projectile)
@@ -158,6 +222,11 @@ local function OnReturn(inst, doer, projectile)
             owner.components.combat:SetAttackPeriod(17 * FRAMES)
         end
     end
+
+    inst:RemoveEventCallback("performaction", inst._on_owner_chop, doer)
+    inst:RemoveEventCallback("onhitother", inst._on_owner_attack, doer)
+    inst._on_owner_chop = nil
+    inst._on_owner_attack = nil
 end
 
 local function SupplyBallDataFn(inst, player, target, addition)
@@ -168,6 +237,38 @@ local function SupplyBallDataFn(inst, player, target, addition)
 
     end
 end
+
+local function ApplyLevelFn(inst, new_level, old_level)
+    if new_level >= 1 then
+        inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_CHAINSAW .. "+" .. tostring(new_level))
+    else
+        inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_CHAINSAW)
+    end
+
+    inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 2)
+    if new_level >= 3 then
+        inst.components.planardamage:SetBaseDamage(1)
+    else
+        inst.components.planardamage:SetBaseDamage(0)
+    end
+
+    local proj = inst.components.icey2_aoeweapon_launch_chainsaw:GetProjectile()
+    if proj ~= nil then
+        proj.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 2)
+        if new_level >= 3 then
+            proj.components.planardamage:SetBaseDamage(1)
+        else
+            proj.components.planardamage:SetBaseDamage(0)
+        end
+    end
+end
+
+local SKILL_TAB = {
+    upgrade_pact_weapon_chainsaw_1 = 1,
+    upgrade_pact_weapon_chainsaw_2 = 2,
+    upgrade_pact_weapon_chainsaw_3 = 3,
+}
+
 
 local function fn()
     local inst = CreateEntity()
@@ -206,13 +307,16 @@ local function fn()
     CreateSwapAnims(inst, FX_DEFS_NORMAL)
 
     inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(13)
+    inst.components.weapon:SetDamage(15)
     inst.components.weapon:SetOnAttack(OnAttackMelee)
 
     inst:AddComponent("icey2_spdamage_force")
-    inst.components.icey2_spdamage_force:SetBaseDamage(12.5)
+
+    inst:AddComponent("planardamage")
 
     inst:AddComponent("inspectable")
+
+    inst:AddComponent("named")
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.imagename = "icey2_pact_weapon_chainsaw"
@@ -229,6 +333,11 @@ local function fn()
 
     inst:AddComponent("icey2_supply_ball_override")
     -- inst.components.icey2_supply_ball_override.getdatafn = SupplyBallDataFn
+
+    inst:AddComponent("icey2_upgradable")
+    inst.components.icey2_upgradable:SetApplyFn(ApplyLevelFn)
+    inst.components.icey2_upgradable:SetSkillTab(SKILL_TAB)
+    inst.components.icey2_upgradable:SetLevel(0)
 
     Icey2WeaponSkill.AddAoetargetingServer(inst, SpellFn)
 

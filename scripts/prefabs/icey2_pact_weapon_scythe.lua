@@ -144,12 +144,18 @@ local function HarvestPickable(inst, ent, doer)
         doer.SoundEmitter:PlaySound(ent.components.pickable.picksound)
     end
 
-    local success, loot = ent.components.pickable:Pick(TheWorld)
+    local level = inst.components.icey2_upgradable:GetLevel()
 
-    if loot ~= nil then
-        for i, item in ipairs(loot) do
-            Launch(item, doer, 1.5)
+    if level < 1 then
+        local success, loot = ent.components.pickable:Pick(TheWorld)
+
+        if loot ~= nil then
+            for i, item in ipairs(loot) do
+                Launch(item, doer, 1.5)
+            end
         end
+    else
+        local success, loot = ent.components.pickable:Pick(doer)
     end
 end
 
@@ -294,7 +300,8 @@ local function ProjectileOnHit(inst)
     ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, .015, .8, inst, 20)
 
     -- Bonus area start
-    inst.components.icey2_bonus_area:Start(10)
+    inst.components.icey2_bonus_area:Start(300)
+
 
     inst:RemoveTag("FX")
     inst:EnableComplexProjectile(false)
@@ -316,7 +323,8 @@ end
 
 local function BonusAreaTest(inst, target)
     return target.components.combat
-        and target == inst.owner
+        and (target == inst.owner
+            or (inst.owner and inst.owner.components.combat:IsAlly(target)))
 end
 
 local function SpellFn(inst, doer, pos)
@@ -345,6 +353,11 @@ local function OnPickUp(inst)
     inst:RemoveTag("icey2_pact_weapon_no_regive")
 end
 
+local function OnBonusAreaStart(inst)
+    -- inst.SoundEmitter:PlaySound("meta2/voidcloth_umbrella/barrier_activate")
+    inst.SoundEmitter:PlaySound("meta2/voidcloth_umbrella/barrier_lp", "loop")
+end
+
 local function OnBonusAreaStop(inst)
     inst:RemoveTag("icey2_pact_weapon_no_regive")
     if inst.owner
@@ -353,7 +366,33 @@ local function OnBonusAreaStop(inst)
         and inst.owner.components.icey2_skill_summon_pact_weapon then
         inst.owner.components.icey2_skill_summon_pact_weapon:StartRegiveTask(inst)
     end
+    -- inst.SoundEmitter:PlaySound("meta2/voidcloth_umbrella/barrier_close")
+    inst.SoundEmitter:KillSound("loop")
 end
+
+local function ApplyLevelFn(inst, new_level, old_level)
+    if new_level >= 1 then
+        inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_SCYTHE .. "+" .. tostring(new_level))
+    else
+        inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_SCYTHE)
+    end
+
+    inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 5)
+    if new_level >= 3 then
+        inst.components.planardamage:SetBaseDamage(1)
+    else
+        inst.components.planardamage:SetBaseDamage(0)
+    end
+
+    inst.components.icey2_bonus_area.bonus_damage_force = 3 * (new_level + 1)
+    inst.components.icey2_bonus_area:CheckToRemove(true)
+end
+
+local SKILL_TAB = {
+    upgrade_pact_weapon_scythe_1 = 1,
+    upgrade_pact_weapon_scythe_2 = 2,
+    upgrade_pact_weapon_scythe_3 = 3,
+}
 
 local function fn()
     local inst = CreateEntity()
@@ -399,9 +438,12 @@ local function fn()
     inst.components.weapon:SetDamage(34)
 
     inst:AddComponent("icey2_spdamage_force")
-    inst.components.icey2_spdamage_force:SetBaseDamage(17)
+
+    inst:AddComponent("planardamage")
 
     inst:AddComponent("inspectable")
+
+    inst:AddComponent("named")
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.imagename = "icey2_pact_weapon_scythe"
@@ -417,17 +459,23 @@ local function fn()
 
     inst:AddComponent("icey2_bonus_area")
     inst.components.icey2_bonus_area.radius = 6
-    inst.components.icey2_bonus_area.bonus_damage_planar = 17
     inst.components.icey2_bonus_area.circle_prefab = "icey2_circle_mark_iceyblue_6"
+    -- inst.components.icey2_bonus_area.circle_prefab = "icey2_pact_weapon_scythe_dome"
     inst.components.icey2_bonus_area.testfn = BonusAreaTest
 
     -- inst:AddComponent("icey2_aoeweapon_throw_scythe")
     -- inst.components.icey2_aoeweapon_throw_scythe:SetOnHitFn(OnSpellHit)
 
+    inst:AddComponent("icey2_upgradable")
+    inst.components.icey2_upgradable:SetApplyFn(ApplyLevelFn)
+    inst.components.icey2_upgradable:SetSkillTab(SKILL_TAB)
+    inst.components.icey2_upgradable:SetLevel(0)
+
 
     Icey2WeaponSkill.AddAoetargetingServer(inst, SpellFn)
 
     inst:ListenForEvent("onputininventory", OnPickUp)
+    inst:ListenForEvent("icey2_bonus_area_start", OnBonusAreaStart)
     inst:ListenForEvent("icey2_bonus_area_stop", OnBonusAreaStop)
 
     MakeHauntableLaunch(inst)
@@ -523,9 +571,84 @@ local function height_controllerfn()
     return inst
 end
 
+local function DomeUpdateFn(inst, dt)
+    if ThePlayer and ThePlayer:IsValid() then
+        local dist = math.sqrt(ThePlayer:GetDistanceSqToInst(inst))
+        local dist_1 = 15
+        local dist_2 = 17
+
+        local c = 1
+        if dist < dist_1 then
+            c = 1
+        elseif dist > dist_2 then
+            c = 0
+        else
+            c = Remap(dist, dist_1, dist_2, 1, 0)
+        end
+
+        if inst.t < 1 then
+            inst.t = math.min(1, inst.t + dt * 3)
+        end
+        c = c * inst.t
+        inst.AnimState:SetMultColour(c, c, c, c)
+    end
+end
+
+local function dome_fn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
+
+    inst.AnimState:SetBank("umbrella_voidcloth")
+    inst.AnimState:SetBuild("umbrella_voidcloth")
+    inst.AnimState:PlayAnimation("barrier_dome", true)
+
+    inst.AnimState:SetAddColour(0.8, 1, 1, 1)
+    inst.AnimState:SetFinalOffset(7)
+
+    inst.scale = 2.5
+    inst.t = 0
+    inst.AnimState:SetMultColour(0, 0, 0, 0)
+    inst.AnimState:SetScale(inst.scale, inst.scale, inst.scale)
+
+    inst:AddTag("FX")
+
+    if not TheNet:IsDedicated() then
+        inst:AddComponent("updatelooper")
+        inst.components.updatelooper:AddOnUpdateFn(DomeUpdateFn)
+
+        -- inst:AddComponent("distancefade")
+        -- inst.components.distancefade:Setup(10, 15)
+    end
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.persists = false
+
+    -- inst.KillFX = function(inst)
+    --     inst:DoPeriodicTask(0, function()
+    --         inst.scale = inst.scale - FRAMES * 5
+    --         if inst.scale > 0 then
+    --             inst.AnimState:SetScale(inst.scale, inst.scale, inst.scale)
+    --         else
+    --             inst:Remove()
+    --         end
+    --     end)
+    -- end
+
+    return inst
+end
+
 
 
 return Prefab("icey2_pact_weapon_scythe", fn, assets),
     Prefab("icey2_pact_weapon_scythe_rolling", rollingfn, assets),
     Prefab("icey2_pact_weapon_scythe_swapanim", swapanimfn, assets),
-    Prefab("icey2_height_controller", height_controllerfn, assets)
+    Prefab("icey2_height_controller", height_controllerfn, assets),
+    Prefab("icey2_pact_weapon_scythe_dome", dome_fn, assets)

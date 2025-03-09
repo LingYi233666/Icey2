@@ -4,6 +4,20 @@ local assets =
     Asset("ANIM", "anim/icey2_pact_weapon_chainsaw.zip"),
 }
 
+local function SetEmergencyDestination(inst, target_pos)
+    local my_pos = inst:GetPosition()
+    local delta_pos = (target_pos - my_pos)
+    local direction = delta_pos:GetNormalized()
+    local speed = delta_pos:Length()
+    speed = math.max(speed, 40)
+
+    local new_vel = direction * speed
+    new_vel = new_vel + my_pos
+    new_vel.x, new_vel.y, new_vel.z = inst.entity:WorldToLocalSpace(new_vel.x, new_vel.y, new_vel.z)
+
+    inst.motor_vel = new_vel
+    inst.Physics:SetMotorVel(inst.motor_vel:Get())
+end
 
 local function OnLaunch(inst, attacker, targetPos)
     inst.start_time = GetTime()
@@ -11,39 +25,39 @@ local function OnLaunch(inst, attacker, targetPos)
     inst.Physics:SetMotorVel(inst.motor_vel:Get())
 
 
-    local function OnOwnerAttack(_, data)
-        if data.weapon == inst then
-            return
-        end
+    -- local function OnOwnerAttack(_, data)
+    --     if data.weapon == inst then
+    --         return
+    --     end
 
-        local target = data.target
+    --     local target = data.target
 
-        if (inst.last_rotate_time == nil or GetTime() - inst.last_rotate_time > 1)
-            and target
-            and target:IsValid() then
-            -- local cur_speed = inst.motor_vel:Length()
-            local target_pos = target:GetPosition()
-            local my_pos = inst:GetPosition()
-            local delta_pos = (target_pos - my_pos)
-            local direction = delta_pos:GetNormalized()
-            local speed = delta_pos:Length()
-            -- speed = math.clamp(speed, 30, 40)
-            speed = math.max(speed, 40)
+    --     if (inst.last_rotate_time == nil or GetTime() - inst.last_rotate_time > 1)
+    --         and target
+    --         and target:IsValid() then
+    --         -- local cur_speed = inst.motor_vel:Length()
+    --         local target_pos = target:GetPosition()
+    --         local my_pos = inst:GetPosition()
+    --         local delta_pos = (target_pos - my_pos)
+    --         local direction = delta_pos:GetNormalized()
+    --         local speed = delta_pos:Length()
+    --         -- speed = math.clamp(speed, 30, 40)
+    --         speed = math.max(speed, 40)
 
 
 
-            local new_vel = direction * speed
-            new_vel = new_vel + my_pos
-            new_vel.x, new_vel.y, new_vel.z = inst.entity:WorldToLocalSpace(new_vel.x, new_vel.y, new_vel.z)
+    --         local new_vel = direction * speed
+    --         new_vel = new_vel + my_pos
+    --         new_vel.x, new_vel.y, new_vel.z = inst.entity:WorldToLocalSpace(new_vel.x, new_vel.y, new_vel.z)
 
-            inst.motor_vel = new_vel
-            inst.Physics:SetMotorVel(inst.motor_vel:Get())
+    --         inst.motor_vel = new_vel
+    --         inst.Physics:SetMotorVel(inst.motor_vel:Get())
 
-            inst.last_rotate_time = GetTime()
-        end
-    end
+    --         inst.last_rotate_time = GetTime()
+    --     end
+    -- end
 
-    inst:ListenForEvent("onhitother", OnOwnerAttack, attacker)
+    -- inst:ListenForEvent("onhitother", OnOwnerAttack, attacker)
 end
 
 local function OnHit(inst, attacker, target)
@@ -79,7 +93,7 @@ local function OnUpdateFn(inst, dt)
                     attacker.components.combat:DoAttack(v, inst, inst, nil, factor, 99999, hit_pos)
                     inst.victims[v] = GetTime()
                 elseif v.components.workable and v.components.workable.action == ACTIONS.CHOP then
-                    v.components.workable:WorkedBy(attacker, 2 * factor)
+                    v.components.workable:WorkedBy(attacker, 1 * factor)
                     inst.victims[v] = GetTime()
                 end
             end
@@ -93,9 +107,14 @@ local function OnAttack(inst, attacker, target)
     local start_pos = target:GetPosition()
     start_pos.y = start_pos.y + GetRandomMinMax(0.6, 0.8)
 
-    local fx = SpawnAt("icey2_supply_ball_shield_spawn", start_pos)
-    fx:FaceAwayFromPoint(inst:GetPosition(), true)
+    -- local fx = SpawnAt("icey2_supply_ball_shield_spawn", start_pos)
+    -- fx:FaceAwayFromPoint(inst:GetPosition(), true)
     -- fx:SpawnChild("icey2_melee_hit_vfx")
+
+    local fx = SpawnAt("icey2_chainsaw_hit_fx", start_pos)
+    fx:FaceAwayFromPoint(inst:GetPosition(), true)
+    fx.AnimState:HideSymbol("fire_puff_fx")
+    -- fx.AnimState:SetMultColour(0, 0, 0, 0)
 
     inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/hit", nil, 0.8)
 end
@@ -125,11 +144,17 @@ local function projectile_fn()
 
     inst.persists = false
 
+    inst.SetEmergencyDestination = SetEmergencyDestination
+
     inst:AddComponent("icey2_elasticity_force")
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(10)
     inst.components.weapon:SetOnAttack(OnAttack)
+
+    inst:AddComponent("icey2_spdamage_force")
+
+    inst:AddComponent("planardamage")
 
     inst:AddComponent("complexprojectile")
     inst.components.complexprojectile:SetOnLaunch(OnLaunch)

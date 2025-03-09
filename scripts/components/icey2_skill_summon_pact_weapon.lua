@@ -107,6 +107,10 @@ function Icey2SkillSummonPactWeapon:RemoveWeaponPrefab(prefab)
     self:UpdateJsonData()
 end
 
+function Icey2SkillSummonPactWeapon:GetLinkedWeapons()
+    return self.linked_weapons
+end
+
 function Icey2SkillSummonPactWeapon:InitEventListeners(weapon)
     self.weapon_event_listeners[weapon] = {
         {
