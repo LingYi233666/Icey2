@@ -193,7 +193,7 @@ end)
 -- Skill: dodge
 AddStategraphState("wilson", State {
     name = "icey2_dodge",
-    tags = { "busy", "evade", "dodge", "noattack", "no_stun", "nopredict", "nointerrupt" },
+    tags = { "busy", "nopredict", "nointerrupt" },
 
     onenter = function(inst, data)
         -- inst.AnimState:PlayAnimation("atk_leap_pre")
@@ -226,11 +226,19 @@ AddStategraphState("wilson", State {
         else
             inst.AnimState:PlayAnimation("icey2_speedrun_pst")
         end
+
+        -- print("OnDodgeStop ontimeout")
+        inst.components.icey2_skill_dodge:OnDodgeStop()
+        inst.sg.statemem.dodge_stop = true
         inst.sg:GoToState("idle", true)
     end,
 
     onexit = function(inst)
-        inst.components.icey2_skill_dodge:OnDodgeStop()
+        if not inst.sg.statemem.dodge_stop then
+            -- print("OnDodgeStop onexit")
+
+            inst.components.icey2_skill_dodge:OnDodgeStop()
+        end
     end
 })
 

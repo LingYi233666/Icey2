@@ -111,6 +111,12 @@ function Icey2SkillSummonPactWeapon:GetLinkedWeapons()
     return self.linked_weapons
 end
 
+function Icey2SkillSummonPactWeapon:UpdateHungerBurnRate()
+    local num_linked_weapons = #self.linked_weapons
+    self.inst.components.hunger.burnratemodifiers:SetModifier(self.inst, 1 + num_linked_weapons * 0.1,
+        "icey2_linked_pact_weapons")
+end
+
 function Icey2SkillSummonPactWeapon:InitEventListeners(weapon)
     self.weapon_event_listeners[weapon] = {
         {
@@ -168,6 +174,8 @@ function Icey2SkillSummonPactWeapon:LinkWeapon(weapon)
     weapon.components.equippable.restrictedtag = self.restrictedtag
     weapon.components.equippable.refuse_on_restrict = true
 
+
+    self:UpdateHungerBurnRate()
     self:InitEventListeners(weapon)
     self:UpdateJsonData()
 end
@@ -202,6 +210,7 @@ function Icey2SkillSummonPactWeapon:UnlinkWeapon(weapon_or_prefab, remove_weapon
 
     table.removearrayvalue(self.linked_weapons, weapon)
 
+    self:UpdateHungerBurnRate()
     self:RemoveEventListeners(weapon)
     self:StopRegiveTask(weapon)
 

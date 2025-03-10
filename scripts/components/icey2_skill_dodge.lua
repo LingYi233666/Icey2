@@ -110,6 +110,9 @@ function Icey2SkillDodge:HasSuitableWeapon()
 end
 
 function Icey2SkillDodge:OnDodgeStart(target_pos)
+    self.start_pos = self.inst:GetPosition()
+    self.start_platform = self.inst:GetCurrentPlatform()
+
     self.inst.components.locomotor:Stop()
 
     self.inst:ForceFacePoint(target_pos)
@@ -129,7 +132,9 @@ function Icey2SkillDodge:OnDodgeStart(target_pos)
 
     if not Icey2Basic.IsWearingArmor(self.inst) and self:HasSuitableWeapon() then
         local enemies = self:SearchCreaturesAutoToAttack()
-        if #enemies > 0 then self:CounterBack(enemies[1]) end
+        if #enemies > 0 then
+            self:CounterBack(enemies[1])
+        end
     end
 
     self.inst.SoundEmitter:PlaySound("icey2_sfx/skill/dodge/dodge")
@@ -142,7 +147,6 @@ end
 function Icey2SkillDodge:OnDodgeStop()
     self.inst.Physics:ClearMotorVelOverride()
     self.inst.Physics:Stop()
-    self.inst.components.health:SetInvincible(false)
 
     self.inst.AnimState:SetMultColour(1, 1, 1, 1)
 
@@ -150,11 +154,52 @@ function Icey2SkillDodge:OnDodgeStop()
         for _, v in pairs(self.dodge_fx) do v:Remove() end
         self.dodge_fx = nil
     end
+
+    -- Check if icey is on ocean or invalid tiles
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+    if self.inst.components.drownable:IsOverWater() then
+        print(self.inst, "drownable trigger!")
+
+        if self.start_platform then
+            x, y, z = self.start_platform.Transform:GetWorldPosition()
+        elseif self.start_pos then
+            x, y, z = self.start_pos:Get()
+        end
+        y = 0
+
+        print("return to", x, y, z)
+        self.inst.Transform:SetPosition(x, y, z)
+
+        -- if self.inst.components.walkableplatformplayer then
+        --     self.inst.components.walkableplatformplayer:TestForPlatform()
+        -- end
+
+        local platform = TheWorld.Map:GetPlatformAtPoint(x, z)
+        print("platform:", platform)
+        -- if platform and self.inst.components.walkableplatformplayer then
+        --     print("GetOnPlatform !")
+        --     self.inst.components.walkableplatformplayer:GetOnPlatform(platform)
+        -- end
+
+        if platform and platform.components.walkableplatform then
+            print("SetEntitiesOnPlatform !")
+            platform.components.walkableplatform:SetEntitiesOnPlatform()
+        end
+
+        print("is over water:", self.inst.components.drownable:IsOverWater())
+        print("current sg:", self.inst.sg.currentstate.name)
+    end
+    self.start_pos = nil
+    self.start_platform = nil
+
+    self.inst.components.health:SetInvincible(false)
 end
 
 function Icey2SkillDodge:CanCast(x, y, z, target)
     local success, reason = Icey2SkillBase_Active.CanCast(self, x, y, z, target)
-    if not success then return false, reason end
+    if not success then
+        return false, reason
+    end
 
     if self.dodge_charge < 1 then
         return false, "NOT_ENOUGH_DODGE_CHARGE"
