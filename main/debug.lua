@@ -143,3 +143,12 @@ function GLOBAL.i_snowman()
         c_give(v, 10)
     end
 end
+
+function GLOBAL.i_allskill()
+    for _, data in pairs(ICEY2_SKILL_DEFINES) do
+        local name = data.Name
+        if not ThePlayer.components.icey2_skiller:IsLearned(name) then
+            ThePlayer.components.icey2_skiller:Learn(name)
+        end
+    end
+end

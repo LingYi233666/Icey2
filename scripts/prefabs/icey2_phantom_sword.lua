@@ -421,9 +421,6 @@ local function projectilefn()
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(0)
 
-    -- inst:AddComponent("icey2_spdamage_force")
-    -- inst.components.icey2_spdamage_force:SetBaseDamage(Icey2Math.SumDices(1, 4) + 1)
-
     inst:AddComponent("complexprojectile")
     inst.components.complexprojectile:SetOnHit(OnProjectileHit)
     inst.components.complexprojectile:SetOnLaunch(OnProjectileLaunch)

@@ -102,6 +102,8 @@ local function fn()
         return inst
     end
 
+    inst.hunger_burn_rate = 0.01
+
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(34)
 

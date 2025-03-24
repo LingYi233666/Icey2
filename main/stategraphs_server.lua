@@ -901,19 +901,22 @@ AddStategraphState("wilson", State {
         end
 
         inst.sg.statemem.weapon = weapon
+        inst.sg.statemem.emit_fx = true
+        inst.sg.statemem.no_battle_focus_progress = false
     end,
 
     timeline =
     {
         TimeEvent(8 * FRAMES, function(inst)
-            inst.sg.statemem.emit_fx = true
-            inst.sg.statemem.fx_height = 1.5
             inst:PerformBufferedAction()
-            inst.sg.statemem.emit_fx = false
+
             inst.sg:RemoveStateTag("abouttoattack")
+
+            inst.sg.statemem.emit_fx = false
+            -- inst.sg.statemem.hide_anim = true
+            inst.sg.statemem.no_battle_focus_progress = true
         end),
         TimeEvent(9 * FRAMES, function(inst)
-            inst.sg.statemem.fx_height = 1.3
             local weapon = inst.sg.statemem.weapon
             if weapon and weapon:IsValid()
                 and weapon.components.icey2_aoeweapon_launch_chainsaw
@@ -922,7 +925,6 @@ AddStategraphState("wilson", State {
             end
         end),
         TimeEvent(10 * FRAMES, function(inst)
-            inst.sg.statemem.fx_height = 1
             local weapon = inst.sg.statemem.weapon
             if weapon and weapon:IsValid()
                 and weapon.components.icey2_aoeweapon_launch_chainsaw

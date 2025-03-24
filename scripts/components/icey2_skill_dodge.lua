@@ -109,7 +109,19 @@ function Icey2SkillDodge:HasSuitableWeapon()
     return weapon and not weapon.components.weapon.projectile
 end
 
+local function ForceStopHeavyLifting(inst)
+    if inst.components.inventory:IsHeavyLifting() then
+        inst.components.inventory:DropItem(
+            inst.components.inventory:Unequip(EQUIPSLOTS.BODY),
+            true,
+            true
+        )
+    end
+end
+
 function Icey2SkillDodge:OnDodgeStart(target_pos)
+    ForceStopHeavyLifting(self.inst)
+
     self.start_pos = self.inst:GetPosition()
     self.start_platform = self.inst:GetCurrentPlatform()
 

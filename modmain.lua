@@ -129,12 +129,36 @@ GLOBAL.setmetatable(env, {
     __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end
 })
 
+
+TUNING.ICEY2_PLAY_SKILL_LEARNED_ANIM = GetModConfigData("play_skill_learned_anim")
+
 PREFAB_SKINS["icey2"] = { -- 修复人物大图显示
     "icey2_none"
 }
 
+local language_main_name = ""
+
+-- print("locale is", locale)
+-- if locale == "zh" or locale == "zhr" or locale == "zht" then
+--     language_main_name = "language_chs"
+-- else
+--     language_main_name = "language_eng"
+-- end
+
+-- print("locale is", locale)
+
+local current_language = GetCurrentLocale()
+if current_language ~= nil then
+    current_language = current_language.code
+end
+if current_language == "zh" or current_language == "zhr" or current_language == "zht" then
+    language_main_name = "language_chs"
+else
+    language_main_name = "language_eng"
+end
+
 local modimport_filenames = {
-    "actions", "basic_utils", "math_utils", "weaponskill_utils", "language_chs", "spdamage", "rpc_defines",
+    "actions", "basic_utils", "math_utils", "weaponskill_utils", language_main_name, "spdamage", "rpc_defines",
     "skill_defines", "recipes", "components", "prefabs", "input", "stategraphs_server",
     "stategraphs_client", "hud", "debug"
 }

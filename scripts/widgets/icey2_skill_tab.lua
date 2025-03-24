@@ -10,6 +10,8 @@ local Icey2SkillLearnedFX = require "widgets/icey2_skill_learned_fx"
 
 local easing = require("easing")
 
+local SKILL_TITLE_SIZE = 34
+
 local Icey2SkillTab = Class(Widget, function(self, owner, config)
     Widget._ctor(self, "Icey2SkillTab")
 
@@ -54,24 +56,66 @@ local Icey2SkillTab = Class(Widget, function(self, owner, config)
     }))
     self.scroll_list:SetPosition(-140, 0)
 
+    self:CreateSkillDesc()
+
     -- self.skill_title = self:AddChild(TEMPLATES.ScreenTitle(""))
-    self.skill_title = self:AddChild(Text(TITLEFONT, 34))
+    self.skill_title = self:AddChild(Text(TITLEFONT, SKILL_TITLE_SIZE))
     self.skill_title:SetColour(UICOLOURS.GOLD_SELECTED)
     self.skill_title:SetPosition(295, 200)
     self.skill_title:Hide()
 
-    self.skill_desc = self:AddChild(Text(NUMBERFONT, 25))
-    self.skill_desc:SetColour(UICOLOURS.GOLD_SELECTED)
-    self.skill_desc:SetVAlign(ANCHOR_TOP)
-    self.skill_desc:SetHAlign(ANCHOR_LEFT)
-    self.skill_desc:Hide()
+    -- self.skill_desc = self:AddChild(Text(NUMBERFONT, 25))
+    -- self.skill_desc:SetColour(UICOLOURS.GOLD_SELECTED)
+    -- self.skill_desc:SetVAlign(ANCHOR_TOP)
+    -- self.skill_desc:SetHAlign(ANCHOR_LEFT)
+    -- self.skill_desc:Hide()
+
+    -- self.skill_desc_scrolled = self:AddChild(TEMPLATES.ScrollingGrid(self.data, {
+    --     context = {},
+    --     widget_width = 260,
+    --     widget_height = 600,
+    --     num_visible_rows = 1,
+    --     num_columns = 1,
+    --     peek_percent = 0.8,
+    --     item_ctor_fn = function(context, i)
+    --         -- local widget = Icey2SkillSlot()
+    --         -- return widget
+
+    --         local widget = Text(NUMBERFONT, 25)
+    --         widget:SetColour(UICOLOURS.GOLD_SELECTED)
+    --         widget:SetVAlign(ANCHOR_TOP)
+    --         widget:SetHAlign(ANCHOR_LEFT)
+
+    --         return widget
+    --     end,
+    --     apply_fn = function(context, widget, data, index)
+    --         if widget == nil then
+    --             return
+    --         elseif data == nil then
+    --             widget:Hide()
+    --             return
+    --         else
+    --             widget:Show()
+    --         end
+
+    --         local text = data.text or "???"
+
+
+    --         -- if data.name == "PHANTOM_SWORD" then
+    --         --     ThePlayer.HUD.debug_slot = widget
+    --         -- end
+
+    --         widget:SetMultilineTruncatedString(text, 999, 260)
+    --     end,
+    --     scrollbar_offset = 15,
+    --     scrollbar_height_offset = 0
+    -- }))
+
+
 
     self.skill_key_config_button = self:AddChild(
-        TEMPLATES.StandardButton(nil,
-            STRINGS.ICEY2_UI
-            .SKILL_TAB
-            .KEY_CONFIG,
-            { 140, 50 }))
+        TEMPLATES.StandardButton(nil, STRINGS.ICEY2_UI.SKILL_TAB.KEY_CONFIG, { 140, 50 })
+    )
     self.skill_key_config_button:Hide()
     self.skill_key_config_button:SetPosition(295, -180)
 
@@ -83,6 +127,59 @@ local function IsCastByButton(name)
     return skill_define and
         (skill_define.OnPressed or skill_define.OnReleased or skill_define.OnPressed_Client or
             skill_define.OnReleased_Client)
+end
+
+function Icey2SkillTab:CreateSkillDesc()
+    local MY_W = 272
+    local MY_W_TEXT = 260
+    local MY_H = 450
+    self.skill_desc_scrolled = self:AddChild(TEMPLATES.ScrollingGrid(self.data, {
+        context = {},
+        widget_width = MY_W,
+        widget_height = MY_H,
+        num_visible_rows = 0.5,
+        num_columns = 1,
+        -- peek_percent = 0,
+        item_ctor_fn = function(context, i)
+            -- local widget = Icey2SkillSlot()
+            -- return widget
+
+            local widget = Text(NUMBERFONT, 25)
+            widget:SetColour(UICOLOURS.GOLD_SELECTED)
+            widget:SetVAlign(ANCHOR_TOP)
+            widget:SetHAlign(ANCHOR_LEFT)
+
+            return widget
+        end,
+        apply_fn = function(context, widget, data, index)
+            if widget == nil then
+                return
+            elseif data == nil then
+                widget:Hide()
+                return
+            else
+                widget:Show()
+            end
+
+            local text = data.text or "???"
+
+
+            -- if data.name == "PHANTOM_SWORD" then
+            --     ThePlayer.HUD.debug_slot = widget
+            -- end
+
+            widget:SetMultilineTruncatedString(text, 999, MY_W_TEXT)
+
+            local text_w, text_h = widget:GetRegionSize()
+            widget:SetPosition(-MY_W_TEXT / 2 + text_w / 2, MY_H / 2 - text_h / 2)
+        end,
+        -- scrollbar_offset = 15,
+        -- scrollbar_height_offset = 0
+        end_offset = 1.1,
+    }))
+    self.skill_desc_scrolled:SetPosition(300, 15)
+    self.skill_desc_scrolled.scroll_per_click = 0.05
+    self.skill_desc_scrolled:Hide()
 end
 
 function Icey2SkillTab:ModifySlideBar()
@@ -115,15 +212,47 @@ function Icey2SkillTab:FreshData(new_data)
     self:ModifySlideBar()
 end
 
-function Icey2SkillTab:UpdateSkillDescPos(x, y)
-    local text_w, text_h = self.skill_desc:GetRegionSize()
-    self.skill_desc:SetPosition(x + text_w / 2, y - text_h / 2)
-end
+-- function Icey2SkillTab:UpdateSkillDescPos(x, y)
+--     local text_w, text_h = self.skill_desc:GetRegionSize()
+--     self.skill_desc:SetPosition(x + text_w / 2, y - text_h / 2)
+-- end
 
 function Icey2SkillTab:UpdateSkillDesc(str)
-    self.skill_desc:SetMultilineTruncatedString(str, 14, 260, 163, true)
+    -- self.skill_desc:SetMultilineTruncatedString(str, 999, 260, 163, true)
+    -- self.skill_desc:SetMultilineTruncatedString(str, 999, 260)
 
-    self:UpdateSkillDescPos(170, 180)
+
+    -- self:UpdateSkillDescPos(170, 180)
+
+
+    self.skill_desc_scrolled:SetItemsData({
+        { text = str },
+    })
+    self.skill_desc_scrolled:ResetScroll()
+    local widget = self.skill_desc_scrolled.widgets_to_update[1]
+    if widget then
+        local text_w, text_h = widget:GetRegionSize()
+        -- print("text_h:", text_h)
+        if text_h < 330 then
+            self.skill_desc_scrolled.scroll_bar_container:Hide()
+        else
+
+        end
+    end
+    --
+    -- self:UpdateSkillDescPos(170, 180)
+end
+
+local function MyAutoSizingString(widget, text, origin_size, max_width)
+    widget:SetString(text)
+    widget:SetSize(origin_size)
+
+    local w = widget:GetRegionSize()
+
+    local scale = math.min(1, max_width / w)
+    if scale ~= 1 then
+        widget:SetSize(origin_size * scale)
+    end
 end
 
 function Icey2SkillTab:OnSkillSlotClick(widget)
@@ -133,10 +262,25 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
         local skill_define = Icey2Basic.GetSkillDefine(self.current_skill_name)
         local is_learned = self.owner.replica.icey2_skiller:IsLearned(self.current_skill_name)
 
-        self.skill_title:Show()
-        self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name:upper()].TITLE)
 
-        self.skill_desc:Show()
+        local title = STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name:upper()].TITLE
+        self.skill_title:Show()
+        -- self.skill_title:SetString(title)
+        -- self.skill_title:SetString(STRINGS.ICEY2_UI.SKILL_TAB.SKILL_DESC[widget.skill_name:upper()].TITLE)
+        --SetMultilineTruncatedString(str, maxlines, maxwidth, maxcharsperline, ellipses, shrink_to_fit, min_shrink_font_size, linebreak_string)
+        -- self.skill_title:SetMultilineTruncatedString(title, 1, 250, nil, nil, true, 1)
+        -- print("Skill title region size:", self.skill_title:GetRegionSize())
+
+        -- self.skill_title:SetSize(SKILL_TITLE_SIZE)
+        -- print("Skill title size pre:", self.skill_title:GetSize())
+        -- self.skill_title:SetAutoSizingString(title, 275)
+        -- print("Skill title size:", self.skill_title:GetSize())
+        -- print("Skill title region size:", self.skill_title:GetRegionSize())
+
+        MyAutoSizingString(self.skill_title, title, SKILL_TITLE_SIZE, 250)
+        -- print("Skill title region size:", self.skill_title:GetRegionSize())
+
+        self.skill_desc_scrolled:Show()
         if is_learned then
             local desc = ""
             local skill_define = Icey2Basic.GetSkillDefine(widget.skill_name)
@@ -178,7 +322,7 @@ function Icey2SkillTab:OnSkillSlotClick(widget)
         end
     else
         self.skill_title:Hide()
-        self.skill_desc:Hide()
+        self.skill_desc_scrolled:Hide()
         self.skill_key_config_button:Hide()
     end
 end

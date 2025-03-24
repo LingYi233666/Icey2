@@ -274,6 +274,8 @@ local function fn()
         return inst
     end
 
+    inst.hunger_burn_rate = 0.25
+
     inst:AddComponent("weapon")
 
     inst:AddComponent("icey2_spdamage_force")
@@ -285,6 +287,8 @@ local function fn()
     inst:AddComponent("named")
 
     inst:AddComponent("inventoryitem")
+    inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance.xml"
+    inst.components.inventoryitem.imagename = "icey2_pact_weapon_gunlance"
     inst.components.inventoryitem.canonlygoinpocket = true
 
     inst:AddComponent("equippable")

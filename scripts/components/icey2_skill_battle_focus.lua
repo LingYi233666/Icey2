@@ -35,27 +35,31 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
                 or weapon.components.projectile
                 or weapon.components.complexprojectile
                 or weapon.components.weapon:CanRangedAttack() then
-                addition = addition * 0
+                addition = 0
             end
         end
 
         if inst.sg and inst.sg:HasStateTag("aoe") then
-            addition = addition * 0
+            addition = 0
+        end
+
+        if inst.sg and inst.sg.statemem.no_battle_focus_progress then
+            addition = 0
         end
 
         -- riding
         if inst.components.rider and inst.components.rider:IsRiding() then
-            addition = addition * 0
+            addition = 0
         end
 
         if not target
             or not target.components.combat
             or (target.components.combat:CalcDamage(self.inst) <= 0.01 and target.prefab ~= "dummytarget") then
-            addition = addition * 0
+            addition = 0
         end
 
         if Icey2Basic.IsWearingArmor(inst) then
-            addition = addition * 0
+            addition = 0
         end
 
         local ball_data = self:GetSupplyBallData(weapon, target, addition)
@@ -168,7 +172,7 @@ function Icey2SkillBattleFocus:SetVal(current)
 
     if old_current < self.max and self.current >= self.max then
         -- Start battle focus bonus
-        self.inst.components.icey2_spdamage_force:AddBonus(self.inst, 8.5, "icey2_skill_battle_focus")
+        self.inst.components.icey2_spdamage_force:AddBonus(self.inst, 5, "icey2_skill_battle_focus")
         self.inst.components.sanity.neg_aura_modifiers:SetModifier(self.inst, 0.5, "icey2_skill_battle_focus")
         self.inst.components.locomotor:SetExternalSpeedMultiplier(self.inst, "icey2_skill_battle_focus", 1.05)
     elseif old_current >= self.max and self.current < self.max then

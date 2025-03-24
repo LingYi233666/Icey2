@@ -384,7 +384,8 @@ local function ApplyLevelFn(inst, new_level, old_level)
         inst.components.planardamage:SetBaseDamage(0)
     end
 
-    inst.components.icey2_bonus_area.bonus_damage_force = 3 * (new_level + 1)
+    -- inst.components.icey2_bonus_area.bonus_damage_force = 3 * (new_level + 1)
+    inst.components.icey2_bonus_area.bonus_damage_force = 2 + 3 * (new_level + 1)
     inst.components.icey2_bonus_area:CheckToRemove(true)
 end
 
@@ -430,6 +431,7 @@ local function fn()
         return inst
     end
 
+    inst.hunger_burn_rate = 0.1
     inst.EnableComplexProjectile = EnableComplexProjectile
 
     CreateSwapAnims(inst, FX_DEFS_NORMAL)

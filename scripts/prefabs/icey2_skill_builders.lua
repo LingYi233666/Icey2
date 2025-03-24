@@ -7,9 +7,15 @@ local function OnBuiltFn(inst, builder)
         else
             builder.components.icey2_skiller:Learn(inst.skill_name)
             builder.sg:GoToState("emote", { anim = "emote_swoon" })
-            builder.AnimState:SetTime(1)
 
-            SendModRPCToClient(CLIENT_MOD_RPC["icey2_rpc"]["play_skill_learned_anim"], builder.userid, inst.skill_name)
+            if TUNING.ICEY2_PLAY_SKILL_LEARNED_ANIM
+                and builder.IsNearDanger
+                and not builder:IsNearDanger() then
+                builder.AnimState:SetTime(1)
+
+                SendModRPCToClient(CLIENT_MOD_RPC["icey2_rpc"]["play_skill_learned_anim"], builder.userid,
+                    inst.skill_name)
+            end
         end
     end
 

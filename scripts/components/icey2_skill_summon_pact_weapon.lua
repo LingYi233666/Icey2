@@ -112,8 +112,16 @@ function Icey2SkillSummonPactWeapon:GetLinkedWeapons()
 end
 
 function Icey2SkillSummonPactWeapon:UpdateHungerBurnRate()
-    local num_linked_weapons = #self.linked_weapons
-    self.inst.components.hunger.burnratemodifiers:SetModifier(self.inst, 1 + num_linked_weapons * 0.1,
+    -- local num_linked_weapons = #self.linked_weapons
+
+    local addition_rate = 0
+    for _, v in pairs(self.linked_weapons) do
+        if v.hunger_burn_rate then
+            addition_rate = addition_rate + FunctionOrValue(v.hunger_burn_rate, v, self.inst) -- weapon, owner
+        end
+    end
+
+    self.inst.components.hunger.burnratemodifiers:SetModifier(self.inst, 1 + addition_rate,
         "icey2_linked_pact_weapons")
 end
 

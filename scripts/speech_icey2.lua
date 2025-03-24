@@ -35,6 +35,7 @@ local MODIFIED_SPEECH = {
 	DESCRIBE = {
 		BACKPACK = "你说得对，但是饥荒是一款格子管理游戏。",
 		BEARDHAIR = "我长不出这么宏伟的胡须！",
+		BEARGER = "它在找蜂蜜吃。",
 		BUSHHAT = "不如纸箱实用。",
 
 		-- CATCOON = "小猫，你可以吃素食堡。",
@@ -76,7 +77,14 @@ local MODIFIED_SPEECH = {
 			GENERIC = "一人一台，刚巴雷特！",
 			CHARGED = "苍蓝雷霆！",
 		},
-		LUNARFROG = "刚刚它背上的眼睛是不是眨了一下？",
+		LUNARFROG = "不要命啦！",
+
+		MOOSE = "一只大憨憨鸭。",
+		MOOSE_NESTING_GROUND = "这个巢看起来好憨憨鸭。",
+		MOOSEEGG = "小憨憨鸭从这里诞生。",
+		MOSSLING = "一只小憨憨鸭。",
+		MULTIPLAYER_PORTAL = "传送成功！",
+		MULTIPLAYER_PORTAL_MOONROCK = "要把我换掉吗？",
 
 		OTTER = "兄.....兄弟......",
 		OTTERDEN =
@@ -113,7 +121,11 @@ local MODIFIED_SPEECH = {
 			GENERIC = "兔子洞。",
 			SPRING = "兔子洞已经坏掉了。",
 		},
+		ROOK = "鲁克，你不做间谍了吗？",
 
+		-- SHADOWTHRALL_HANDS = "Hands off!",
+		-- SHADOWTHRALL_HORNS = "It looks hungry for a fight.",
+		-- SHADOWTHRALL_WINGS = "The wings seem to be just for show.",
 		SHADOWTHRALL_MOUTH = "Snake? Snaaaaaaaaaaaaaaaake!",
 
 		TOADSTOOL =
@@ -128,10 +140,11 @@ local MODIFIED_SPEECH = {
 			GENERIC = "肉乎乎的一坨虫洞。",
 			OPEN = "它想对我做什么呢？",
 		},
+		WORM_BOSS = "可以在设置里关掉。",
 
 		WILSON =
 		{
-			GENERIC = "看起来平平无奇，但我相信他能用头脑征服这个世界。",
+			GENERIC = "%s看起来平平无奇，但我相信他能用头脑征服这个世界。",
 			ATTACKER = "%s，你是个坏人！",
 			MURDERER = "杀人犯！",
 			REVIVER = "%s是鬼魂的好朋友",
@@ -261,6 +274,7 @@ local MODIFIED_SPEECH = {
 		WALTER =
 		{
 			GENERIC = "日安, %s！",
+			-- GENERIC = "我不能呼吸了！",
 			ATTACKER = "%s，你是个坏人！",
 			MURDERER = "杀人犯！",
 			REVIVER = "%s是鬼魂的好朋友",
@@ -288,14 +302,14 @@ local MODIFIED_SPEECH = {
 			GHOST = "我得给%s一颗心！",
 		},
 
-		SHIYE =
-		{
-			GENERIC = "你好，皇家守卫%s!",
-			ATTACKER = "你为这个世界带来了混乱！",
-			MURDERER = "面具杀手！",
-			REVIVER = "%s是个好人",
-			GHOST = "我得把%s从虚空之境中拉回来！",
-		},
+		-- SHIYE =
+		-- {
+		-- 	GENERIC = "你好，皇家守卫%s!",
+		-- 	ATTACKER = "你为这个世界带来了混乱！",
+		-- 	MURDERER = "面具杀手！",
+		-- 	REVIVER = "%s是个好人",
+		-- 	GHOST = "我得把%s从虚空之境中拉回来！",
+		-- },
 	},
 
 	ANNOUNCE_DEERCLOPS = "我的传感器在震动，这附近一定有大家伙！",
@@ -334,9 +348,13 @@ local MODIFIED_SPEECH = {
 	ANNOUNCE_DAMP = "好像有些湿了···",
 	ANNOUNCE_WET = "看来我的衣服并不防水···",
 	ANNOUNCE_WETTER = "再这样下去要短路了！",
-	ANNOUNCE_SOAKED = "啊！走光了！旁白你在看哪里？！！",
+	ANNOUNCE_SOAKED = "啊！走光了！旁白君你在看哪里？！！",
 
-	ANNOUNCE_WORMHOLE = "还好它没对我动手动脚。",
+	-- ANNOUNCE_SHADOWTHRALL_STEALTH = "aieeee，忍者，为啥这里会有忍者？！",
+	ANNOUNCE_SHADOWTHRALL_STEALTH = "Aieeeeeeeeee！忍者，忍者为何？！",
+
+
+	ANNOUNCE_WORMHOLE = "啊，我身上黏糊糊的！",
 
 }
 

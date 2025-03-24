@@ -49,10 +49,12 @@ local function PassiveSkillOnForgetWrapper(cmp_name)
 end
 
 local function SkillIngredient(name)
-    if not string.starts(name, "icey2_skill_builder_") then
-        name = "icey2_skill_builder_" .. name
-    end
-    return Ingredient(name, 0, "images/inventoryimages/" .. name .. ".xml")
+    -- if not string.starts(name, "icey2_skill_builder_") then
+    --     name = "icey2_skill_builder_" .. name
+    -- end
+
+    local name2 = "icey2_skill_builder_" .. name
+    return Ingredient(name2, 0, "images/inventoryimages/" .. name2 .. ".xml")
 end
 
 local function AllLinkedWeaponsCheckSkill(inst)
@@ -97,7 +99,7 @@ ICEY2_SKILL_DEFINES = {
 
         OnPressed = CastSkillByComponentWrapper("icey2_skill_phantom_sword"),
 
-        Ingredients = { Ingredient("moonrocknugget", 5), },
+        Ingredients = { Ingredient("flint", 5), },
     },
 
     {
@@ -139,7 +141,7 @@ ICEY2_SKILL_DEFINES = {
         end,
 
         Ingredients = {
-            Ingredient("rocks", 10), Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
+            Ingredient("boards", 2), Ingredient("rope", 1), Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
         },
         Tech = TECH.SCIENCE_ONE,
 
@@ -226,8 +228,8 @@ ICEY2_SKILL_DEFINES = {
         end,
 
         Ingredients = {
-            Ingredient("flint", 3),
-            Ingredient("twigs", 1),
+            Ingredient("flint", 6),
+            Ingredient("twigs", 3),
             Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
         },
         Tech = TECH.SCIENCE_TWO,
@@ -297,7 +299,7 @@ ICEY2_SKILL_DEFINES = {
 
         Ingredients = {
             Ingredient("blowdart_pipe", 6),
-            Ingredient("boards", 4),
+            Ingredient("transistor", 2),
             Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
         },
         Tech = TECH.MAGIC_TWO,
@@ -365,7 +367,7 @@ ICEY2_SKILL_DEFINES = {
         end,
 
         Ingredients = {
-            Ingredient("boards", 4),
+            Ingredient("wagpunk_bits", 4),
             Ingredient("flint", 4),
             Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
         },

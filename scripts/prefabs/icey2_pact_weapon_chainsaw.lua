@@ -110,14 +110,28 @@ end
 
 
 local function OnAttackMelee(inst, attacker, target)
-    if attacker.sg and attacker.sg.statemem and attacker.sg.statemem.emit_fx then
-        local start_pos = target:GetPosition()
-        start_pos.y = start_pos.y + GetRandomMinMax(0.8, 2)
+    -- if attacker.sg and attacker.sg.statemem and attacker.sg.statemem.emit_fx then
+    --     local start_pos = target:GetPosition()
+    --     start_pos.y = start_pos.y + GetRandomMinMax(0.8, 2)
 
-        local fx = SpawnAt("icey2_chainsaw_hit_fx", start_pos)
-        fx:FaceAwayFromPoint(attacker:GetPosition(), true)
+    --     local fx = SpawnAt("icey2_chainsaw_hit_fx", start_pos)
+    --     fx:FaceAwayFromPoint(attacker:GetPosition(), true)
 
-        -- attacker.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/hit")
+    --     -- attacker.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/hit")
+    -- end
+
+    if attacker.sg and attacker.sg.statemem then
+        if attacker.sg.statemem.emit_fx then
+            local start_pos = target:GetPosition()
+            start_pos.y = start_pos.y + GetRandomMinMax(0.8, 2)
+
+            local fx = SpawnAt("icey2_chainsaw_hit_fx", start_pos)
+            fx:FaceAwayFromPoint(attacker:GetPosition(), true)
+
+            if attacker.sg.statemem.hide_anim then
+                fx.AnimState:SetMultColour(0, 0, 0, 0)
+            end
+        end
     end
 end
 
@@ -304,10 +318,19 @@ local function fn()
         return inst
     end
 
+    inst.hunger_burn_rate = 0.5
+
     CreateSwapAnims(inst, FX_DEFS_NORMAL)
 
+
+    -- Note: Chainsaw will deal 3 damage in one attack SG
+    -- Damage is:
+    --  17 + force damage + planar damage
+    --  8.5 + force damage + planar damage
+    --  8.5 + force damage + planar damage
+
     inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(15)
+    inst.components.weapon:SetDamage(17)
     inst.components.weapon:SetOnAttack(OnAttackMelee)
 
     inst:AddComponent("icey2_spdamage_force")

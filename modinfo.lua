@@ -1,7 +1,7 @@
-name = "After Icey" ---mod名字
-description = "测试描述文字。" --mod描述
-author = "左轮山猫" --作者
-version = "0.0.1" -- mod版本 上传mod需要两次的版本不一样
+name = "艾希：地狱归来" ---mod名字
+description = "一个有趣的人物模组。" --mod描述
+author = "灵衣女王的鬼铠" --作者
+version = "1.0.0" -- mod版本 上传mod需要两次的版本不一样
 
 forumthread = ""
 
@@ -21,4 +21,26 @@ server_filter_tags = { --服务器标签
     "character",
 }
 
---configuration_options = {} --mod设置
+configuration_options = {
+    {
+        name = "play_skill_learned_anim",
+        label = "技能学习动画",
+        options =
+        {
+            { description = "播放", data = true },
+            { description = "不播放", data = false },
+        },
+        default = true,
+    },
+} --mod设置
+
+
+if locale == "zh" or locale == "zhr" or locale == "zht" then
+    -- Do nothing
+else
+    name = "Icey: Back from Hell"
+    description = "An interesting character mod."
+    configuration_options[1].label = "Skill learning animation"
+    configuration_options[1].options[1].description = "Play"
+    configuration_options[1].options[2].description = "Don't play"
+end
