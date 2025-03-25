@@ -30,6 +30,10 @@ local Icey2ControlKeyHelper = Class(function(self, inst)
         -- end)
 
         self.task = inst:DoPeriodicTask(0, function()
+            if ThePlayer ~= self.inst then
+                return
+            end
+
             local pos = TheInput:GetWorldPosition()
             local target = TheInput:GetWorldEntityUnderMouse()
 
