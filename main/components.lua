@@ -172,7 +172,7 @@ AddComponentPostInit("builder", function(self)
 end)
 
 AddClassPostConstruct("components/builder_replica", function(self)
-    print("AddClassPostConstruct builder_replica success !", self.inst)
+    -- print("AddClassPostConstruct builder_replica success !", self.inst)
 
     local old_HasCharacterIngredient = self.HasCharacterIngredient
 
@@ -188,5 +188,30 @@ AddClassPostConstruct("components/builder_replica", function(self)
             end
         end
         return old_HasCharacterIngredient(self, ingredient, ...)
+    end
+end)
+
+
+-- I think this is not good
+AddComponentPostInit("playercontroller", function(self)
+    -- In case maybe one day my code crash, other modder can just use this
+    self.Icey2StoreGetActionButtonAction = self.GetActionButtonAction
+
+    self.GetActionButtonAction = function(self, force_target, ...)
+        local bufferedaction = self:Icey2StoreGetActionButtonAction(force_target, ...)
+        if not bufferedaction then
+            return bufferedaction
+        end
+
+        local action = bufferedaction.action
+        local target = bufferedaction.target
+
+        if action == ACTIONS.PICK and Icey2Basic.CanDoScythe(self.inst, target) then
+            local tool = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+            bufferedaction = BufferedAction(self.inst, target, ACTIONS.ICEY2_SCYTHE, tool)
+        end
+
+        return bufferedaction
     end
 end)

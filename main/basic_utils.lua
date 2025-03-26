@@ -102,4 +102,15 @@ function Icey2Basic.GetSkillDefine(name)
     end
 end
 
+function Icey2Basic.IsValidScytheTarget(target)
+    local cant_scythe_tags = { "plant", "lichen", "oceanvine", "kelp" }
+    return target and target:HasTag("pickable") and target:HasOneOfTags(cant_scythe_tags)
+end
+
+function Icey2Basic.CanDoScythe(doer, target)
+    local tool = doer.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+    return tool and tool:HasTag("icey2_scythe") and Icey2Basic.IsValidScytheTarget(target)
+end
+
 GLOBAL.Icey2Basic = Icey2Basic

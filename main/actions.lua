@@ -14,8 +14,7 @@ end)
 ACTIONS.ICEY2_SCYTHE.rmb = false
 
 AddComponentAction("EQUIPPED", "icey2_scythe", function(inst, doer, target, actions, right)
-    local cant_scythe_tags = { "plant", "lichen", "oceanvine", "kelp" }
-    if not right and target and target:HasTag("pickable") and target:HasOneOfTags(cant_scythe_tags) then
+    if not right and Icey2Basic.IsValidScytheTarget(target) then
         table.insert(actions, ACTIONS.ICEY2_SCYTHE)
     end
 end)
@@ -33,7 +32,6 @@ AddAction("ICEY2_VERSATILE_WEAPON_CHANGE_FORM", "ICEY2_VERSATILE_WEAPON_CHANGE_F
 
     return false
 end)
-ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.rmb = true
 ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.do_not_locomote = true
 ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.customarrivecheck = function() return true end
 ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.stroverridefn = function(act)
