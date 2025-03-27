@@ -1,7 +1,7 @@
 name = "艾希：地狱归来" ---mod名字
 description = "一个有趣的人物模组。" --mod描述
 author = "灵衣女王的鬼铠" --作者
-version = "1.0.3" -- mod版本 上传mod需要两次的版本不一样
+version = "1.0.4" -- mod版本 上传mod需要两次的版本不一样
 
 forumthread = ""
 
@@ -32,6 +32,17 @@ configuration_options = {
         },
         default = true,
     },
+
+    {
+        name = "dodge_direction",
+        label = "冲刺方向",
+        options =
+        {
+            { description = "鼠标所指方向", data = 1 },
+            { description = "艾希面朝方向", data = 2 },
+        },
+        default = 1,
+    },
 } --mod设置
 
 
@@ -40,7 +51,12 @@ if locale == "zh" or locale == "zhr" or locale == "zht" then
 else
     name = "Icey: Back from Hell"
     description = "An interesting character mod."
+
     configuration_options[1].label = "Skill learning animation"
     configuration_options[1].options[1].description = "Play"
     configuration_options[1].options[2].description = "Don't play"
+
+    configuration_options[2].label = "Dodge direction"
+    configuration_options[2].options[1].description = "Cursor direction"
+    configuration_options[2].options[2].description = "Facing direction"
 end

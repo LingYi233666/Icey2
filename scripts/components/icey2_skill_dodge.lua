@@ -221,6 +221,10 @@ function Icey2SkillDodge:CanCast(x, y, z, target)
 end
 
 function Icey2SkillDodge:Cast(x, y, z, target)
+    if TUNING.ICEY2_DODGE_DIRECTION == 2 then
+        x, y, z = (self.inst:GetPosition() + Icey2Basic.GetFaceVector(self.inst) * 5):Get()
+    end
+
     Icey2SkillBase_Active.Cast(self, x, y, z, target)
 
     self:DoDeltaCharge(-1)

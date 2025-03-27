@@ -193,7 +193,7 @@ end)
 -- Skill: dodge
 AddStategraphState("wilson", State {
     name = "icey2_dodge",
-    tags = { "busy", "nopredict", "nointerrupt" },
+    tags = { "busy", "nopredict", "nointerrupt", "icey2_attack_dodge" },
 
     onenter = function(inst, data)
         -- inst.AnimState:PlayAnimation("atk_leap_pre")

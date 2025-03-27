@@ -169,6 +169,11 @@ STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES = {
     KEY_CONFIG = "键位一览"
 }
 
+local dodge_direction_str = "鼠标所指方向"
+if TUNING.ICEY2_DODGE_DIRECTION == 2 then
+    dodge_direction_str = "艾希面朝方向"
+end
+
 STRINGS.ICEY2_UI.SKILL_TAB = {
     SKILL_DESC = {
         HUNGER_IS_ELECTRICITY = {
@@ -196,7 +201,9 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         DODGE = {
             TITLE = "闪光冲刺",
             DESC =
-            "消耗少许电力值和一格闪避充能，向鼠标指向方向冲刺，冲刺期间你不会受到伤害。在冲刺开始时，你会自动使用残影向正在攻击你的敌人发动一次反击。\n闪避充能数量能在右上角查看，你可以通过制造各种闪避充能芯片来增加闪避充能数量上限，但是每种闪避芯片只能安装一次。使用此方法最多将闪避充能上限提升至4格。\n此外，若你装备了任何种类的护甲或盾牌，就无法使用闪光冲刺。"
+                "消耗少许电力值和一格闪避充能，向" ..
+                dodge_direction_str ..
+                "冲刺，冲刺期间你不会受到伤害。在冲刺开始时，你会自动使用残影向正在攻击你的敌人发动一次反击。\n闪避充能数量能在右上角查看，你可以通过制造各种闪避充能芯片来增加闪避充能数量上限，但是每种闪避芯片只能安装一次。使用此方法最多将闪避充能上限提升至4格。\n此外，若你装备了任何种类的护甲或盾牌，就无法使用闪光冲刺。"
         },
 
         SUMMON_PACT_WEAPON = {

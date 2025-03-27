@@ -151,6 +151,12 @@ local function OnNewState(inst, data)
     print(inst, "new state:", data.statename)
 end
 
+local function CanDodgeTest(inst, attacker)
+    -- return inst.components.gale_skill_shadow_dodge and inst.components.gale_skill_shadow_dodge:IsDodging()
+    return (inst.sg and inst.sg:HasStateTag("icey2_attack_dodge")) or inst:HasTag("icey2_attack_dodge")
+end
+
+
 local function ParryCallback(inst, data)
     if inst.components.icey2_skill_battle_focus
         and inst.components.icey2_skill_battle_focus:IsEnabled()
@@ -257,6 +263,11 @@ local master_postinit = function(inst)
     inst.components.eater:SetCanEatGears()
 
     ----------------------------------------------------------------------
+
+    if not inst.components.attackdodger then
+        inst:AddComponent("attackdodger")
+    end
+    inst.components.attackdodger:SetCanDodgeFn(CanDodgeTest)
 
     inst:AddComponent("icey2_status_bonus")
 

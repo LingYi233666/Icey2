@@ -176,6 +176,11 @@ STRINGS.ICEY2_UI.MAIN_MENU.SUB_TITLES = {
     KEY_CONFIG = "Key Configuration"
 }
 
+local dodge_direction_str = "direction pointed by mouse cursor"
+if TUNING.ICEY2_DODGE_DIRECTION == 2 then
+    dodge_direction_str = "direction Icey is facing"
+end
+
 STRINGS.ICEY2_UI.SKILL_TAB = {
     SKILL_DESC = {
         HUNGER_IS_ELECTRICITY = {
@@ -205,7 +210,9 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         DODGE = {
             TITLE = "Flash Dash",
             DESC =
-            "Consumes a small amount of electricity and one dodge charge to dash in the direction of the mouse pointer. You will not take damage during the dash. At the start of the dash, you will automatically use afterimages to launch a counterattack against enemies attacking you.\nThe number of dodge charges can be viewed in the upper right corner. You can increase the upper limit of dodge charges by crafting various dodge charge chips, but each dodge chip can only be installed once. Using this method, the dodge charge limit can be increased to a maximum of 4 charges.\nIn addition, if you are equipped with any type of armor or shield, you will not be able to use Flash Dash."
+                "Consumes a small amount of electricity and one dodge charge to dash in the " ..
+                dodge_direction_str ..
+                ". You will not take damage during the dash. At the start of the dash, you will automatically use afterimages to launch a counterattack against enemies attacking you.\nThe number of dodge charges can be viewed in the upper right corner. You can increase the upper limit of dodge charges by crafting various dodge charge chips, but each dodge chip can only be installed once. Using this method, the dodge charge limit can be increased to a maximum of 4 charges.\nIn addition, if you are equipped with any type of armor or shield, you will not be able to use Flash Dash."
         },
 
         SUMMON_PACT_WEAPON = {

@@ -131,6 +131,7 @@ GLOBAL.setmetatable(env, {
 
 
 TUNING.ICEY2_PLAY_SKILL_LEARNED_ANIM = GetModConfigData("play_skill_learned_anim")
+TUNING.ICEY2_DODGE_DIRECTION = GetModConfigData("dodge_direction")
 
 PREFAB_SKINS["icey2"] = { -- 修复人物大图显示
     "icey2_none"
