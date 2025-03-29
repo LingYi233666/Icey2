@@ -259,7 +259,7 @@ local function ApplyLevelFn(inst, new_level, old_level)
         inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_CHAINSAW)
     end
 
-    inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 2)
+    inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 3)
     if new_level >= 3 then
         inst.components.planardamage:SetBaseDamage(1)
     else

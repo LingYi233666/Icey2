@@ -86,9 +86,13 @@ local function OnAttackMelee(inst, attacker, target)
 
     attacker.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/melee_hit", nil, 0.3)
 
+    local level = inst.components.icey2_upgradable:GetLevel()
     local ball_prefabs = {
-        { "icey2_supply_ball_shield",       1 },
-        { "icey2_supply_ball_shield_small", math.random(1, 4) },
+        { "icey2_supply_ball_shield", 1 },
+        { "icey2_supply_ball_shield_small",
+            -- math.random(1, 4) + math.max(0, level - 1)
+            math.random(1, 4)
+        },
     }
 
     local sphere_emitter = Icey2Math.CustomSphereEmitter(0, 0.6, 0, PI, 0, PI * 2)
@@ -151,62 +155,74 @@ local function OnProjectileLaunched(inst, attacker, target, proj)
     end
 end
 
+local function OnFormChangeToMelee(inst)
+    local owner = inst.components.inventoryitem:GetGrandOwner()
+
+    inst.AnimState:PlayAnimation("idle")
+
+    inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance.xml"
+    inst.components.inventoryitem:ChangeImageName("icey2_pact_weapon_gunlance")
+
+    inst.components.weapon:SetDamage(42.5)
+    inst.components.weapon:SetRange(0)
+    inst.components.weapon:SetProjectile(nil)
+    inst.components.weapon:SetOnAttack(OnAttackMelee)
+    inst.components.weapon:SetOnProjectileLaunched(nil)
+
+    inst:RemoveTag("icey2_pact_weapon_gunlance_range")
+    inst:RemoveTag("NO_ICEY2_PARRY")
+
+    if owner then
+        owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
+            "swap_icey2_pact_weapon_gunlance")
+
+        owner.AnimState:Show("ARM_carry")
+        owner.AnimState:Hide("ARM_normal")
+
+
+        if owner.components.combat then
+            owner.components.combat:SetAttackPeriod(MELEE_PERIOD)
+        end
+    end
+end
+
+local function OnFormChangeToRange(inst)
+    local owner = inst.components.inventoryitem:GetGrandOwner()
+
+    inst.AnimState:PlayAnimation("idle_range")
+
+    inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance_range.xml"
+    inst.components.inventoryitem:ChangeImageName("icey2_pact_weapon_gunlance_range")
+
+    inst.components.weapon:SetDamage(27.5)
+    inst.components.weapon:SetRange(20, 30)
+    inst.components.weapon:SetProjectile("icey2_fake_projectile")
+    inst.components.weapon:SetOnAttack(nil)
+    inst.components.weapon:SetOnProjectileLaunched(OnProjectileLaunched)
+
+    inst:AddTag("icey2_pact_weapon_gunlance_range")
+    inst:AddTag("NO_ICEY2_PARRY")
+
+    if owner then
+        owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
+            "swap_icey2_pact_weapon_gunlance_range")
+
+        owner.AnimState:Hide("ARM_carry")
+        owner.AnimState:Show("ARM_normal")
+
+        if owner.components.combat then
+            owner.components.combat:SetAttackPeriod(FRAMES)
+        end
+    end
+end
+
 local function OnFormChange(inst, old_form, new_form, on_load)
     local owner = inst.components.inventoryitem:GetGrandOwner()
 
     if new_form == 1 then
-        inst.AnimState:PlayAnimation("idle")
-
-        inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance.xml"
-        inst.components.inventoryitem:ChangeImageName("icey2_pact_weapon_gunlance")
-
-        inst.components.weapon:SetDamage(42.5)
-        inst.components.weapon:SetRange(0)
-        inst.components.weapon:SetProjectile(nil)
-        inst.components.weapon:SetOnAttack(OnAttackMelee)
-        inst.components.weapon:SetOnProjectileLaunched(nil)
-
-        inst:RemoveTag("icey2_pact_weapon_gunlance_range")
-        inst:RemoveTag("NO_ICEY2_PARRY")
-
-        if owner then
-            owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
-                "swap_icey2_pact_weapon_gunlance")
-
-            owner.AnimState:Show("ARM_carry")
-            owner.AnimState:Hide("ARM_normal")
-
-
-            if owner.components.combat then
-                owner.components.combat:SetAttackPeriod(MELEE_PERIOD)
-            end
-        end
+        OnFormChangeToMelee(inst)
     elseif new_form == 2 then
-        inst.AnimState:PlayAnimation("idle_range")
-
-        inst.components.inventoryitem.atlasname = "images/inventoryimages/icey2_pact_weapon_gunlance_range.xml"
-        inst.components.inventoryitem:ChangeImageName("icey2_pact_weapon_gunlance_range")
-
-        inst.components.weapon:SetDamage(27.5)
-        inst.components.weapon:SetRange(20, 30)
-        inst.components.weapon:SetProjectile("icey2_fake_projectile")
-        inst.components.weapon:SetOnAttack(nil)
-        inst.components.weapon:SetOnProjectileLaunched(OnProjectileLaunched)
-
-        inst:AddTag("icey2_pact_weapon_gunlance_range")
-        inst:AddTag("NO_ICEY2_PARRY")
-
-        if owner then
-            owner.AnimState:OverrideSymbol("swap_object", "swap_icey2_pact_weapon_gunlance",
-                "swap_icey2_pact_weapon_gunlance_range")
-
-            owner.AnimState:Hide("ARM_carry")
-            owner.AnimState:Show("ARM_normal")
-
-            if owner.components.combat then
-                owner.components.combat:SetAttackPeriod(FRAMES)
-            end
-        end
+        OnFormChangeToRange(inst)
     end
 
     inst.components.icey2_upgradable:CheckSkill()
@@ -229,7 +245,7 @@ local function ApplyLevelFn(inst, new_level, old_level)
     local current_form = inst.components.icey2_versatile_weapon:GetCurForm()
 
     if current_form == 1 then
-        inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 5)
+        inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 11)
     elseif current_form == 2 then
         inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 2)
     end
@@ -306,6 +322,8 @@ local function fn()
     inst.components.icey2_upgradable:SetApplyFn(ApplyLevelFn)
     inst.components.icey2_upgradable:SetSkillTab(SKILL_TAB)
     inst.components.icey2_upgradable:SetLevel(0)
+
+    OnFormChangeToMelee(inst)
 
     MakeHauntableLaunch(inst)
 

@@ -1,5 +1,5 @@
-local function GaleSaveForRerollWrapper(old_fn)
-    local function GaleSaveForReroll(inst, ...)
+local function SaveForRerollWrapper(old_fn)
+    local function SaveForReroll(inst, ...)
         local data = old_fn(inst, ...)
 
         if inst.prefab == "icey2" then
@@ -9,15 +9,21 @@ local function GaleSaveForRerollWrapper(old_fn)
             data.icey2_reroll_data_handler = inst.components.icey2_reroll_data_handler:OnSave()
         end
 
+        print(inst, "save for reroll !  data.icey2_reroll_data_handler:")
+        dumptable(data.icey2_reroll_data_handler)
+
         return data
     end
 
-    return GaleSaveForReroll
+    return SaveForReroll
 end
 
-local function GaleLoadForRerollWrapper(old_fn)
-    local function GaleLoadForReroll(inst, data, ...)
+local function LoadForRerollWrapper(old_fn)
+    local function LoadForReroll(inst, data, ...)
         old_fn(inst, data, ...)
+
+        print(inst, "load for reroll !  data.icey2_reroll_data_handler:")
+        dumptable(data.icey2_reroll_data_handler)
 
         if inst.prefab == "icey2" then
             if data.icey2_reroll_data_handler ~= nil then
@@ -31,7 +37,7 @@ local function GaleLoadForRerollWrapper(old_fn)
         end
     end
 
-    return GaleLoadForReroll
+    return LoadForReroll
 end
 
 
@@ -43,8 +49,8 @@ AddPlayerPostInit(function(inst)
     if inst.prefab == "icey2" or inst.prefab == "wonkey" then
         inst:AddComponent("icey2_reroll_data_handler")
 
-        inst.SaveForReroll = GaleSaveForRerollWrapper(inst.SaveForReroll)
-        inst.LoadForReroll = GaleLoadForRerollWrapper(inst.LoadForReroll)
+        inst.SaveForReroll = SaveForRerollWrapper(inst.SaveForReroll)
+        inst.LoadForReroll = LoadForRerollWrapper(inst.LoadForReroll)
     end
 end)
 

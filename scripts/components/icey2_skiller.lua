@@ -69,10 +69,13 @@ function Icey2Skiller:Forget(name)
 	self:UpdateJsonData()
 end
 
-function Icey2Skiller:UpdateJsonData()
+function Icey2Skiller:UpdateJsonData(refresh)
+	if refresh then
+		self.json_data = ""
+	end
+
 	local data = {
 		learned_skill = self.learned_skill,
-		unlocked_tree = self.unlocked_tree
 	}
 
 	self.json_data = json.encode(data)
@@ -104,13 +107,22 @@ end
 function Icey2Skiller:OnLoad(data)
 	if data then
 		if data.learned_skill then
-			print(":OnLoad() data.learned_skill:")
-			dumptable(data.learned_skill)
+			-- print(":OnLoad() data.learned_skill:")
+			-- dumptable(data.learned_skill)
 			for k, name in pairs(data.learned_skill) do
 				self:Learn(name, true)
 			end
 		end
 	end
+end
+
+function Icey2Skiller:LoadForReroll(data)
+	-- When return from wonkey, it seems HUD not receiving skill data, cause the skill tab missing all skills
+	self.inst:DoTaskInTime(1, function()
+		self:UpdateJsonData(true)
+	end)
+
+	return self:OnLoad(data)
 end
 
 function Icey2Skiller:GetDebugString()

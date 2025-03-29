@@ -3,7 +3,7 @@ local Icey2SkillBase_Active = require("components/icey2_skill_base_active")
 
 
 local function DefaultParryTestFnWrapper(self)
-    local function TestFn(player, attacker, damage, weapon, stimuli)
+    local function TestFn(player, attacker, damage, weapon, stimuli, spdamage)
         if not (player.components.icey2_skill_shield
                 and player.components.icey2_skill_shield:IsEnabled()) then
             return
@@ -13,8 +13,12 @@ local function DefaultParryTestFnWrapper(self)
             return
         end
 
+        local all_damage = Icey2Basic.DamageSum(damage, spdamage)
+
+        print("TestFn all_damage:", all_damage)
+
         local cur_shield = player.components.icey2_skill_shield.current
-        local cost_shield = self:GetShieldRequired(damage)
+        local cost_shield = self:GetShieldRequired(all_damage)
         local tar_deg = Icey2Basic.GetFaceAngle(player, attacker)
 
 
@@ -45,7 +49,7 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
     self.parry_start_time = nil
     self.parry_degree = 120
     self.good_parry_time_threshold = 0.33
-    self.shield_consume_factors = { 0.4, 0.5 }
+    self.shield_consume_factors = { 0.2, 0.4 }
     self.parry_history = {}
 
     self.parrytestfn = DefaultParryTestFnWrapper(self)
@@ -57,7 +61,7 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
     ----------------------------------------------------------------------------------
 
     self._on_attacked = function(inst, data)
-        local damage = data.damage
+        local all_damage = Icey2Basic.DamageSum(data.damage, data.spdamage)
         local redirected = data.redirected
         local attacker = data.attacker
 
@@ -69,7 +73,9 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
                     inst:SpawnChild("icey2_greatparry_vfx").Transform:SetPosition(0.5, 0, 0)
                 end
 
-                inst.components.icey2_skill_shield:DoDelta(-self:GetShieldRequired(damage))
+                print("Parry all damage:", all_damage)
+
+                inst.components.icey2_skill_shield:DoDelta(-self:GetShieldRequired(all_damage))
 
                 table.insert(self.parry_history, MergeMaps(data, { time = GetTime() }))
 
@@ -111,8 +117,8 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
     end
 end)
 
-function Icey2SkillParry:TryParry(attacker, damage, weapon, stimuli)
-    return self.parrytestfn ~= nil and self.parrytestfn(self.inst, attacker, damage, weapon, stimuli)
+function Icey2SkillParry:TryParry(attacker, damage, weapon, stimuli, spdamage)
+    return self.parrytestfn ~= nil and self.parrytestfn(self.inst, attacker, damage, weapon, stimuli, spdamage)
 end
 
 function Icey2SkillParry:CanStartParry(x, y, z, target)

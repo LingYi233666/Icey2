@@ -113,4 +113,22 @@ function Icey2Basic.CanDoScythe(doer, target)
     return tool and tool:HasTag("icey2_scythe") and Icey2Basic.IsValidScytheTarget(target)
 end
 
+function Icey2Basic.DamageSum(...)
+    local total = 0
+
+    for _, v in pairs({ ... }) do
+        if v then
+            if type(v) == "number" then
+                total = total + v
+            elseif type(v) == "table" then
+                for _, v2 in pairs(v) do
+                    total = total + v2
+                end
+            end
+        end
+    end
+
+    return total
+end
+
 GLOBAL.Icey2Basic = Icey2Basic

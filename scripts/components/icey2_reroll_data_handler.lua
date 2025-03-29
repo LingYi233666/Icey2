@@ -30,7 +30,13 @@ function Icey2RerollDataHandler:ApplyMemory()
     for name, saved_data in pairs(self.memory.components) do
         local cmp = self.inst.components[name]
         if cmp then
-            cmp:OnLoad(saved_data)
+            if cmp.LoadForReroll then
+                cmp:LoadForReroll(saved_data)
+            elseif cmp.OnLoad then
+                cmp:OnLoad(saved_data)
+            else
+                print(self.inst, name, "doesn't have any load function for reroll !")
+            end
         end
     end
 

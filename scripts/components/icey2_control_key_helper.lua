@@ -7,9 +7,9 @@ local Icey2ControlKeyHelper = Class(function(self, inst)
         self.mouse_pos_client = nil
         self.mouse_target_client = nil
 
-        local move_control_keys = {
-            CONTROL_MOVE_UP, CONTROL_MOVE_DOWN, CONTROL_MOVE_LEFT, CONTROL_MOVE_RIGHT
-        }
+        -- local move_control_keys = {
+        --     CONTROL_MOVE_UP, CONTROL_MOVE_DOWN, CONTROL_MOVE_LEFT, CONTROL_MOVE_RIGHT
+        -- }
 
         -- self.handler = TheInput:AddGeneralControlHandler(function(control, pressed)
         --     if table.contains(move_control_keys, control) then
@@ -29,23 +29,25 @@ local Icey2ControlKeyHelper = Class(function(self, inst)
         --     end
         -- end)
 
-        self.task = inst:DoPeriodicTask(0, function()
-            if ThePlayer ~= self.inst then
-                return
-            end
+        -- self.task = inst:DoPeriodicTask(0, function()
+        --     if ThePlayer ~= self.inst then
+        --         return
+        --     end
 
-            local pos = TheInput:GetWorldPosition()
-            local target = TheInput:GetWorldEntityUnderMouse()
+        --     local pos = TheInput:GetWorldPosition()
+        --     local target = TheInput:GetWorldEntityUnderMouse()
 
-            self.mouse_pos_client = pos
-            self.mouse_target_client = target
+        --     self.mouse_pos_client = pos
+        --     self.mouse_target_client = target
 
-            if GetTime() - self.last_update_time > 0.2 then
-                SendModRPCToServer(MOD_RPC["icey2_rpc"]["update_mouse_position"], pos.x, pos.z)
-                -- SendModRPCToServer(MOD_RPC["icey2_rpc"]["update_mouse_entity"], target)
-                self.last_update_time = GetTime()
-            end
-        end)
+        --     if GetTime() - self.last_update_time > 0.2 then
+        --         SendModRPCToServer(MOD_RPC["icey2_rpc"]["update_mouse_position"], pos.x, pos.z)
+        --         -- SendModRPCToServer(MOD_RPC["icey2_rpc"]["update_mouse_entity"], target)
+        --         self.last_update_time = GetTime()
+        --     end
+        -- end)
+
+        self.inst:StartUpdatingComponent(self)
     else
         self.moving_dir_server = Vector3(0, 0, 0)
         self.mouse_pos_server = Vector3(0, 0, 0)
@@ -83,5 +85,23 @@ end
 --         tostring(self:GetMousePosition()),
 --         tostring(self:GetEntityUnderMouse()))
 -- end
+
+function Icey2ControlKeyHelper:OnUpdate(dt)
+    if ThePlayer == nil or ThePlayer ~= self.inst then
+        return
+    end
+
+    local pos = TheInput:GetWorldPosition()
+    local target = TheInput:GetWorldEntityUnderMouse()
+
+    self.mouse_pos_client = pos
+    self.mouse_target_client = target
+
+    if GetTime() - self.last_update_time > 0.2 then
+        SendModRPCToServer(MOD_RPC["icey2_rpc"]["update_mouse_position"], pos.x, pos.z)
+        -- SendModRPCToServer(MOD_RPC["icey2_rpc"]["update_mouse_entity"], target)
+        self.last_update_time = GetTime()
+    end
+end
 
 return Icey2ControlKeyHelper

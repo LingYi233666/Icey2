@@ -168,9 +168,13 @@ local function ParryCallback(inst, data)
 
     local attacker = data.attacker
     if attacker and inst.components.combat:CanTarget(attacker) and not inst.components.combat:IsAlly(attacker) then
-        local damage = 34
+        local cur_shield = inst.components.icey2_skill_shield.current
+        local all_damage = math.max(68, cur_shield)
+
+        local damage = all_damage / 2
         local spdamage = {
-            icey2_spdamage_force = 34
+            icey2_spdamage_force = all_damage / 2 - 1,
+            planar = 1,
         }
         attacker.components.combat:GetAttacked(inst, damage, nil, "electric", spdamage)
 

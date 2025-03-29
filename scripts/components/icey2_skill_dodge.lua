@@ -6,7 +6,7 @@ local Icey2SkillDodge = Class(Icey2SkillBase_Active, function(self, inst)
     ------------------------------------------
     self.can_cast_while_busy = true
     self.costs.hunger = 1
-    self.cooldown = 0.33
+    self.cooldown = 0.1
 
     ------------------------------------------
 
@@ -18,6 +18,8 @@ local Icey2SkillDodge = Class(Icey2SkillBase_Active, function(self, inst)
     self.recharge_rate = 3
 
     self:SetMaxCharge(self.max_dodge_charge)
+
+    self.use_icey2_reroll_data_handler = true
 end)
 
 function Icey2SkillDodge:DoDeltaCharge(delta)
@@ -253,6 +255,10 @@ function Icey2SkillDodge:OnLoad(data)
     if data.max_dodge_charge ~= nil then
         self:SetMaxCharge(data.max_dodge_charge)
     end
+end
+
+function Icey2SkillDodge:GetDebugString()
+    return string.format("Charge: %.2f/%.2f", self.dodge_charge, self.max_dodge_charge)
 end
 
 return Icey2SkillDodge

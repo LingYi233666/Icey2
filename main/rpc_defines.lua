@@ -75,7 +75,9 @@ AddClientModRPCHandler("icey2_rpc", "play_skill_learned_anim", function(skill_na
 end)
 
 AddModRPCHandler("icey2_rpc", "update_mouse_position", function(inst, x, z)
-    inst.components.icey2_control_key_helper:SetMousePosition(Vector3(x, 0, z))
+    if inst.components.icey2_control_key_helper then
+        inst.components.icey2_control_key_helper:SetMousePosition(Vector3(x, 0, z))
+    end
 end)
 
 AddClientModRPCHandler("icey2_rpc", "push_shield_charge_anim", function()

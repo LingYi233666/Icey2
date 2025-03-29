@@ -258,9 +258,9 @@ AddStategraphState("wilson", State {
         inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
 
         inst.sg.statemem.parrytime = 99999
-        inst.components.combat.redirectdamagefn = function(inst, attacker, damage, weapon, stimuli)
+        inst.components.combat.redirectdamagefn = function(inst, attacker, damage, weapon, stimuli, spdamage)
             return inst.components.icey2_skill_parry
-                and inst.components.icey2_skill_parry:TryParry(attacker, damage, weapon, stimuli)
+                and inst.components.icey2_skill_parry:TryParry(attacker, damage, weapon, stimuli, spdamage)
         end
 
         local s = 0.4
@@ -1203,7 +1203,7 @@ AddStategraphState("wilson", State {
                 inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:FinalBlow(inst)
             end
 
-            inst.components.health:SetInvincible(false)
+            -- inst.components.health:SetInvincible(false)
 
             -- SpawnAt("moonpulse_fx", inst, { 0.5, 0.5, 0, 5 })
         end),

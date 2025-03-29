@@ -152,3 +152,9 @@ function GLOBAL.i_allskill()
         end
     end
 end
+
+function GLOBAL.i_wonkey()
+    c_give("cursed_monkey_token", 10)
+    c_give("cave_banana", 10)
+    c_gonext("monkeyqueen")
+end

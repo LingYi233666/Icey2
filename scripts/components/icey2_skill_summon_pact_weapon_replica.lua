@@ -1,4 +1,3 @@
--- ThePlayer.replica.icey2_skill_summon_pact_weapon.pact_weapon_options
 local Icey2SkillSummonPactWeapon = Class(function(self, inst)
     self.inst = inst
 

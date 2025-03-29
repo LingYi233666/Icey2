@@ -256,9 +256,9 @@ local function hitfx_fn()
         vfx.entity:AddFollower()
         vfx.Follower:FollowSymbol(inst.GUID, "swap_object", 0, FX_HEIGHTS[i] + height_offset, 0, true, nil, i - 1)
 
-        -- inst:DoTaskInTime(0, function()
-        vfx._can_emit:set(true)
-        -- end)
+        inst:DoTaskInTime(FRAMES, function()
+            vfx._can_emit:set(true)
+        end)
     end
 
     -- local vfx = inst:SpawnChild("icey2_blue_fire_explode_vfx")
