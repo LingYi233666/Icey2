@@ -21,10 +21,11 @@ AddStategraphPostInit("wilson", function(sg)
 
             else
                 if not (inst.components.rider and inst.components.rider:IsRiding()) then
-                    if inst:HasTag("icey2_skill_unarmoured_movement") then
-                        handle_by_old = false
-                        inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
-                    elseif Icey2Basic.IsCarryingGunlance(inst, true) then
+                    -- if inst:HasTag("icey2_skill_unarmoured_movement") then
+                    --     handle_by_old = false
+                    --     inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
+                    -- else
+                    if Icey2Basic.IsCarryingGunlance(inst, true) then
                         handle_by_old = false
                         inst.sg:GoToState("icey2_gunlance_ranged_run_stop")
                     end
@@ -32,14 +33,15 @@ AddStategraphPostInit("wilson", function(sg)
             end
         elseif not is_moving and should_move then
             if not (inst.components.rider and inst.components.rider:IsRiding()) then
-                if inst:HasTag("icey2_skill_unarmoured_movement") then
-                    -- V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
-                    if data and data.dir then
-                        inst.components.locomotor:SetMoveDir(data.dir)
-                    end
-                    handle_by_old = false
-                    inst.sg:GoToState("icey2_skill_unarmoured_movement_start")
-                elseif Icey2Basic.IsCarryingGunlance(inst, true) then
+                -- if inst:HasTag("icey2_skill_unarmoured_movement") then
+                --     -- V2C: Added "dir" param so we don't have to add "canrotate" to all interruptible states
+                --     if data and data.dir then
+                --         inst.components.locomotor:SetMoveDir(data.dir)
+                --     end
+                --     handle_by_old = false
+                --     inst.sg:GoToState("icey2_skill_unarmoured_movement_start")
+                -- else
+                if Icey2Basic.IsCarryingGunlance(inst, true) then
                     if data and data.dir then
                         inst.components.locomotor:SetMoveDir(data.dir)
                     end
@@ -101,6 +103,8 @@ AddStategraphPostInit("wilson", function(sg)
                 return "icey2_gunlance_melee_attack"
             elseif weapon.prefab == "icey2_pact_weapon_chainsaw" and not weapon:HasTag("without_pan") then
                 return "icey2_chainsaw_attack"
+            elseif weapon.prefab == "icey2_pact_weapon_hammer" then
+                return "icey2_hammer_attack"
             elseif weapon.prefab == "icey2_test_shooter" then
                 return "icey2_test_shoot_stream"
             end
@@ -160,7 +164,7 @@ AddStategraphPostInit("wilson", function(sg)
             old_onenter(inst, ...)
 
             local feed = inst:GetBufferedAction().invobject
-            if feed:HasTag("blood_metal") then
+            if feed and feed:HasTag("blood_metal") then
                 inst.SoundEmitter:PlaySound("dontstarve/wilson/eat", "eating")
                 inst.SoundEmitter:PlaySound("icey2_sfx/prefabs/blood_metal/eat_loop", "electric")
 
@@ -187,13 +191,27 @@ AddStategraphPostInit("wilson", function(sg)
     end
 end)
 
+-- hammer
+AddStategraphPostInit("wilson", function(sg)
+    local old_HAMMER = sg.actionhandlers[ACTIONS.HAMMER].deststate
+    sg.actionhandlers[ACTIONS.HAMMER].deststate = function(inst, action)
+        local old_rets = old_HAMMER(inst, action)
 
+        if old_rets ~= nil then
+            local equip = action.invobject
+            if equip and equip.prefab == "icey2_pact_weapon_hammer" then
+                return "icey2_hammer_attack"
+            end
+        end
+        return old_rets
+    end
+end)
 
 -----------------------------------------------------------------------------
 -- Skill: dodge
 AddStategraphState("wilson", State {
     name = "icey2_dodge",
-    tags = { "busy", "nopredict", "nointerrupt", "icey2_attack_dodge" },
+    tags = { "busy", "nopredict", "nointerrupt", "icey2_attack_dodge", "noattack" },
 
     onenter = function(inst, data)
         -- inst.AnimState:PlayAnimation("atk_leap_pre")
@@ -349,155 +367,155 @@ local DoRunSounds = function(inst)
 end
 
 -------------------------------------------------------------------------------------------
--- Locomote: unarmored movement
-AddStategraphState("wilson", State {
-    name = "icey2_skill_unarmoured_movement_start",
-    tags = { "moving", "running", "canrotate", "autopredict" },
+-- -- Locomote: unarmored movement
+-- AddStategraphState("wilson", State {
+--     name = "icey2_skill_unarmoured_movement_start",
+--     tags = { "moving", "running", "canrotate", "autopredict" },
 
-    onenter = function(inst)
-        if not inst:HasTag("icey2_skill_unarmoured_movement") then
-            inst.sg:GoToState("run_start")
-            return
-        end
+--     onenter = function(inst)
+--         if not inst:HasTag("icey2_skill_unarmoured_movement") then
+--             inst.sg:GoToState("run_start")
+--             return
+--         end
 
-        inst.components.locomotor:RunForward()
-        inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pre"))
+--         inst.components.locomotor:RunForward()
+--         inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pre"))
 
-        inst.sg.mem.footsteps = 0
-    end,
+--         inst.sg.mem.footsteps = 0
+--     end,
 
-    onupdate = function(inst) inst.components.locomotor:RunForward() end,
+--     onupdate = function(inst) inst.components.locomotor:RunForward() end,
 
-    timeline = {
-        TimeEvent(5 * FRAMES, function(inst)
-            DoRunSounds(inst)
-            DoFoleySounds(inst)
-        end)
-    },
+--     timeline = {
+--         TimeEvent(5 * FRAMES, function(inst)
+--             DoRunSounds(inst)
+--             DoFoleySounds(inst)
+--         end)
+--     },
 
-    events = {
-        EventHandler("animover", function(inst)
-            if inst.AnimState:AnimDone() then
-                inst.sg:GoToState("icey2_skill_unarmoured_movement")
-            end
-        end)
-    }
-})
+--     events = {
+--         EventHandler("animover", function(inst)
+--             if inst.AnimState:AnimDone() then
+--                 inst.sg:GoToState("icey2_skill_unarmoured_movement")
+--             end
+--         end)
+--     }
+-- })
 
-AddStategraphState("wilson", State {
-    name = "icey2_skill_unarmoured_movement",
-    tags = { "moving", "running", "canrotate", "autopredict" },
+-- AddStategraphState("wilson", State {
+--     name = "icey2_skill_unarmoured_movement",
+--     tags = { "moving", "running", "canrotate", "autopredict" },
 
-    onenter = function(inst)
-        inst.components.locomotor:RunForward()
+--     onenter = function(inst)
+--         inst.components.locomotor:RunForward()
 
-        local anim = Icey2Basic.GetUnarmouredMovementAnim(inst, "loop")
-        if not inst.AnimState:IsCurrentAnimation(anim) then
-            inst.AnimState:PlayAnimation(anim, true)
-        end
+--         local anim = Icey2Basic.GetUnarmouredMovementAnim(inst, "loop")
+--         if not inst.AnimState:IsCurrentAnimation(anim) then
+--             inst.AnimState:PlayAnimation(anim, true)
+--         end
 
-        inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
-    end,
+--         inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+--     end,
 
-    onupdate = function(inst)
-        if not inst:HasTag("icey2_skill_unarmoured_movement") then
-            inst.sg:GoToState("run_start")
-            return
-        end
-        inst.components.locomotor:RunForward()
-    end,
+--     onupdate = function(inst)
+--         if not inst:HasTag("icey2_skill_unarmoured_movement") then
+--             inst.sg:GoToState("run_start")
+--             return
+--         end
+--         inst.components.locomotor:RunForward()
+--     end,
 
-    timeline = {
-        TimeEvent(5 * FRAMES, function(inst)
-            DoRunSounds(inst)
-            DoFoleySounds(inst)
-        end),
-        TimeEvent(9 * FRAMES, function(inst)
-            DoRunSounds(inst)
-            DoFoleySounds(inst)
-        end),
-        TimeEvent(13 * FRAMES, function(inst)
-            DoRunSounds(inst)
-            DoFoleySounds(inst)
-        end),
-        TimeEvent(14 * FRAMES, function(inst)
-            DoRunSounds(inst)
-            DoFoleySounds(inst)
-        end),
-        TimeEvent(17 * FRAMES, function(inst)
-            DoRunSounds(inst)
-            DoFoleySounds(inst)
-        end)
-    },
+--     timeline = {
+--         TimeEvent(5 * FRAMES, function(inst)
+--             DoRunSounds(inst)
+--             DoFoleySounds(inst)
+--         end),
+--         TimeEvent(9 * FRAMES, function(inst)
+--             DoRunSounds(inst)
+--             DoFoleySounds(inst)
+--         end),
+--         TimeEvent(13 * FRAMES, function(inst)
+--             DoRunSounds(inst)
+--             DoFoleySounds(inst)
+--         end),
+--         TimeEvent(14 * FRAMES, function(inst)
+--             DoRunSounds(inst)
+--             DoFoleySounds(inst)
+--         end),
+--         TimeEvent(17 * FRAMES, function(inst)
+--             DoRunSounds(inst)
+--             DoFoleySounds(inst)
+--         end)
+--     },
 
-    events = {
-        -- EventHandler("gogglevision", function(inst, data)
-        --     if data.enabled then
-        --         if inst.sg.statemem.sandstorm then
-        --             inst.sg:GoToState("run")
-        --         end
-        --     elseif not (inst.sg.statemem.riding or inst.sg.statemem.heavy or
-        --         inst.sg.statemem.iswere or inst.sg.statemem.sandstorm) and
-        --         inst:IsInAnyStormOrCloud() then
-        --         inst.sg:GoToState("run")
-        --     end
-        -- end), EventHandler("stormlevel", function(inst, data)
-        --     if data.level < TUNING.SANDSTORM_FULL_LEVEL then
-        --         if inst.sg.statemem.sandstorm then
-        --             inst.sg:GoToState("run")
-        --         end
-        --     elseif not (inst.sg.statemem.riding or inst.sg.statemem.heavy or
-        --         inst.sg.statemem.iswere or inst.sg.statemem.sandstorm or
-        --         inst.components.playervision:HasGoggleVision()) then
-        --         inst.sg:GoToState("run")
-        --     end
-        -- end), EventHandler("miasmalevel", function(inst, data)
-        --     if data.level < 1 then
-        --         if inst.sg.statemem.sandstorm then
-        --             inst.sg:GoToState("run")
-        --         end
-        --     elseif not (inst.sg.statemem.riding or inst.sg.statemem.heavy or
-        --         inst.sg.statemem.iswere or inst.sg.statemem.sandstorm or
-        --         inst.components.playervision:HasGoggleVision()) then
-        --         inst.sg:GoToState("run")
-        --     end
-        -- end), EventHandler("carefulwalking", function(inst, data)
-        --     if not data.careful then
-        --         if inst.sg.statemem.careful then
-        --             inst.sg:GoToState("run")
-        --         end
-        --     elseif not (inst.sg.statemem.riding or inst.sg.statemem.heavy or
-        --         inst.sg.statemem.sandstorm or inst.sg.statemem.groggy or
-        --         inst.sg.statemem.careful or inst.sg.statemem.iswere) then
-        --         inst.sg:GoToState("run")
-        --     end
-        -- end)
-    },
+--     events = {
+--         -- EventHandler("gogglevision", function(inst, data)
+--         --     if data.enabled then
+--         --         if inst.sg.statemem.sandstorm then
+--         --             inst.sg:GoToState("run")
+--         --         end
+--         --     elseif not (inst.sg.statemem.riding or inst.sg.statemem.heavy or
+--         --         inst.sg.statemem.iswere or inst.sg.statemem.sandstorm) and
+--         --         inst:IsInAnyStormOrCloud() then
+--         --         inst.sg:GoToState("run")
+--         --     end
+--         -- end), EventHandler("stormlevel", function(inst, data)
+--         --     if data.level < TUNING.SANDSTORM_FULL_LEVEL then
+--         --         if inst.sg.statemem.sandstorm then
+--         --             inst.sg:GoToState("run")
+--         --         end
+--         --     elseif not (inst.sg.statemem.riding or inst.sg.statemem.heavy or
+--         --         inst.sg.statemem.iswere or inst.sg.statemem.sandstorm or
+--         --         inst.components.playervision:HasGoggleVision()) then
+--         --         inst.sg:GoToState("run")
+--         --     end
+--         -- end), EventHandler("miasmalevel", function(inst, data)
+--         --     if data.level < 1 then
+--         --         if inst.sg.statemem.sandstorm then
+--         --             inst.sg:GoToState("run")
+--         --         end
+--         --     elseif not (inst.sg.statemem.riding or inst.sg.statemem.heavy or
+--         --         inst.sg.statemem.iswere or inst.sg.statemem.sandstorm or
+--         --         inst.components.playervision:HasGoggleVision()) then
+--         --         inst.sg:GoToState("run")
+--         --     end
+--         -- end), EventHandler("carefulwalking", function(inst, data)
+--         --     if not data.careful then
+--         --         if inst.sg.statemem.careful then
+--         --             inst.sg:GoToState("run")
+--         --         end
+--         --     elseif not (inst.sg.statemem.riding or inst.sg.statemem.heavy or
+--         --         inst.sg.statemem.sandstorm or inst.sg.statemem.groggy or
+--         --         inst.sg.statemem.careful or inst.sg.statemem.iswere) then
+--         --         inst.sg:GoToState("run")
+--         --     end
+--         -- end)
+--     },
 
-    ontimeout = function(inst)
-        inst.sg:GoToState("icey2_skill_unarmoured_movement")
-    end
-})
+--     ontimeout = function(inst)
+--         inst.sg:GoToState("icey2_skill_unarmoured_movement")
+--     end
+-- })
 
-AddStategraphState("wilson", State {
-    name = "icey2_skill_unarmoured_movement_stop",
-    tags = { "canrotate", "idle", "autopredict" },
+-- AddStategraphState("wilson", State {
+--     name = "icey2_skill_unarmoured_movement_stop",
+--     tags = { "canrotate", "idle", "autopredict" },
 
-    onenter = function(inst)
-        inst.components.locomotor:Stop()
-        inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pst"))
-    end,
+--     onenter = function(inst)
+--         inst.components.locomotor:Stop()
+--         inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pst"))
+--     end,
 
-    timeline = {},
+--     timeline = {},
 
-    events = {
-        EventHandler("animover", function(inst)
-            if inst.AnimState:AnimDone() then
-                inst.sg:GoToState("idle")
-            end
-        end)
-    }
-})
+--     events = {
+--         EventHandler("animover", function(inst)
+--             if inst.AnimState:AnimDone() then
+--                 inst.sg:GoToState("idle")
+--             end
+--         end)
+--     }
+-- })
 -------------------------------------------------------------------------------------------
 
 -- Locomote: carry gunlance with range attack form
@@ -880,13 +898,15 @@ AddStategraphState("wilson", State {
         inst.AnimState:PlayAnimation("atk_pre")
         inst.AnimState:PushAnimation("atk", false)
 
-        if weapon and weapon:IsValid()
-            and weapon.components.icey2_aoeweapon_launch_chainsaw
-            and not weapon.components.icey2_aoeweapon_launch_chainsaw:GetProjectile() then
-            inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/swipe", nil, nil, true)
-        else
-            inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon", nil, nil, true)
-        end
+        -- if weapon and weapon:IsValid()
+        --     and weapon.components.icey2_aoeweapon_launch_chainsaw
+        --     and not weapon.components.icey2_aoeweapon_launch_chainsaw:GetProjectile() then
+        --     inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/swipe", nil, nil, true)
+        -- else
+        --     inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon", nil, nil, true)
+        -- end
+        inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/swipe", nil, nil, true)
+
         cooldown = math.max(cooldown, 17 * FRAMES)
 
         inst.sg:SetTimeout(cooldown)
@@ -958,6 +978,82 @@ AddStategraphState("wilson", State {
     end,
 })
 
+
+-----------------------------------------------------------------------------
+-- attack: hammer attack
+AddStategraphState("wilson", State {
+    name = "icey2_hammer_attack",
+    tags = { "attack", "notalking", "abouttoattack", "autopredict" },
+
+    onenter = function(inst)
+        if inst.components.combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+        local buffaction = inst:GetBufferedAction()
+        local target = buffaction ~= nil and buffaction.target or nil
+        inst.components.combat:SetTarget(target)
+        inst.components.combat:StartAttack()
+        inst.components.locomotor:Stop()
+        local cooldown = inst.components.combat.min_attack_period
+
+
+        inst.AnimState:PlayAnimation("atk_pre")
+        inst.AnimState:PushAnimation("atk", false)
+
+        inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_hammer/swipe", nil, nil, true)
+
+        cooldown = math.max(cooldown, 23 * FRAMES)
+
+        inst.sg:SetTimeout(cooldown)
+
+        if target ~= nil then
+            inst.components.combat:BattleCry()
+            if target:IsValid() then
+                inst:FacePoint(target:GetPosition())
+                inst.sg.statemem.attacktarget = target
+                inst.sg.statemem.retarget = target
+            end
+        end
+    end,
+
+
+
+    timeline =
+    {
+        TimeEvent(8 * FRAMES, function(inst)
+            inst:PerformBufferedAction()
+            inst.sg:RemoveStateTag("abouttoattack")
+        end),
+    },
+
+
+    ontimeout = function(inst)
+        inst.sg:RemoveStateTag("attack")
+        inst.sg:AddStateTag("idle")
+    end,
+
+    events =
+    {
+        EventHandler("equip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("unequip", function(inst) inst.sg:GoToState("idle") end),
+        EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        inst.components.combat:SetTarget(nil)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.components.combat:CancelAttack()
+        end
+    end,
+})
 
 -----------------------------------------------------------------------------
 -- aoe: flurry_lunge
@@ -1144,7 +1240,10 @@ AddStategraphState("wilson", State {
 
 AddStategraphState("wilson", State {
     name = "icey2_aoeweapon_flurry_lunge_final",
-    tags = { "aoe", "attack", "abouttoattack", "busy", "nopredict" },
+    -- tags = { "aoe", "attack", "abouttoattack", "busy", "nopredict" },
+    -- tags = { "aoe", "attack", "abouttoattack", "nopredict" },
+    tags = { "aoe", "attack", "abouttoattack", },
+
 
     onenter = function(inst, data)
         inst.sg.statemem.weapon = data.weapon
@@ -1227,7 +1326,8 @@ AddStategraphState("wilson", State {
                 inst.sg.statemem.run_stop_fn = true
             end
 
-            inst.sg:GoToState("idle", true)
+            -- inst.sg:GoToState("idle", true)
+            inst.sg:AddStateTag("idle")
         end),
 
         -- TimeEvent(0 * FRAMES, function(inst)

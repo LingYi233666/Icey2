@@ -36,6 +36,7 @@ local MODIFIED_SPEECH = {
 		BACKPACK = "你说得对，但是饥荒是一款格子管理游戏。",
 		BEARDHAIR = "我长不出这么宏伟的胡须！",
 		BEARGER = "它在找蜂蜜吃。",
+		BISHOP = "你看过《肖申克的救赎》吗？",
 		BUSHHAT = "不如纸箱实用。",
 
 		-- CATCOON = "小猫，你可以吃素食堡。",
@@ -121,12 +122,23 @@ local MODIFIED_SPEECH = {
 			GENERIC = "兔子洞。",
 			SPRING = "兔子洞已经坏掉了。",
 		},
+		ROBIN_WINTER =
+		{
+			GENERIC = "铃铛蔷薇的鸟。",
+			HELD = "让我看看这个鸟。",
+		},
 		ROOK = "鲁克，你不做间谍了吗？",
 
 		-- SHADOWTHRALL_HANDS = "Hands off!",
 		-- SHADOWTHRALL_HORNS = "It looks hungry for a fight.",
 		-- SHADOWTHRALL_WINGS = "The wings seem to be just for show.",
 		SHADOWTHRALL_MOUTH = "Snake? Snaaaaaaaaaaaaaaaake!",
+		SPIDER =
+		{
+			DEAD = "死了！",
+			GENERIC = "蜘蛛到处都是！那就到处开火！",
+			SLEEPING = "睡着了还蛮可爱的。",
+		},
 
 		TOADSTOOL =
 		{
@@ -355,6 +367,8 @@ local MODIFIED_SPEECH = {
 
 
 	ANNOUNCE_WORMHOLE = "啊，我身上黏糊糊的！",
+	ANNOUNCE_WORMS = "侦测到地震运动，洞穴蠕虫正在进入。",
+	ANNOUNCE_WORMS_BOSS = "有什么东西要破土而出了！",
 
 }
 

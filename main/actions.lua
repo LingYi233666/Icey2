@@ -33,6 +33,7 @@ AddAction("ICEY2_VERSATILE_WEAPON_CHANGE_FORM", "ICEY2_VERSATILE_WEAPON_CHANGE_F
     return false
 end)
 ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.do_not_locomote = true
+ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.mount_valid = true
 ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.customarrivecheck = function() return true end
 ACTIONS.ICEY2_VERSATILE_WEAPON_CHANGE_FORM.stroverridefn = function(act)
     local item = act.invobject

@@ -17,21 +17,21 @@ end
 
 function Icey2SkillBase_Passive:OnSave()
     local data = {}
-    data.enable = self.enable
+    -- data.enable = self.enable
 
     return data
 end
 
 function Icey2SkillBase_Passive:OnLoad(data)
-    if data ~= nil then
-        if data.enable ~= nil then
-            if data.enable == true then
-                self:Enable()
-            else
-                self:Disable()
-            end
-        end
-    end
+    -- if data ~= nil then
+    --     if data.enable ~= nil then
+    --         if data.enable == true then
+    --             self:Enable()
+    --         else
+    --             self:Disable()
+    --         end
+    --     end
+    -- end
 end
 
 return Icey2SkillBase_Passive

@@ -15,6 +15,9 @@ local assets =
     -- Asset("ATLAS", "images/inventoryimages/icey2_dodge_charge_chip_4.xml"),
 }
 
+-- Dodge chip recipes num
+local dodge_chip_num = 6
+
 local function OnBuiltFn(inst, builder)
     if inst.components.icey2_dodge_charge_upgrader:TryUpdate(builder) then
         builder:RemoveTag(inst.prefab .. "_builder")
@@ -25,13 +28,13 @@ local function OnBuiltFn(inst, builder)
     end
 
     if builder.components.icey2_skill_dodge.max_dodge_charge >= 4 then
-        for i = 1, 5 do
+        for i = 1, dodge_chip_num do
             builder:RemoveTag("icey2_dodge_charge_chip_" .. i .. "_builder")
         end
     end
 end
 
-local function common_fn(suit_value)
+local function common_fn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -81,9 +84,9 @@ end
 
 local rets = {}
 
-for i = 1, 5 do
+for i = 1, dodge_chip_num do
     local function fn()
-        return common_fn(i)
+        return common_fn()
     end
     table.insert(rets, Prefab("icey2_dodge_charge_chip_" .. i, fn, assets))
 end

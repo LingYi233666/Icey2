@@ -47,9 +47,9 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
     ------------------------------------------
 
     self.parry_start_time = nil
-    self.parry_degree = 120
+    self.parry_degree = 150
     self.good_parry_time_threshold = 0.33
-    self.shield_consume_factors = { 0.2, 0.4 }
+    self.shield_consume_factors = { 0.4, 0.5 }
     self.parry_history = {}
 
     self.parrytestfn = DefaultParryTestFnWrapper(self)

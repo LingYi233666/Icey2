@@ -22,9 +22,9 @@ end
 
 local function PassiveSkillOnLearnedWrapper(cmp_name)
     local function fn(inst, is_onload)
-        if is_onload then
-            return
-        end
+        -- if is_onload then
+        --     return
+        -- end
 
         local cmp = inst.components[cmp_name]
 
@@ -425,7 +425,74 @@ ICEY2_SKILL_DEFINES = {
         Tech = TECH.MAGIC_THREE,
     },
 
+    {
+        Name = "new_pact_weapon_hammer",
+        OnLearned = function(inst, is_onload)
+            inst.components.icey2_skill_summon_pact_weapon:AddWeaponPrefab("icey2_pact_weapon_hammer")
+        end,
 
+        OnForget = function(inst)
+            inst.components.icey2_skill_summon_pact_weapon:RemoveWeaponPrefab("icey2_pact_weapon_hammer")
+        end,
+
+        Ingredients = {
+            Ingredient("wagpunk_bits", 4),
+            Ingredient("hammer", 1),
+            Ingredient(CHARACTER_INGREDIENT.SANITY, 50)
+        },
+        Tech = TECH.MAGIC_THREE,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_hammer_1",
+        OnLearned = function(inst, is_onload)
+            AllLinkedWeaponsCheckSkill(inst)
+        end,
+
+        OnForget = function(inst)
+            AllLinkedWeaponsCheckSkill(inst)
+        end,
+
+        Ingredients = {
+            SkillIngredient("new_pact_weapon_hammer"),
+            Ingredient("icey2_blood_metal", 3, "images/inventoryimages/icey2_blood_metal.xml"),
+        },
+        Tech = TECH.MAGIC_THREE,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_hammer_2",
+        OnLearned = function(inst, is_onload)
+            AllLinkedWeaponsCheckSkill(inst)
+        end,
+
+        OnForget = function(inst)
+            AllLinkedWeaponsCheckSkill(inst)
+        end,
+
+        Ingredients = {
+            SkillIngredient("upgrade_pact_weapon_hammer_1"),
+            Ingredient("icey2_blood_metal", 5, "images/inventoryimages/icey2_blood_metal.xml"),
+        },
+        Tech = TECH.MAGIC_THREE,
+    },
+
+    {
+        Name = "upgrade_pact_weapon_hammer_3",
+        OnLearned = function(inst, is_onload)
+            AllLinkedWeaponsCheckSkill(inst)
+        end,
+
+        OnForget = function(inst)
+            AllLinkedWeaponsCheckSkill(inst)
+        end,
+
+        Ingredients = {
+            SkillIngredient("upgrade_pact_weapon_hammer_2"),
+            Ingredient("icey2_blood_metal", 7, "images/inventoryimages/icey2_blood_metal.xml"),
+        },
+        Tech = TECH.MAGIC_THREE,
+    },
 }
 
 -- Check if has duplicate skill names

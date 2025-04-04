@@ -30,6 +30,9 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_GUNLANCE = "这是某种..
 STRINGS.NAMES.ICEY2_PACT_WEAPON_CHAINSAW = "能量电锯"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_CHAINSAW = "这是某种...武器。"
 
+STRINGS.NAMES.ICEY2_PACT_WEAPON_HAMMER = "能量战锤"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_HAMMER = "这是某种...武器。"
+
 STRINGS.NAMES.ICEY1_BLUEROSE = "高频切割刃"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY1_BLUEROSE = "已经很旧了。"
 STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY1_BLUEROSE = "看起来很眼熟。"
@@ -76,6 +79,9 @@ STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_4 = "吸收传送之力来增加连�
 
 STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_5 = "闪避充能芯片5"
 STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_5 = "吸收海象的力量来增加连续闪避次数。无法重复制作。"
+
+STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_6 = "闪避充能芯片6"
+STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_6 = "吸收羽毛的轻灵来增加连续闪避次数。无法重复制作。"
 
 -- root skill
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_HUNGER_IS_ELECTRICITY = "电能驱动"
@@ -131,6 +137,18 @@ STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_2 = "强化
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_3 = "能量电锯高级强化"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_3 = "强化你的能量电锯。"
 
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_HAMMER = "解锁能量武器：战锤"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_HAMMER = "使你的能量武器种类增加！"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_1 = "能量战锤初级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_1 = "强化你的能量战锤。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_2 = "能量战锤中级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_2 = "强化你的能量战锤。"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_3 = "能量战锤高级强化"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_3 = "强化你的能量战锤。"
+
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "解锁战意聚焦"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "不受伤的连续攻击可以恢复属性。"
 
@@ -184,7 +202,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
 
         FORCE_SHIELD = {
             TITLE = "力场护盾",
-            DESC = "你的力场护盾与任何护甲的加持一样有效。在你不装备任何护甲或盾牌时，力场护盾能帮助你吸收等量伤害。\n护盾当前值与最大值能在右上角查看。",
+            DESC = "你的力场护盾与任何护甲的加持一样有效。在你不装备任何护甲或盾牌时，力场护盾能帮助你吸收等量伤害。你可以通过制作能量罐来提高护盾上限，最高提升到250点。\n护盾当前值与上限能在右上角查看。",
         },
 
         BATTLE_FOCUS = {
@@ -297,6 +315,27 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         UPGRADE_PACT_WEAPON_CHAINSAW_3 = {
             TITLE = "能量电锯高级强化",
             DESC = "你将你的能量电锯强化至顶峰，现在它获得以下永久增益：\n*力场攻击力上升。\n*位面攻击力上升。\n*你在维持回旋刀刃的专注时具有优势。",
+        },
+
+        NEW_PACT_WEAPON_HAMMER = {
+            TITLE = "能量武器：战锤",
+            DESC =
+            "“创造能量武器”技能新增武器种类：能量战锤。这是一柄笨重但极其强大的巨锤，能够造成严重的破坏，但是挥舞速度很慢。武器战技如下：\n战技·无战技：\n因为作者还没想好，所以该武器暂时没有战技。",
+        },
+
+        UPGRADE_PACT_WEAPON_HAMMER_1 = {
+            TITLE = "能量战锤初级强化",
+            DESC = "你使用了金属血强化了你的能量战锤，现在它获得以下永久增益：\n*力场攻击力上升。",
+        },
+
+        UPGRADE_PACT_WEAPON_HAMMER_2 = {
+            TITLE = "能量战锤中级强化",
+            DESC = "你进一步强化了你的能量战锤，现在它获得以下永久增益：\n*力场攻击力上升。",
+        },
+
+        UPGRADE_PACT_WEAPON_HAMMER_3 = {
+            TITLE = "能量战锤高级强化",
+            DESC = "你将你的能量战锤强化至顶峰，现在它获得以下永久增益：\n*力场攻击力上升。",
         },
 
         PARRY = {

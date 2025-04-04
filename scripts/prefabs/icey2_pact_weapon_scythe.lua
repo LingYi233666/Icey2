@@ -423,6 +423,7 @@ local function fn()
     Icey2WeaponSkill.AddAoetargetingClient(inst, "line", nil, 12)
     inst.components.aoetargeting.reticule.reticuleprefab = "reticulelong"
     inst.components.aoetargeting.reticule.pingprefab = "reticulelongping"
+    inst.components.aoetargeting:SetAllowRiding(true)
     inst.components.aoetargeting:SetAlwaysValid(true)
 
     inst.entity:SetPristine()

@@ -91,7 +91,8 @@ local function OnAttackMelee(inst, attacker, target)
         { "icey2_supply_ball_shield", 1 },
         { "icey2_supply_ball_shield_small",
             -- math.random(1, 4) + math.max(0, level - 1)
-            math.random(1, 4)
+            -- math.random(1, 4)
+            math.random(0, 2)
         },
     }
 
@@ -109,7 +110,7 @@ local function OnAttackMelee(inst, attacker, target)
 end
 
 local function OnProjectileLaunched(inst, attacker, target, proj)
-    local energy_required = 5
+    local energy_required = 2
     local hunger_required = 1
 
     if attacker.components.icey2_skill_shield
@@ -245,7 +246,7 @@ local function ApplyLevelFn(inst, new_level, old_level)
     local current_form = inst.components.icey2_versatile_weapon:GetCurForm()
 
     if current_form == 1 then
-        inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 11)
+        inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 8)
     elseif current_form == 2 then
         inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 2)
     end

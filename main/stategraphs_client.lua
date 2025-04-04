@@ -24,10 +24,11 @@ AddStategraphPostInit("wilson_client", function(sg)
 
         elseif is_moving and not should_move then
             if not (inst.replica.rider and inst.replica.rider:IsRiding()) then
-                if inst:HasTag("icey2_skill_unarmoured_movement") then
-                    handle_by_old = false
-                    inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
-                elseif Icey2Basic.IsCarryingGunlance(inst, true) then
+                -- if inst:HasTag("icey2_skill_unarmoured_movement") then
+                --     handle_by_old = false
+                --     inst.sg:GoToState("icey2_skill_unarmoured_movement_stop")
+                -- else
+                if Icey2Basic.IsCarryingGunlance(inst, true) then
                     handle_by_old = false
                     inst.sg:GoToState("icey2_gunlance_ranged_run_stop")
                 end
@@ -42,10 +43,11 @@ AddStategraphPostInit("wilson_client", function(sg)
                     end
                 end
 
-                if inst:HasTag("icey2_skill_unarmoured_movement") then
-                    handle_by_old = false
-                    inst.sg:GoToState("icey2_skill_unarmoured_movement_start")
-                elseif Icey2Basic.IsCarryingGunlance(inst, true) then
+                -- if inst:HasTag("icey2_skill_unarmoured_movement") then
+                --     handle_by_old = false
+                --     inst.sg:GoToState("icey2_skill_unarmoured_movement_start")
+                -- else
+                if Icey2Basic.IsCarryingGunlance(inst, true) then
                     handle_by_old = false
                     inst.sg:GoToState("icey2_gunlance_ranged_run_start")
                 end
@@ -97,6 +99,10 @@ AddStategraphPostInit("wilson_client", function(sg)
                 -- return
             elseif Icey2Basic.IsCarryingGunlance(inst, false) then
                 return "icey2_gunlance_melee_attack"
+            elseif weapon.prefab == "icey2_pact_weapon_chainsaw" and not weapon:HasTag("without_pan") then
+                return "icey2_chainsaw_attack"
+            elseif weapon.prefab == "icey2_pact_weapon_hammer" then
+                return "icey2_hammer_attack"
             elseif weapon ~= nil then
                 if weapon.prefab == "icey2_test_shooter" then
                     return "icey2_test_shoot_stream"
@@ -144,6 +150,22 @@ AddStategraphPostInit("wilson_client", function(sg)
         local feed = action.invobject
         if old_rets ~= nil and feed:HasTag("blood_metal") then
             return "eat"
+        end
+        return old_rets
+    end
+end)
+
+-- hammer
+AddStategraphPostInit("wilson", function(sg)
+    local old_HAMMER = sg.actionhandlers[ACTIONS.HAMMER].deststate
+    sg.actionhandlers[ACTIONS.HAMMER].deststate = function(inst, action)
+        local old_rets = old_HAMMER(inst, action)
+
+        if old_rets ~= nil then
+            local equip = action.invobject
+            if equip and equip.prefab == "icey2_pact_weapon_hammer" then
+                return "icey2_hammer_attack"
+            end
         end
         return old_rets
     end
@@ -201,122 +223,122 @@ end
 
 -------------------------------------------------------------------------------------------
 -- Locomote: unarmored movement
-AddStategraphState("wilson_client",
-    State {
-        name = "icey2_skill_unarmoured_movement_start",
-        tags = { "moving", "running", "canrotate" },
+-- AddStategraphState("wilson_client",
+--     State {
+--         name = "icey2_skill_unarmoured_movement_start",
+--         tags = { "moving", "running", "canrotate" },
 
-        onenter = function(inst)
-            if not inst:HasTag("icey2_skill_unarmoured_movement") then
-                inst.sg:GoToState("run_start")
-                return
-            end
+--         onenter = function(inst)
+--             if not inst:HasTag("icey2_skill_unarmoured_movement") then
+--                 inst.sg:GoToState("run_start")
+--                 return
+--             end
 
-            inst.components.locomotor:RunForward()
-            inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pre"))
+--             inst.components.locomotor:RunForward()
+--             inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pre"))
 
-            inst.sg.mem.footsteps = 0
-        end,
+--             inst.sg.mem.footsteps = 0
+--         end,
 
-        onupdate = function(inst)
-            inst.components.locomotor:RunForward()
-        end,
+--         onupdate = function(inst)
+--             inst.components.locomotor:RunForward()
+--         end,
 
-        timeline =
-        {
-            TimeEvent(5 * FRAMES, function(inst)
-                DoRunSounds(inst)
-                DoFoleySounds(inst)
-            end),
-        },
+--         timeline =
+--         {
+--             TimeEvent(5 * FRAMES, function(inst)
+--                 DoRunSounds(inst)
+--                 DoFoleySounds(inst)
+--             end),
+--         },
 
-        events =
-        {
-            EventHandler("animover", function(inst)
-                if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("icey2_skill_unarmoured_movement")
-                end
-            end),
-        },
-    }
-)
+--         events =
+--         {
+--             EventHandler("animover", function(inst)
+--                 if inst.AnimState:AnimDone() then
+--                     inst.sg:GoToState("icey2_skill_unarmoured_movement")
+--                 end
+--             end),
+--         },
+--     }
+-- )
 
-AddStategraphState("wilson_client",
-    State {
-        name = "icey2_skill_unarmoured_movement",
-        tags = { "moving", "running", "canrotate" },
+-- AddStategraphState("wilson_client",
+--     State {
+--         name = "icey2_skill_unarmoured_movement",
+--         tags = { "moving", "running", "canrotate" },
 
-        onenter = function(inst)
-            inst.components.locomotor:RunForward()
+--         onenter = function(inst)
+--             inst.components.locomotor:RunForward()
 
-            local anim = Icey2Basic.GetUnarmouredMovementAnim(inst, "loop")
-            if not inst.AnimState:IsCurrentAnimation(anim) then
-                inst.AnimState:PlayAnimation(anim, true)
-            end
+--             local anim = Icey2Basic.GetUnarmouredMovementAnim(inst, "loop")
+--             if not inst.AnimState:IsCurrentAnimation(anim) then
+--                 inst.AnimState:PlayAnimation(anim, true)
+--             end
 
-            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
-        end,
+--             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+--         end,
 
-        onupdate = function(inst)
-            if not inst:HasTag("icey2_skill_unarmoured_movement") then
-                inst.sg:GoToState("run_start")
-                return
-            end
-            inst.components.locomotor:RunForward()
-        end,
+--         onupdate = function(inst)
+--             if not inst:HasTag("icey2_skill_unarmoured_movement") then
+--                 inst.sg:GoToState("run_start")
+--                 return
+--             end
+--             inst.components.locomotor:RunForward()
+--         end,
 
-        timeline =
-        {
-            TimeEvent(5 * FRAMES, function(inst)
-                DoRunSounds(inst)
-                DoFoleySounds(inst)
-            end),
-            TimeEvent(9 * FRAMES, function(inst)
-                DoRunSounds(inst)
-                DoFoleySounds(inst)
-            end),
-            TimeEvent(13 * FRAMES, function(inst)
-                DoRunSounds(inst)
-                DoFoleySounds(inst)
-            end),
-            TimeEvent(14 * FRAMES, function(inst)
-                DoRunSounds(inst)
-                DoFoleySounds(inst)
-            end),
-            TimeEvent(17 * FRAMES, function(inst)
-                DoRunSounds(inst)
-                DoFoleySounds(inst)
-            end),
+--         timeline =
+--         {
+--             TimeEvent(5 * FRAMES, function(inst)
+--                 DoRunSounds(inst)
+--                 DoFoleySounds(inst)
+--             end),
+--             TimeEvent(9 * FRAMES, function(inst)
+--                 DoRunSounds(inst)
+--                 DoFoleySounds(inst)
+--             end),
+--             TimeEvent(13 * FRAMES, function(inst)
+--                 DoRunSounds(inst)
+--                 DoFoleySounds(inst)
+--             end),
+--             TimeEvent(14 * FRAMES, function(inst)
+--                 DoRunSounds(inst)
+--                 DoFoleySounds(inst)
+--             end),
+--             TimeEvent(17 * FRAMES, function(inst)
+--                 DoRunSounds(inst)
+--                 DoFoleySounds(inst)
+--             end),
 
-        },
+--         },
 
-        ontimeout = function(inst)
-            inst.sg:GoToState("icey2_skill_unarmoured_movement")
-        end,
-    }
-)
+--         ontimeout = function(inst)
+--             inst.sg:GoToState("icey2_skill_unarmoured_movement")
+--         end,
+--     }
+-- )
 
-AddStategraphState("wilson_client",
-    State {
-        name = "icey2_skill_unarmoured_movement",
-        tags = { "canrotate", "idle", },
+-- AddStategraphState("wilson_client",
+--     State {
+--         name = "icey2_skill_unarmoured_movement",
+--         tags = { "canrotate", "idle", },
 
-        onenter = function(inst)
-            inst.components.locomotor:Stop()
+--         onenter = function(inst)
+--             inst.components.locomotor:Stop()
 
-            inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pst"))
-        end,
+--             inst.AnimState:PlayAnimation(Icey2Basic.GetUnarmouredMovementAnim(inst, "pst"))
+--         end,
 
-        events =
-        {
-            EventHandler("animover", function(inst)
-                if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("idle")
-                end
-            end),
-        },
-    }
-)
+--         events =
+--         {
+--             EventHandler("animover", function(inst)
+--                 if inst.AnimState:AnimDone() then
+--                     inst.sg:GoToState("idle")
+--                 end
+--             end),
+--         },
+--     }
+-- )
 
 
 -------------------------------------------------------------------------------------------
@@ -713,6 +735,148 @@ AddStategraphState("wilson_client", State {
             inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/swipe", nil, 0.4, true)
         end),
 
+        TimeEvent(8 * FRAMES, function(inst)
+            inst:ClearBufferedAction()
+            inst.sg:RemoveStateTag("abouttoattack")
+        end),
+    },
+
+
+    ontimeout = function(inst)
+        inst.sg:RemoveStateTag("attack")
+        inst.sg:AddStateTag("idle")
+    end,
+
+    events =
+    {
+        EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.replica.combat:CancelAttack()
+        end
+    end,
+})
+
+
+AddStategraphState("wilson_client", State {
+    name = "icey2_chainsaw_attack",
+    tags = { "attack", "notalking", "abouttoattack", },
+
+    onenter = function(inst)
+        local combat = inst.replica.combat
+        if combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+        local cooldown = combat:MinAttackPeriod()
+
+        combat:StartAttack()
+        inst.components.locomotor:Stop()
+
+        inst.AnimState:PlayAnimation("atk_pre")
+        inst.AnimState:PushAnimation("atk", false)
+
+        inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_chainsaw/swipe", nil, nil, true)
+
+        cooldown = math.max(cooldown, 17 * FRAMES)
+
+        local buffaction = inst:GetBufferedAction()
+        if buffaction ~= nil then
+            inst:PerformPreviewBufferedAction()
+
+            if buffaction.target ~= nil and buffaction.target:IsValid() then
+                inst:FacePoint(buffaction.target:GetPosition())
+                inst.sg.statemem.attacktarget = buffaction.target
+                inst.sg.statemem.retarget = buffaction.target
+            end
+        end
+
+        inst.sg:SetTimeout(cooldown)
+    end,
+
+    timeline =
+    {
+        TimeEvent(8 * FRAMES, function(inst)
+            inst:ClearBufferedAction()
+            inst.sg:RemoveStateTag("abouttoattack")
+        end),
+    },
+
+
+    ontimeout = function(inst)
+        inst.sg:RemoveStateTag("attack")
+        inst.sg:AddStateTag("idle")
+    end,
+
+    events =
+    {
+        EventHandler("animqueueover", function(inst)
+            if inst.AnimState:AnimDone() then
+                inst.sg:GoToState("idle")
+            end
+        end),
+    },
+
+    onexit = function(inst)
+        if inst.sg:HasStateTag("abouttoattack") then
+            inst.replica.combat:CancelAttack()
+        end
+    end,
+})
+
+
+AddStategraphState("wilson_client", State {
+    name = "icey2_hammer_attack",
+    tags = { "attack", "notalking", "abouttoattack", },
+
+    onenter = function(inst)
+        local combat = inst.replica.combat
+        if combat:InCooldown() then
+            inst.sg:RemoveStateTag("abouttoattack")
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle", true)
+            return
+        end
+
+        local cooldown = combat:MinAttackPeriod()
+
+        combat:StartAttack()
+        inst.components.locomotor:Stop()
+        local equip = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+
+        inst.AnimState:PlayAnimation("atk_pre")
+        inst.AnimState:PushAnimation("atk", false)
+
+        inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_hammer/swipe", nil, nil, true)
+
+        cooldown = math.max(cooldown, 23 * FRAMES)
+
+        local buffaction = inst:GetBufferedAction()
+        if buffaction ~= nil then
+            inst:PerformPreviewBufferedAction()
+
+            if buffaction.target ~= nil and buffaction.target:IsValid() then
+                inst:FacePoint(buffaction.target:GetPosition())
+                inst.sg.statemem.attacktarget = buffaction.target
+                inst.sg.statemem.retarget = buffaction.target
+            end
+        end
+
+        inst.sg:SetTimeout(cooldown)
+    end,
+
+    timeline =
+    {
         TimeEvent(8 * FRAMES, function(inst)
             inst:ClearBufferedAction()
             inst.sg:RemoveStateTag("abouttoattack")

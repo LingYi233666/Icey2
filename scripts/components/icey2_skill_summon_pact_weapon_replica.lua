@@ -43,6 +43,7 @@ function Icey2SkillSummonPactWeapon:CreateWheelItems()
         "icey2_pact_weapon_scythe",
         "icey2_pact_weapon_gunlance",
         "icey2_pact_weapon_chainsaw",
+        "icey2_pact_weapon_hammer",
     }
 
     local function GetIndex(prefab)

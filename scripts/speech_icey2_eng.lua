@@ -36,6 +36,7 @@ local MODIFIED_SPEECH = {
         BACKPACK = "You're right, but Don't Starve is a grid-based inventory management game.",
         BEARDHAIR = "I can't grow such a magnificent beard!",
         BEARGER = "It's looking for honey.",
+        BISHOP = "Have you seen 'The Shawshank Redemption'?",
         BUSHHAT = "Not as practical as a cardboard box.",
 
         -- CATCOON = "小猫，你可以吃素食堡。",
@@ -121,12 +122,24 @@ local MODIFIED_SPEECH = {
             GENERIC = "Rabbit hole.",
             SPRING = "The rabbit hole is broken.",
         },
+        ROBIN_WINTER =
+        {
+            GENERIC = "Bird of the bell rose.",
+            HELD = "Let me see that bird.",
+        },
         ROOK = "Rook, aren't you a spy anymore?",
 
         -- SHADOWTHRALL_HANDS = "Hands off!",
         -- SHADOWTHRALL_HORNS = "It looks hungry for a fight.",
         -- SHADOWTHRALL_WINGS = "The wings seem to be just for show.",
         SHADOWTHRALL_MOUTH = "Snake? Snaaaaaaaaaaaaaaaake!",
+        SPIDER =
+        {
+            DEAD = "Dead!",
+            GENERIC = "Spiders everywhere! Open fire!",
+            SLEEPING = "Looks kinda cute when it's sleeping.",
+        },
+
 
         TOADSTOOL =
         {
@@ -355,7 +368,8 @@ local MODIFIED_SPEECH = {
 
 
     ANNOUNCE_WORMHOLE = "Ugh, I'm all slimy!",
-
+    ANNOUNCE_WORMS = "Seismic activity detected. Cave worms are entering the area.",
+    ANNOUNCE_WORMS_BOSS = "Something's breaking through the surface!",
 }
 
 return MODIFIED_SPEECH

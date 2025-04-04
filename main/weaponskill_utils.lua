@@ -62,6 +62,7 @@ function Icey2WeaponSkill.AddAoetargetingClient(inst, aoetype, tags, range, extr
     inst.components.aoetargeting.reticule.invalidcolour = { 178 / 255, 100 / 255, 50 / 255, 1 }
     inst.components.aoetargeting.reticule.ease = true
     inst.components.aoetargeting.reticule.mouseenabled = true
+    inst.components.aoetargeting:SetAllowRiding(false)
 
     if aoetype == "point" then
         inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoe"

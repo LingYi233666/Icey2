@@ -23,10 +23,24 @@ local VOXEL_SIZE = 100
 function Icey2SkullPileSpawner:IsValidPos(pos)
     local x, y, z = pos:Get()
 
-    if TheWorld.Map:IsOceanTileAtPoint(x, y, z)
-        or not TheWorld.Map:IsVisualGroundAtPoint(x, y, z)
-        or not TheWorld.Map:IsPassableAtPoint(x, 0, z)
-        or TheWorld.Map:GetPlatformAtPoint(x, z) ~= nil then
+
+    for dx = -3, 3 do
+        for dz = -3, 3 do
+            local cx = x + dx
+            local cz = z + dz
+
+            if TheWorld.Map:IsOceanTileAtPoint(cx, y, cz)
+                or not TheWorld.Map:IsVisualGroundAtPoint(cx, y, cz)
+                or not TheWorld.Map:IsPassableAtPoint(cx, 0, cz)
+                or TheWorld.Map:GetPlatformAtPoint(cx, cz) ~= nil then
+                return false
+            end
+        end
+    end
+
+    -- Avoid island
+    local node, node_index = TheWorld.Map:FindVisualNodeAtPoint(x, y, z)
+    if node and node.type == NODE_TYPE.SeparatedRoom then
         return false
     end
 
@@ -266,17 +280,24 @@ function Icey2SkullPileSpawner:OnUpdate(dt)
         return
     end
 
-    self.timer_regenerate = self.timer_regenerate - dt
+    local rate = 1
+    for _, v in pairs(AllPlayers) do
+        if v and v.prefab == "icey2" then
+            rate = rate + 1
+        end
+    end
+
+    self.timer_regenerate = self.timer_regenerate - dt * rate
     if self.timer_regenerate <= 0 then
         -- Enough skull piles, no nedd to spawn
-        if #self.skull_piles > 5 then
+        if #self.skull_piles > 16 then
             self.timer_regenerate = TUNING.TOTAL_DAY_TIME
             return
         end
 
         -- Not enough skull plies, regenerate it.
         self:DoSpawnDuringGame()
-        self.timer_regenerate = GetRandomMinMax(TUNING.TOTAL_DAY_TIME * 5, TUNING.TOTAL_DAY_TIME * 10)
+        self.timer_regenerate = GetRandomMinMax(TUNING.TOTAL_DAY_TIME * 3, TUNING.TOTAL_DAY_TIME * 5)
     end
 end
 

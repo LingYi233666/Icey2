@@ -40,6 +40,8 @@ local assets = {
     Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_chainsaw.xml"),
     Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_gunlance.tex"),
     Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_gunlance.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_hammer.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_hammer.xml"),
     Asset("IMAGE", "images/ui/skill_slot/new_pact_weapon_scythe.tex"),
     Asset("ATLAS", "images/ui/skill_slot/new_pact_weapon_scythe.xml"),
     Asset("IMAGE", "images/ui/skill_slot/parry.tex"),
@@ -64,6 +66,12 @@ local assets = {
     Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_2.xml"),
     Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_3.tex"),
     Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_gunlance_3.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_hammer_1.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_hammer_1.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_hammer_2.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_hammer_2.xml"),
+    Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_hammer_3.tex"),
+    Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_hammer_3.xml"),
     Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_rapier_1.tex"),
     Asset("ATLAS", "images/ui/skill_slot/upgrade_pact_weapon_rapier_1.xml"),
     Asset("IMAGE", "images/ui/skill_slot/upgrade_pact_weapon_rapier_2.tex"),
@@ -91,6 +99,8 @@ local assets = {
     Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_chainsaw.xml"),
     Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_gunlance.tex"),
     Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_gunlance.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_hammer.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_hammer.xml"),
     Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_scythe.tex"),
     Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_new_pact_weapon_scythe.xml"),
     Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_parry.tex"),
@@ -115,6 +125,12 @@ local assets = {
     Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_2.xml"),
     Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_3.tex"),
     Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_gunlance_3.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_hammer_1.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_hammer_1.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_hammer_2.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_hammer_2.xml"),
+    Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_hammer_3.tex"),
+    Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_hammer_3.xml"),
     Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_1.tex"),
     Asset("ATLAS", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_1.xml"),
     Asset("IMAGE", "images/inventoryimages/icey2_skill_builder_upgrade_pact_weapon_rapier_2.tex"),
@@ -132,30 +148,10 @@ local assets = {
 local prefabs = {}
 
 -- 初始物品
-local start_inv = {
-    "leafymeatburger",
-}
+local start_inv = { "leafymeatburger", }
 
-
-local function CustomIdleStateFn(inst)
-    -- if inst.components.icey2_skill_battle_focus
-    --     and inst.components.icey2_skill_battle_focus:IsEnabled()
-    --     and inst.components.icey2_skill_battle_focus:GetPercent() > 0.5 then
-    --     return "icey2_funnyidle"
-    -- end
-
-    return "icey2_funnyidle"
-end
-
-local function OnNewState(inst, data)
-    print(inst, "new state:", data.statename)
-end
-
-local function CanDodgeTest(inst, attacker)
-    -- return inst.components.gale_skill_shadow_dodge and inst.components.gale_skill_shadow_dodge:IsDodging()
-    return (inst.sg and inst.sg:HasStateTag("icey2_attack_dodge")) or inst:HasTag("icey2_attack_dodge")
-end
-
+-- Dodge chip recipes num
+local dodge_chip_num = 6
 
 local function ParryCallback(inst, data)
     if inst.components.icey2_skill_battle_focus
@@ -169,7 +165,7 @@ local function ParryCallback(inst, data)
     local attacker = data.attacker
     if attacker and inst.components.combat:CanTarget(attacker) and not inst.components.combat:IsAlly(attacker) then
         local cur_shield = inst.components.icey2_skill_shield.current
-        local all_damage = math.max(68, cur_shield)
+        local all_damage = math.max(17, cur_shield)
 
         local damage = all_damage / 2
         local spdamage = {
@@ -201,7 +197,7 @@ local common_postinit = function(inst)
     inst.AnimState:AddOverrideBuild("wx_upgrade")
 
     inst:AddTag("icey2")
-    for i = 1, 5 do
+    for i = 1, dodge_chip_num do
         inst:AddTag("icey2_dodge_charge_chip_" .. i .. "_builder")
     end
 
@@ -213,7 +209,7 @@ local common_postinit = function(inst)
 end
 
 local function OnSave(inst, data)
-    for i = 1, 5 do
+    for i = 1, dodge_chip_num do
         local tag = "icey2_dodge_charge_chip_" .. i .. "_builder"
         local index = "has_" .. tag
         data[index] = inst:HasTag(tag)
@@ -222,7 +218,7 @@ end
 
 local function OnLoad(inst, data)
     if data ~= nil then
-        for i = 1, 5 do
+        for i = 1, dodge_chip_num do
             local tag = "icey2_dodge_charge_chip_" .. i .. "_builder"
             local index = "has_" .. tag
 
@@ -268,11 +264,6 @@ local master_postinit = function(inst)
 
     ----------------------------------------------------------------------
 
-    if not inst.components.attackdodger then
-        inst:AddComponent("attackdodger")
-    end
-    inst.components.attackdodger:SetCanDodgeFn(CanDodgeTest)
-
     inst:AddComponent("icey2_status_bonus")
 
     inst:AddComponent("icey2_spdamage_force")
@@ -283,7 +274,7 @@ local master_postinit = function(inst)
 
     inst:AddComponent("icey2_skill_dodge")
 
-    inst:AddComponent("icey2_skill_unarmoured_movement")
+    -- inst:AddComponent("icey2_skill_unarmoured_movement")
 
     inst:AddComponent("icey2_skill_shield")
 

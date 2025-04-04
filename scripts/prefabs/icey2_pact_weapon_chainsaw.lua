@@ -310,6 +310,7 @@ local function fn()
     Icey2WeaponSkill.AddAoetargetingClient(inst, "line", nil, 12)
     inst.components.aoetargeting.reticule.reticuleprefab = "reticulelong"
     inst.components.aoetargeting.reticule.pingprefab = "reticulelongping"
+    inst.components.aoetargeting:SetAllowRiding(true)
     inst.components.aoetargeting:SetAlwaysValid(true)
 
     inst.entity:SetPristine()
@@ -318,7 +319,7 @@ local function fn()
         return inst
     end
 
-    inst.hunger_burn_rate = 0.5
+    inst.hunger_burn_rate = 0.4
 
     CreateSwapAnims(inst, FX_DEFS_NORMAL)
 

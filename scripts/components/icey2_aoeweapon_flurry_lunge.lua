@@ -10,6 +10,7 @@ local Icey2AOEWeapon_FlurryLunge = Class(AOEWeapon_Base, function(self, inst)
     self.is_final_blow = false
 
     self:SetTags("_combat")
+    self:SetNoTags("wall", "FX", "DECOR", "INLIMBO")
     self:SetWorkActions(nil)
 
     inst:AddTag("icey2_aoeweapon")

@@ -31,6 +31,9 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_GUNLANCE = "It's some kind
 STRINGS.NAMES.ICEY2_PACT_WEAPON_CHAINSAW = "Energy Chainsaw"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_CHAINSAW = "It's some kind of... weapon."
 
+STRINGS.NAMES.ICEY2_PACT_WEAPON_HAMMER = "Energy Hammer"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY2_PACT_WEAPON_HAMMER = "It's some kind of... weapon."
+
 STRINGS.NAMES.ICEY1_BLUEROSE = "High-Frequency Cutting Blade"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.ICEY1_BLUEROSE = "It's quite old."
 STRINGS.CHARACTERS.ICEY2.DESCRIBE.ICEY1_BLUEROSE = "Looks familiar."
@@ -83,6 +86,10 @@ STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_4 =
 STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_5 = "Dodge Charge Chip 5"
 STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_5 =
 "Absorb the strength of the Walrus to increase consecutive dodge count. Cannot be crafted repeatedly."
+
+STRINGS.NAMES.ICEY2_DODGE_CHARGE_CHIP_6 = "Dodge Charge Chip 6"
+STRINGS.RECIPE_DESC.ICEY2_DODGE_CHARGE_CHIP_6 =
+"Absorbs the lightness of feathers to increase consecutive dodge count. Cannot be crafted repeatedly."
 
 -- root skill
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_HUNGER_IS_ELECTRICITY = "Electricity Driven"
@@ -138,6 +145,18 @@ STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_2 = "Enhanc
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_3 = "Energy Chainsaw Advanced Enhancement"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_CHAINSAW_3 = "Enhance your Energy Chainsaw."
 
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_HAMMER = "Unlock Energy Weapon: Hammer"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_NEW_PACT_WEAPON_HAMMER = "Expands your energy weapon arsenal!"
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_1 = "Energy Hammer - Basic Upgrade"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_1 = "Enhances your Energy Hammer."
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_2 = "Energy Hammer - Intermediate Upgrade"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_2 = "Enhances your Energy Hammer."
+
+STRINGS.NAMES.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_3 = "Energy Hammer - Advanced Upgrade"
+STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_UPGRADE_PACT_WEAPON_HAMMER_3 = "Enhances your Energy Hammer."
+
 STRINGS.NAMES.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "Unlock Battle Focus"
 STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_BATTLE_FOCUS = "Continuous attacks without taking damage can restore attributes."
 
@@ -192,7 +211,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         FORCE_SHIELD = {
             TITLE = "Force Field Shield",
             DESC =
-            "Your force field shield is as effective as any armor buff. When you are not equipped with any armor or shield, the force field shield can help you absorb an equal amount of damage.\nThe current and maximum shield values can be viewed in the upper right corner.",
+            "Your Force Field Shield is as effective as any armor. When you are not equipped with armor or a shield, the Force Field Shield helps you absorb an equal amount of damage. You can increase the shield's capacity by crafting Energy Canisters, up to a maximum of 250 points.\nThe current shield value and capacity can be viewed in the top right corner.",
         },
 
         BATTLE_FOCUS = {
@@ -320,6 +339,31 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
             DESC =
             "You have enhanced your Energy Chainsaw to its peak, and now it gains the following permanent buffs:\n*Increased force field attack power.\n*Increased planar attack power.\n*You have an advantage in maintaining focus on whirling blades.",
         },
+
+        NEW_PACT_WEAPON_HAMMER = {
+            TITLE = "Energy Weapon: Hammer",
+            DESC =
+            "The 'Create Energy Weapon' skill now includes a new weapon type: the Energy Hammer. This is a cumbersome but extremely powerful great hammer, capable of dealing massive damage, but it is slow to wield. Weapon Skill:\nSkill - None:\nCurrently, this weapon has no skill. It is still under development.",
+        },
+
+        UPGRADE_PACT_WEAPON_HAMMER_1 = {
+            TITLE = "Energy Hammer - Basic Upgrade",
+            DESC =
+            "You have used Metallic Blood to enhance your Energy Hammer, and it now gains the following permanent benefits:\n*Increased force field attack power.",
+        },
+
+        UPGRADE_PACT_WEAPON_HAMMER_2 = {
+            TITLE = "Energy Hammer - Intermediate Upgrade",
+            DESC =
+            "You have further enhanced your Energy Hammer, and it now gains the following permanent benefits:\n*Increased force field attack power.",
+        },
+
+        UPGRADE_PACT_WEAPON_HAMMER_3 = {
+            TITLE = "Energy Hammer - Advanced Upgrade",
+            DESC =
+            "You have enhanced your Energy Hammer to its peak, and it now gains the following permanent benefits:\n*Increased force field attack power.\n*Increased planar attack power.",
+        },
+
 
         PARRY = {
             TITLE = "Energy Shield",

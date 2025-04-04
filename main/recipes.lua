@@ -96,11 +96,12 @@ AddRecipeWithManyIngredients(
 ---------------- Dodge charge upgrade ----------------
 
 local dodge_charge_upgrade_chips_recipe = {
-    { Ingredient("wintersfeastfuel", 3),    Ingredient("crumbs", 12), Ingredient("gears", 1),        Ingredient("wagpunk_bits", 3), },
-    { Ingredient("rabbitkingspear", 1),     Ingredient("gears", 1),   Ingredient("wagpunk_bits", 3), },
-    { Ingredient("goose_feather", 8),       Ingredient("gears", 1),   Ingredient("wagpunk_bits", 3), },
-    { Ingredient("townportaltalisman", 12), Ingredient("gears", 1),   Ingredient("wagpunk_bits", 3), },
-    { Ingredient("walrus_tusk", 2),         Ingredient("gears", 1),   Ingredient("wagpunk_bits", 3), },
+    { Ingredient("wintersfeastfuel", 3),    Ingredient("crumbs", 12),   Ingredient("gears", 1),        Ingredient("wagpunk_bits", 3), },
+    { Ingredient("rabbitkingspear", 1),     Ingredient("gears", 1),     Ingredient("wagpunk_bits", 3), },
+    { Ingredient("goose_feather", 8),       Ingredient("gears", 1),     Ingredient("wagpunk_bits", 3), },
+    { Ingredient("townportaltalisman", 12), Ingredient("gears", 1),     Ingredient("wagpunk_bits", 3), },
+    { Ingredient("walrus_tusk", 2),         Ingredient("gears", 1),     Ingredient("wagpunk_bits", 3), },
+    { Ingredient("feather_crow", 8),        Ingredient("boneshard", 6), Ingredient("gears", 1),        Ingredient("wagpunk_bits", 3), },
 }
 
 for i, recipe in pairs(dodge_charge_upgrade_chips_recipe) do

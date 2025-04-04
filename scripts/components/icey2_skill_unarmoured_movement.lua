@@ -1,3 +1,5 @@
+-- WARNING: This component is deprecated !
+
 local Icey2SkillBase_Passive = require("components/icey2_skill_base_passive")
 
 local Icey2SkillUnarmouredMovement = Class(Icey2SkillBase_Passive,

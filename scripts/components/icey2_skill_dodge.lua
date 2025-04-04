@@ -91,11 +91,15 @@ end
 
 function Icey2SkillDodge:CounterBack(target)
     local shadow = SpawnPrefab("icey2_clone_dodge_counter_back")
-    local dmg, spdmg = self.inst.components.combat:CalcDamage(target, self.inst.components.combat:GetWeapon(), 1.5)
+    local dmg, spdmg = self.inst.components.combat:CalcDamage(target, self.inst.components.combat:GetWeapon())
 
-    spdmg = spdmg or {}
-    spdmg.icey2_spdamage_force = (spdmg.icey2_spdamage_force or 0) + dmg
-    dmg = 0
+    -- spdmg = spdmg or {}
+    -- spdmg.icey2_spdamage_force = (spdmg.icey2_spdamage_force or 0) + dmg
+    -- dmg = 0
+
+    if spdmg and spdmg.icey2_spdamage_force then
+        spdmg.icey2_spdamage_force = spdmg.icey2_spdamage_force * 2
+    end
 
     -- shadow.AnimState:OverrideSymbol("swap_object", "swap_nightmaresword", "swap_nightmaresword")
 
