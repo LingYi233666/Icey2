@@ -26,6 +26,8 @@ local assets = {
     Asset("ANIM", "anim/player_walk_tf2minigun.zip"),
     Asset("ANIM", "anim/player_actions_tf2minigun.zip"),
 
+    Asset("ANIM", "anim/icey2_actions_circle_attack.zip"),
+
     --------------------------------------------------------------
     -- Skills ui
     Asset("IMAGE", "images/ui/skill_slot/battle_focus.tex"),
@@ -163,7 +165,13 @@ local function ParryCallback(inst, data)
     end
 
     local attacker = data.attacker
-    if attacker and inst.components.combat:CanTarget(attacker) and not inst.components.combat:IsAlly(attacker) then
+    local weapon = data.weapon
+    local is_projectile = weapon and
+        (weapon.components.projectile or (weapon.components.weapon and weapon.components.weapon.projectile))
+    if attacker
+        and not is_projectile
+        and inst.components.combat:CanTarget(attacker)
+        and not inst.components.combat:IsAlly(attacker) then
         local cur_shield = inst.components.icey2_skill_shield.current
         local all_damage = math.max(17, cur_shield)
 

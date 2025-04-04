@@ -7,6 +7,7 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
 
     self.current = 0
     self.max = 100
+    self.increasemultipliers = SourceModifierList(self.inst) -- damage dealt to others multiplier
 
     -- data = {
     --     target = self.inst,
@@ -61,6 +62,8 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
         if Icey2Basic.IsWearingArmor(inst) then
             addition = 0
         end
+
+        addition = addition * self.increasemultipliers:Get()
 
         local ball_data = self:GetSupplyBallData(weapon, target, addition)
         if ball_data and ball_data.prefabs then

@@ -40,15 +40,39 @@ local function ReticuleUpdatePositionFnLine(inst, pos, reticule, ease, smoothing
 end
 
 local function OnAttack(inst, doer, target)
-    doer.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_hammer/hit")
+    if inst.in_area_attack then
+        return
+    end
 
-    -- SpawnAt("weaponsparks", target)
+    if doer.components.combat then
+        inst.in_area_attack = true
 
-    local spark = SpawnPrefab("hitsparks_fx")
-    -- spark:Setup(doer, target, nil, { 96 / 255, 249 / 255, 255 / 255 })
-    -- spark:Setup(doer, target, nil, { 1, 0, 0 })
-    spark:Setup(doer, target)
-    -- spark.black:set(true)
+        local multi = 0.3
+        local x, y, z = target.Transform:GetWorldPosition()
+        local ents = TheSim:FindEntities(x, y, z, 1.5, { "_combat" })
+
+
+        inst.components.icey2_spdamage_force:AddMultiplier(inst, multi, "area_attack")
+        if doer.components.icey2_skill_battle_focus then
+            doer.components.icey2_skill_battle_focus.increasemultipliers:SetModifier(inst, 0, "area_attack")
+        end
+
+        for _, v in pairs(ents) do
+            if v ~= target
+                and v ~= doer
+                and doer.components.combat:CanTarget(v)
+                and not doer.components.combat:IsAlly(v) then
+                doer.components.combat:DoAttack(v, inst, nil, nil, multi, 99999)
+            end
+        end
+
+        inst.components.icey2_spdamage_force:RemoveMultiplier(inst, "area_attack")
+        if doer.components.icey2_skill_battle_focus then
+            doer.components.icey2_skill_battle_focus.increasemultipliers:RemoveModifier(inst, "area_attack")
+        end
+
+        inst.in_area_attack = false
+    end
 end
 
 local function onequip(inst, owner)
@@ -57,6 +81,8 @@ local function onequip(inst, owner)
     owner.AnimState:Hide("ARM_normal")
 
     owner.AnimState:SetSymbolLightOverride("swap_object", 0.6)
+
+    owner.components.combat:SetAttackPeriod(23 * FRAMES)
 end
 
 local function onunequip(inst, owner)
@@ -66,6 +92,8 @@ local function onunequip(inst, owner)
     owner.AnimState:SetSymbolLightOverride("swap_object", 0)
 
     -- inst.components.icey2_aoeweapon_kingkong:Stop()
+
+    owner.components.combat:SetAttackPeriod(TUNING.WILSON_ATTACK_PERIOD)
 end
 
 -- local function OnSpellHit(inst, doer, target)
@@ -76,9 +104,9 @@ end
 --     end
 -- end
 
-local function SpellFn(inst, doer, pos)
-    inst.components.icey2_aoeweapon_kingkong:Start(doer, 120)
-end
+-- local function SpellFn(inst, doer, pos)
+--     doer:PushEvent("icey2_start_circle_attack")
+-- end
 
 local function ApplyLevelFn(inst, new_level, old_level)
     if new_level >= 1 then
@@ -87,7 +115,8 @@ local function ApplyLevelFn(inst, new_level, old_level)
         inst.components.named:SetName(STRINGS.NAMES.ICEY2_PACT_WEAPON_HAMMER)
     end
 
-    inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 10)
+    -- inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 10)
+    inst.components.icey2_spdamage_force:SetBaseDamage(1 + new_level * 16)
     if new_level >= 3 then
         inst.components.planardamage:SetBaseDamage(1)
     else
@@ -117,9 +146,10 @@ local function fn()
     inst.AnimState:SetLightOverride(0.6)
 
     inst:AddTag("icey2_pact_weapon")
-    inst:AddTag("hide_percentage")
-    inst:AddTag("ignore_icey2_unarmoured_defence_limit")
-    inst:AddTag("heavyarmor")
+    -- inst:AddTag("hide_percentage")
+    -- inst:AddTag("ignore_icey2_unarmoured_defence_limit")
+    -- inst:AddTag("heavyarmor")
+    -- inst:AddTag("icey2_parry_anim_attacked")
 
     MakeInventoryFloatable(inst, "med", 0.05, { 1.1, 0.5, 1.1 }, true, -9)
 
@@ -160,11 +190,11 @@ local function fn()
     inst.components.equippable:SetOnEquip(onequip)
     inst.components.equippable:SetOnUnequip(onunequip)
 
-    inst:AddComponent("armor")
-    inst.components.armor:InitIndestructible(0.5)
+    -- inst:AddComponent("armor")
+    -- inst.components.armor:InitIndestructible(0.25)
 
-    inst:AddComponent("planardefense")
-    inst.components.planardefense:SetBaseDefense(10)
+    -- inst:AddComponent("planardefense")
+    -- inst.components.planardefense:SetBaseDefense(10)
 
     inst:AddComponent("tool")
     inst.components.tool:SetAction(ACTIONS.HAMMER, 3)
@@ -174,7 +204,7 @@ local function fn()
     inst.components.icey2_upgradable:SetSkillTab(SKILL_TAB)
     inst.components.icey2_upgradable:SetLevel(0)
 
-    -- inst:AddComponent("icey2_aoeweapon_kingkong")
+    -- inst:AddComponent("icey2_aoeweapon_circle_attack")
 
     -- Icey2WeaponSkill.AddAoetargetingServer(inst, SpellFn)
 

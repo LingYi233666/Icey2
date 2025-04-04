@@ -283,7 +283,7 @@ function Icey2SkullPileSpawner:OnUpdate(dt)
     local rate = 1
     for _, v in pairs(AllPlayers) do
         if v and v.prefab == "icey2" then
-            rate = rate + 1
+            rate = rate + 0.1
         end
     end
 

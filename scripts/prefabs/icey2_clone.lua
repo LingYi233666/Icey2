@@ -104,7 +104,10 @@ local function DodgeCounterBackFn()
 
 
         inst:DoTaskInTime(13 * FRAMES, function()
-            if owner and owner:IsValid() then
+            if owner
+                and owner:IsValid()
+                and owner.components.combat:CanTarget(target)
+                and not owner.components.combat:IsAlly(target) then
                 target.components.combat:GetAttacked(owner, dmg, nil, nil, spdmg)
             end
             inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_weapon")

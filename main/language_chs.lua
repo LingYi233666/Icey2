@@ -335,7 +335,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
 
         UPGRADE_PACT_WEAPON_HAMMER_3 = {
             TITLE = "能量战锤高级强化",
-            DESC = "你将你的能量战锤强化至顶峰，现在它获得以下永久增益：\n*力场攻击力上升。",
+            DESC = "你将你的能量战锤强化至顶峰，现在它获得以下永久增益：\n*力场攻击力上升。\n*位面攻击力上升。",
         },
 
         PARRY = {

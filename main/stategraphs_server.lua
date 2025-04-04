@@ -78,6 +78,8 @@ AddStategraphPostInit("wilson", function(sg)
                     return "icey2_aoeweapon_flurry_lunge_pre"
                 elseif weapon.prefab == "icey2_pact_weapon_chainsaw" then
                     return "attack"
+                elseif weapon.prefab == "icey2_pact_weapon_hammer" then
+                    return "icey2_circle_attack_pre"
                 end
             else
                 return
@@ -206,6 +208,22 @@ AddStategraphPostInit("wilson", function(sg)
         return old_rets
     end
 end)
+
+-- attacked
+-- AddStategraphPostInit("wilson", function(sg)
+--     local old_attacked = sg.events["attacked"].fn
+--     sg.events["attacked"].fn = function(inst, data)
+--         if not inst.components.health:IsDead() and not inst.sg:HasStateTag("drowning") and not inst.sg:HasStateTag("falling") then
+--             local equip = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+
+--             if equip and equip:HasTag("icey2_parry_anim_hit") then
+--                 inst.sg:GoToState("hit")
+--             end
+--         end
+
+--         return old_attacked(inst, data)
+--     end
+-- end)
 
 -----------------------------------------------------------------------------
 -- Skill: dodge
@@ -986,20 +1004,37 @@ AddStategraphState("wilson", State {
     tags = { "attack", "notalking", "abouttoattack", "autopredict" },
 
     onenter = function(inst)
-        if inst.components.combat:InCooldown() then
-            inst.sg:RemoveStateTag("abouttoattack")
-            inst:ClearBufferedAction()
-            inst.sg:GoToState("idle", true)
-            return
-        end
-
         local buffaction = inst:GetBufferedAction()
-        local target = buffaction ~= nil and buffaction.target or nil
-        inst.components.combat:SetTarget(target)
-        inst.components.combat:StartAttack()
-        inst.components.locomotor:Stop()
         local cooldown = inst.components.combat.min_attack_period
 
+        if buffaction then
+            local target = buffaction.target
+            inst.sg.statemem.actiontarget = target
+
+            if buffaction.action == ACTIONS.ATTACK then
+                if inst.components.combat:InCooldown() then
+                    inst.sg:RemoveStateTag("abouttoattack")
+                    inst:ClearBufferedAction()
+                    inst.sg:GoToState("idle", true)
+                    return
+                end
+
+                inst.components.combat:SetTarget(target)
+                inst.components.combat:StartAttack()
+                inst.components.locomotor:Stop()
+
+                if target ~= nil then
+                    inst.components.combat:BattleCry()
+                    if target:IsValid() then
+                        inst:FacePoint(target:GetPosition())
+                        inst.sg.statemem.attacktarget = target
+                        inst.sg.statemem.retarget = target
+                    end
+                end
+            elseif buffaction.action == ACTIONS.HAMMER then
+                inst.sg.statemem.is_hammer = true
+            end
+        end
 
         inst.AnimState:PlayAnimation("atk_pre")
         inst.AnimState:PushAnimation("atk", false)
@@ -1009,15 +1044,6 @@ AddStategraphState("wilson", State {
         cooldown = math.max(cooldown, 23 * FRAMES)
 
         inst.sg:SetTimeout(cooldown)
-
-        if target ~= nil then
-            inst.components.combat:BattleCry()
-            if target:IsValid() then
-                inst:FacePoint(target:GetPosition())
-                inst.sg.statemem.attacktarget = target
-                inst.sg.statemem.retarget = target
-            end
-        end
     end,
 
 
@@ -1025,7 +1051,28 @@ AddStategraphState("wilson", State {
     timeline =
     {
         TimeEvent(8 * FRAMES, function(inst)
+            local function emit_fn(ent)
+                if ent ~= nil
+                    and ent:IsValid()
+                    and ent == inst.sg.statemem.actiontarget then
+                    local spark = SpawnPrefab("hitsparks_fx")
+                    spark:Setup(inst, ent)
+
+                    inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_hammer/hit")
+                end
+            end
+
+            if inst.sg.statemem.is_hammer then
+                emit_fn(inst.sg.statemem.actiontarget)
+            end
+
+            local function callback(_, data)
+                emit_fn(data.target)
+            end
+            inst:ListenForEvent("onhitother", callback)
             inst:PerformBufferedAction()
+            inst:RemoveEventCallback("onhitother", callback)
+
             inst.sg:RemoveStateTag("abouttoattack")
         end),
     },
@@ -1397,6 +1444,106 @@ AddStategraphState("wilson", State {
         inst.components.health:SetInvincible(false)
     end,
 })
+
+AddStategraphState("wilson",
+    State
+    {
+        name = "icey2_circle_attack_pre",
+        tags = { "aoe", "attack", "abouttoattack" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+
+            inst.AnimState:PlayAnimation("chop_pre")
+            inst.AnimState:PushAnimation("chop_lag", false)
+
+            inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_whoosh")
+
+            inst.sg:SetTimeout(2)
+        end,
+
+        ontimeout = function(inst)
+            -- inst.sg:GoToState("icey2_circle_attack")
+            inst.sg:GoToState("idle")
+        end,
+
+        timeline = {
+            TimeEvent(33 * FRAMES, function(inst)
+                inst:PerformBufferedAction()
+            end),
+        },
+
+        events = {
+            EventHandler("icey2_start_circle_attack", function(inst, data)
+                inst.sg:GoToState("icey2_circle_attack")
+            end),
+        },
+
+        onexit = function(inst)
+
+        end,
+    }
+)
+
+AddStategraphState("wilson",
+    State
+    {
+        name = "icey2_circle_attack",
+        tags = { "aoe", "attack", "abouttoattack" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+
+            inst.Transform:SetTwoFaced()
+
+            inst.AnimState:SetDeltaTimeMultiplier(1.5)
+            inst.AnimState:PlayAnimation("icey2atk_circle0")
+            inst.AnimState:PushAnimation("icey2atk_circle2", false)
+            inst.AnimState:PushAnimation("icey2atk_circle3", false)
+
+            -- inst.SoundEmitter:PlaySound("gale_sfx/character/gale_harpy_whirl")
+
+            local fx = SpawnAt("icey2_circle_attack_fx", inst)
+            fx.Transform:SetRotation(inst.Transform:GetRotation())
+        end,
+
+        onupdate = function(inst)
+            local bufferedaction = inst:GetBufferedAction()
+            if bufferedaction ~= nil then
+                inst.sg:GoToState("idle", true)
+            end
+        end,
+
+        events = {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("icey2_circle_attack")
+                end
+            end),
+        },
+
+        timeline = {
+            -- TimeEvent(1 * FRAMES, function(inst)
+            --     ShakeAllCameras(CAMERASHAKE.FULL, .35, .02, 0.5, inst, 40)
+            -- end),
+
+            -- TimeEvent(3 * FRAMES, function(inst)
+            --     ShakeAllCameras(CAMERASHAKE.FULL, .35, .02, 0.5, inst, 40)
+            -- end),
+
+            -- TimeEvent(6 * FRAMES, function(inst)
+            --     ShakeAllCameras(CAMERASHAKE.FULL, .35, .02, 0.5, inst, 40)
+            -- end),
+        },
+
+        onexit = function(inst)
+            inst.AnimState:SetDeltaTimeMultiplier(1)
+            inst.Transform:SetFourFaced()
+        end,
+    }
+)
+
+--------------------------------------------------------------------------
 
 
 local START_SHOOT_TIME = 10 * FRAMES

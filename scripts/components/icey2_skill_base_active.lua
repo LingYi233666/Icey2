@@ -54,6 +54,7 @@ local Icey2SkillBase_Active = Class(function(self, inst)
 
     self.can_cast_while_dead = false
     self.can_cast_while_busy = false
+    self.can_cast_while_frozen = false
     self.can_cast_while_no_interrupt = false
     self.can_cast_while_riding = false
     self.can_cast_while_wearing_armor = false
@@ -68,6 +69,10 @@ end
 function Icey2SkillBase_Active:_IsBusy()
     return self.inst:HasTag("busy")
         or (self.inst.sg and self.inst.sg:HasStateTag("busy"))
+end
+
+function Icey2SkillBase_Active:_IsFrozen()
+    return self.inst.sg and (self.inst.sg:HasStateTag("frozen") or self.inst.sg:HasStateTag("thawing"))
 end
 
 function Icey2SkillBase_Active:_IsNoInterrupt()
@@ -141,6 +146,10 @@ function Icey2SkillBase_Active:CanCast(x, y, z, target)
 
     if not self.can_cast_while_busy and self:_IsBusy() then
         return false, "PLAYER_BUSY"
+    end
+
+    if not self.can_cast_while_frozen and self:_IsFrozen() then
+        return false, "PLAYER_FROZEN"
     end
 
     if not self.can_cast_while_no_interrupt and self:_IsNoInterrupt() then

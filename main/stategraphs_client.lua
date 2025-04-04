@@ -77,6 +77,9 @@ AddStategraphPostInit("wilson_client", function(sg)
                     return
                 elseif weapon.prefab == "icey2_pact_weapon_chainsaw" then
                     return "attack"
+                elseif weapon.prefab == "icey2_pact_weapon_hammer" then
+                    inst:PerformPreviewBufferedAction()
+                    return
                 end
             else
                 return
@@ -156,7 +159,7 @@ AddStategraphPostInit("wilson_client", function(sg)
 end)
 
 -- hammer
-AddStategraphPostInit("wilson", function(sg)
+AddStategraphPostInit("wilson_client", function(sg)
     local old_HAMMER = sg.actionhandlers[ACTIONS.HAMMER].deststate
     sg.actionhandlers[ACTIONS.HAMMER].deststate = function(inst, action)
         local old_rets = old_HAMMER(inst, action)
