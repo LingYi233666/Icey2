@@ -95,21 +95,19 @@ AddStategraphPostInit("wilson_client", function(sg)
     sg.actionhandlers[ACTIONS.ATTACK].deststate = function(inst, action)
         local old_rets = old_ATTACK(inst, action)
         local weapon = inst.replica.combat:GetWeapon()
-        if old_rets ~= nil and not (inst.replica.rider and inst.replica.rider:IsRiding()) then
+        if old_rets ~= nil
+            and weapon
+            and not (inst.replica.rider and inst.replica.rider:IsRiding()) then
             if Icey2Basic.IsCarryingGunlance(inst, true) then
                 return "icey2_gunlance_ranged_attack"
-                -- inst:PerformPreviewBufferedAction()
-                -- return
             elseif Icey2Basic.IsCarryingGunlance(inst, false) then
                 return "icey2_gunlance_melee_attack"
             elseif weapon.prefab == "icey2_pact_weapon_chainsaw" and not weapon:HasTag("without_pan") then
                 return "icey2_chainsaw_attack"
             elseif weapon.prefab == "icey2_pact_weapon_hammer" then
                 return "icey2_hammer_attack"
-            elseif weapon ~= nil then
-                if weapon.prefab == "icey2_test_shooter" then
-                    return "icey2_test_shoot_stream"
-                end
+            elseif weapon.prefab == "icey2_test_shooter" then
+                return "icey2_test_shoot_stream"
             end
         end
 
