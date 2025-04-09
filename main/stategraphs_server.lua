@@ -79,7 +79,7 @@ AddStategraphPostInit("wilson", function(sg)
                 elseif weapon.prefab == "icey2_pact_weapon_chainsaw" then
                     return "attack"
                 elseif weapon.prefab == "icey2_pact_weapon_hammer" then
-                    return "icey2_circle_attack_pre"
+                    return "icey2_ground_slam"
                 end
             else
                 return
@@ -145,16 +145,16 @@ end)
 
 -- eat
 AddStategraphPostInit("wilson", function(sg)
-    local old_EAT = sg.actionhandlers[ACTIONS.EAT].deststate
-    sg.actionhandlers[ACTIONS.EAT].deststate = function(inst, action)
-        local old_rets = old_EAT(inst, action)
+    -- local old_EAT = sg.actionhandlers[ACTIONS.EAT].deststate
+    -- sg.actionhandlers[ACTIONS.EAT].deststate = function(inst, action)
+    --     local old_rets = old_EAT(inst, action)
 
-        local feed = action.invobject
-        if old_rets ~= nil and feed:HasTag("blood_metal") then
-            return "eat"
-        end
-        return old_rets
-    end
+    --     local feed = action.invobject
+    --     if old_rets ~= nil and feed:HasTag("blood_metal") then
+    --         return "eat"
+    --     end
+    --     return old_rets
+    -- end
 
 
     local eat_SG = sg.states["eat"]
@@ -162,10 +162,18 @@ AddStategraphPostInit("wilson", function(sg)
         local old_onenter = eat_SG.onenter
         local old_onexit = eat_SG.onexit
 
-        eat_SG.onenter = function(inst, ...)
-            old_onenter(inst, ...)
+        eat_SG.onenter = function(inst, data, ...)
+            old_onenter(inst, data, ...)
 
-            local feed = inst:GetBufferedAction().invobject
+
+            local feed
+            local bufferedaction = inst:GetBufferedAction()
+            if data and data.feed then
+                feed = data.feed
+            elseif bufferedaction and bufferedaction.invobject then
+                feed = bufferedaction.invobject
+            end
+
             if feed and feed:HasTag("blood_metal") then
                 inst.SoundEmitter:PlaySound("dontstarve/wilson/eat", "eating")
                 inst.SoundEmitter:PlaySound("icey2_sfx/prefabs/blood_metal/eat_loop", "electric")
@@ -1320,6 +1328,7 @@ AddStategraphState("wilson", State {
 
         -- inst.sg.statemem.vfx = inst:SpawnChild("icey2_superjump_land_vfx")
 
+
         if inst.sg.statemem.weapon and inst.sg.statemem.weapon:IsValid() then
             inst.sg.statemem.weapon.components.icey2_aoeweapon_flurry_lunge:StartFinalBlow(inst)
         end
@@ -1543,6 +1552,101 @@ AddStategraphState("wilson",
     }
 )
 
+AddStategraphState("wilson",
+    State {
+        name = "icey2_ground_slam",
+        tags = { "aoe", "doing", "busy", "nopredict", "noattack" },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+
+            local function callback(_, data)
+                inst.sg.statemem.weapon = data.weapon
+                inst.sg.statemem.target_pos = data.target_pos
+            end
+
+            inst:ListenForEvent("icey2_ground_slam", callback)
+            inst:PerformBufferedAction()
+            inst:RemoveEventCallback("icey2_ground_slam", callback)
+
+            local weapon = inst.sg.statemem.weapon
+            local target_pos = inst.sg.statemem.target_pos
+            if weapon == nil
+                or not weapon:IsValid()
+                or weapon.components.icey2_aoeweapon_ground_slam == nil
+                or target_pos == nil then
+                inst.sg:GoToState("idle")
+                return
+            end
+
+            local my_pos = inst:GetPosition()
+            local speed = (target_pos - my_pos):Length() / (14 * FRAMES)
+            inst.sg.statemem.speed = speed
+            inst:ForceFacePoint(target_pos)
+
+            inst.AnimState:PlayAnimation("jumpout")
+            inst.AnimState:SetTime(4 * FRAMES)
+
+
+            -- inst.SoundEmitter:PlaySound("spark_hammer/sfx/enm_hand_jump")
+            inst.SoundEmitter:PlaySound("dontstarve/common/deathpoof")
+
+            inst.components.health:SetInvincible(true)
+            weapon.components.icey2_aoeweapon_ground_slam:OnStart(inst, target_pos)
+        end,
+
+        onupdate = function(inst)
+            if inst.sg.statemem.speed > 0 then
+                inst.Physics:SetMotorVel(inst.sg.statemem.speed, 0, 0)
+            end
+        end,
+
+        timeline =
+        {
+            TimeEvent(12 * FRAMES, function(inst)
+                local weapon = inst.sg.statemem.weapon
+                if weapon and weapon:IsValid() and weapon.components.icey2_aoeweapon_ground_slam then
+                    weapon.components.icey2_aoeweapon_ground_slam:PushAddColour(inst)
+                end
+            end),
+
+            TimeEvent(14 * FRAMES, function(inst)
+                inst.sg.statemem.speed = 0
+                inst.Physics:Stop()
+
+
+                local weapon = inst.sg.statemem.weapon
+                if weapon and weapon:IsValid() and weapon.components.icey2_aoeweapon_ground_slam then
+                    weapon.components.icey2_aoeweapon_ground_slam:DoAreaAttack(inst)
+                    weapon.components.icey2_aoeweapon_ground_slam:TossNearbyItems(inst)
+                    weapon.components.icey2_aoeweapon_ground_slam:IgniteNearbyThings(inst, inst:GetPosition(), 0.33)
+                    weapon.components.icey2_aoeweapon_ground_slam:SpawnFX(inst:GetPosition())
+                end
+
+                ShakeAllCameras(CAMERASHAKE.VERTICAL, .7, .015, .8, inst, 20)
+                inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_hammer/hit_ground")
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            inst.Physics:Stop()
+            inst.components.health:SetInvincible(false)
+            local weapon = inst.sg.statemem.weapon
+            if weapon and weapon:IsValid() and weapon.components.icey2_aoeweapon_ground_slam then
+                weapon.components.icey2_aoeweapon_ground_slam:OnStop(inst)
+            end
+        end
+    }
+)
 --------------------------------------------------------------------------
 
 

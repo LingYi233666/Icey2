@@ -143,18 +143,18 @@ AddStategraphPostInit("wilson_client", function(sg)
 end)
 
 -- eat
-AddStategraphPostInit("wilson_client", function(sg)
-    local old_EAT = sg.actionhandlers[ACTIONS.EAT].deststate
-    sg.actionhandlers[ACTIONS.EAT].deststate = function(inst, action)
-        local old_rets = old_EAT(inst, action)
+-- AddStategraphPostInit("wilson_client", function(sg)
+--     local old_EAT = sg.actionhandlers[ACTIONS.EAT].deststate
+--     sg.actionhandlers[ACTIONS.EAT].deststate = function(inst, action)
+--         local old_rets = old_EAT(inst, action)
 
-        local feed = action.invobject
-        if old_rets ~= nil and feed:HasTag("blood_metal") then
-            return "eat"
-        end
-        return old_rets
-    end
-end)
+--         local feed = action.invobject
+--         if old_rets ~= nil and feed:HasTag("blood_metal") then
+--             return "eat"
+--         end
+--         return old_rets
+--     end
+-- end)
 
 -- hammer
 AddStategraphPostInit("wilson_client", function(sg)

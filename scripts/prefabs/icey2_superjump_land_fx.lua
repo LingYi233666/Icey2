@@ -11,6 +11,11 @@ local assets =
     Asset("SHADER", ADD_SHADER),
 }
 
+local assets_fx2 =
+{
+    Asset("ANIM", "anim/player_superjump.zip"),
+}
+
 --------------------------------------------------------------------------
 
 local function IntColour(r, g, b, a)
@@ -155,5 +160,42 @@ local function fxfn()
     return inst
 end
 
+local function fx2fn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
+
+
+    inst.Transform:SetTwoFaced()
+
+    inst.AnimState:SetBank("wilson")
+    inst.AnimState:SetBuild("player_superjump")
+    inst.AnimState:PlayAnimation("superjump_land_fx")
+
+    inst.AnimState:SetLightOverride(1)
+
+    inst.AnimState:SetMultColour(0, 1, 1, 1)
+    -- inst.AnimState:SetAddColour(0, 1, 1, 1)
+    -- inst.AnimState:SetMultColour(0, 0.5, 1, 1)
+
+
+
+    inst:AddTag("FX")
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.persists = false
+
+    inst:ListenForEvent("animover", inst.Remove)
+
+    return inst
+end
+
 return Prefab("icey2_superjump_land_vfx", vfxfn, assets),
-    Prefab("icey2_superjump_land_fx", fxfn, assets)
+    Prefab("icey2_superjump_land_fx", fxfn, assets),
+    Prefab("icey2_superjump_land_fx2", fx2fn, assets_fx2)

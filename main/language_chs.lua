@@ -164,6 +164,7 @@ STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_PARRY = "制造盾牌格挡面前的攻�
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_RAPIER = "迭影"
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_SCYTHE = "掷镰"
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_CHAINSAW = "回旋刀刃"
+STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_HAMMER = "坠落震击"
 STRINGS.ACTIONS.CASTAOE.ICEY1_BLUEROSE = "突围冲击"
 
 STRINGS.ACTIONS.ICEY2_SCYTHE = "收割"
@@ -320,7 +321,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         NEW_PACT_WEAPON_HAMMER = {
             TITLE = "能量武器：战锤",
             DESC =
-            "“创造能量武器”技能新增武器种类：能量战锤。这是一柄笨重但极其强大的巨锤，能够造成严重的破坏，但是挥舞速度很慢。武器战技如下：\n战技·无战技：\n因为作者还没想好，所以该武器暂时没有战技。",
+            "“创造能量武器”技能新增武器种类：能量战锤。这是一柄笨重但极其强大的巨锤，能够造成严重的破坏，但是挥舞速度很慢。武器战技如下：\n战技·坠落震击：\n轻盈向前跳，再顺势用臀部用力向下坠落，在落地时释放超热的等离子闪电。",
         },
 
         UPGRADE_PACT_WEAPON_HAMMER_1 = {

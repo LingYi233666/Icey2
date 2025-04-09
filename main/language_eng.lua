@@ -172,6 +172,7 @@ STRINGS.RECIPE_DESC.ICEY2_SKILL_BUILDER_PARRY = "Create a shield to block attack
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_RAPIER = "Shadow Barrage"
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_SCYTHE = "Scythe Throw"
 STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_CHAINSAW = "Whirling Blades"
+STRINGS.ACTIONS.CASTAOE.ICEY2_PACT_WEAPON_HAMMER = "Ground Slam"
 STRINGS.ACTIONS.CASTAOE.ICEY1_BLUEROSE = "Breakthrough Impact"
 
 STRINGS.ACTIONS.ICEY2_SCYTHE = "Reap"
@@ -343,7 +344,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         NEW_PACT_WEAPON_HAMMER = {
             TITLE = "Energy Weapon: Hammer",
             DESC =
-            "The 'Create Energy Weapon' skill now includes a new weapon type: the Energy Hammer. This is a cumbersome but extremely powerful great hammer, capable of dealing massive damage, but it is slow to wield. Weapon Skill:\nSkill - None:\nCurrently, this weapon has no skill. It is still under development.",
+            "“Create Energy Weapon” skill adds a new weapon type: Energy Warhammer. This is a heavy but extremely powerful great hammer, capable of dealing severe damage, but with a slow swing speed. Weapon Skill is as follows:\nSkill · Ground Slam:\nLeap lightly forward, then use the momentum to forcefully slam downwards with your hip, releasing super-heated plasma lightning upon landing.",
         },
 
         UPGRADE_PACT_WEAPON_HAMMER_1 = {

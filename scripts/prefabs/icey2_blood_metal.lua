@@ -86,6 +86,7 @@ local function common_fn(anim, scale)
     end
 
     inst:AddTag("blood_metal")
+    inst:AddTag("sloweat")
 
     inst.entity:SetPristine()
 

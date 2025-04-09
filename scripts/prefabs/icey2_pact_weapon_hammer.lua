@@ -1,3 +1,5 @@
+local SourceModifierList = require("util/sourcemodifierlist")
+
 local assets =
 {
     Asset("ANIM", "anim/icey2_pact_weapon_hammer.zip"),
@@ -8,44 +10,13 @@ local assets =
 }
 
 
-local function ReticuleTargetFnLine()
-    return Vector3(ThePlayer.entity:LocalToWorldSpace(6.5, 0, 0))
-end
-
-local function ReticuleMouseTargetFnLine(inst, mousepos)
-    if mousepos ~= nil then
-        local x, y, z = inst.Transform:GetWorldPosition()
-        local dx = mousepos.x - x
-        local dz = mousepos.z - z
-        local l = dx * dx + dz * dz
-        if l <= 0 then
-            return inst.components.reticule.targetpos
-        end
-        l = 6.5 / math.sqrt(l)
-        return Vector3(x + dx * l, 0, z + dz * l)
-    end
-end
-
-local function ReticuleUpdatePositionFnLine(inst, pos, reticule, ease, smoothing, dt)
-    local x, y, z = inst.Transform:GetWorldPosition()
-    reticule.Transform:SetPosition(x, 0, z)
-    reticule.Transform:SetRotation(0)
-    -- local rot = -math.atan2(pos.z - z, pos.x - x) / DEGREES
-    -- if ease and dt ~= nil then
-    --     local rot0 = reticule.Transform:GetRotation()
-    --     local drot = rot - rot0
-    --     rot = Lerp((drot > 180 and rot0 + 360) or (drot < -180 and rot0 - 360) or rot0, rot, dt * smoothing)
-    -- end
-    -- reticule.Transform:SetRotation(rot)
-end
-
 local function OnAttack(inst, doer, target)
-    if inst.in_area_attack then
+    if inst.in_area_attack:Get() then
         return
     end
 
     if doer.components.combat then
-        inst.in_area_attack = true
+        inst.in_area_attack:SetModifier(inst, true, "normal_attack")
 
         local multi = 0.3
         local x, y, z = target.Transform:GetWorldPosition()
@@ -71,7 +42,7 @@ local function OnAttack(inst, doer, target)
             doer.components.icey2_skill_battle_focus.increasemultipliers:RemoveModifier(inst, "area_attack")
         end
 
-        inst.in_area_attack = false
+        inst.in_area_attack:RemoveModifier(inst, "normal_attack")
     end
 end
 
@@ -104,9 +75,23 @@ end
 --     end
 -- end
 
--- local function SpellFn(inst, doer, pos)
---     doer:PushEvent("icey2_start_circle_attack")
--- end
+local function StartFn(inst, attacker, pos)
+    inst.in_area_attack:SetModifier(inst, true, "ground_slam")
+end
+
+local function StopFn(inst, attacker)
+    inst.in_area_attack:RemoveModifier(inst, "ground_slam")
+end
+
+local function SpellFn(inst, doer, pos)
+    doer:PushEvent("icey2_ground_slam", { weapon = inst, target_pos = pos })
+
+    if Icey2Basic.IsWearingArmor(doer) then
+        inst.components.rechargeable:Discharge(15)
+    else
+        inst.components.rechargeable:Discharge(5)
+    end
+end
 
 local function ApplyLevelFn(inst, new_level, old_level)
     if new_level >= 1 then
@@ -153,10 +138,13 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", 0.05, { 1.1, 0.5, 1.1 }, true, -9)
 
-    -- Icey2WeaponSkill.AddAoetargetingClient(inst, "point", nil, 12)
-    -- inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoesmall"
-    -- inst.components.aoetargeting.reticule.pingprefab = "reticuleaoesmallping"
-    -- inst.components.aoetargeting.reticule.updatepositionfn = ReticuleUpdatePositionFnLine
+    Icey2WeaponSkill.AddAoetargetingClient(inst, "point", nil, 4)
+    inst.components.aoetargeting.reticule.reticuleprefab = "reticuleaoesmall"
+    inst.components.aoetargeting.reticule.pingprefab = "reticuleaoesmallping"
+    -- inst.components.aoetargeting:SetShouldRepeatCastFn(function()
+    --     return true
+    -- end)
+
 
     -- inst.fxcolour = { 96 / 255, 249 / 255, 255 / 255 }
     -- inst.castsound = "dontstarve/common/lava_arena/spell/meteor"
@@ -168,6 +156,7 @@ local function fn()
     end
 
     inst.hunger_burn_rate = 0.6
+    inst.in_area_attack = SourceModifierList(inst, false, SourceModifierList.boolean)
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(51)
@@ -204,9 +193,12 @@ local function fn()
     inst.components.icey2_upgradable:SetSkillTab(SKILL_TAB)
     inst.components.icey2_upgradable:SetLevel(0)
 
-    -- inst:AddComponent("icey2_aoeweapon_circle_attack")
+    inst:AddComponent("icey2_aoeweapon_ground_slam")
+    inst.components.icey2_aoeweapon_ground_slam.startfn = StartFn
+    inst.components.icey2_aoeweapon_ground_slam.stopfn = StopFn
 
-    -- Icey2WeaponSkill.AddAoetargetingServer(inst, SpellFn)
+
+    Icey2WeaponSkill.AddAoetargetingServer(inst, SpellFn)
 
     MakeHauntableLaunch(inst)
 

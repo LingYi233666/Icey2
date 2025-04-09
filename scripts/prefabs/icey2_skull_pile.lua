@@ -9,16 +9,26 @@ local FULL_WORKLEFT = 15
 
 SetSharedLootTable("icey2_skull_pile_mining",
     {
-        { "wagpunk_bits", 1.00 },
-        { "wagpunk_bits", 0.67 },
-        { "transistor",   1.00 },
-        { "transistor",   0.67 },
+        -- { "wagpunk_bits", 1.00 },
+        -- { "wagpunk_bits", 0.67 },
+        -- { "transistor",   1.00 },
+        -- { "transistor",   0.67 },
+        -- { "rocks",        0.25 },
+        -- { "log",          0.25 },
+        -- { "boards",       0.12 },
+        -- { "trinket_6",    0.12 },
+        -- { "blueprint",    0.12 },
+        -- { "gears",        0.12 },
+
+        { "wagpunk_bits", 0.33 },
+        { "wagpunk_bits", 0.12 },
+        { "transistor",   0.33 },
+        { "transistor",   0.12 },
         { "rocks",        0.25 },
         { "log",          0.25 },
-        { "boards",       0.12 },
         { "trinket_6",    0.12 },
-        { "blueprint",    0.12 },
-        { "gears",        0.12 },
+        { "blueprint",    0.05 },
+        { "gears",        0.05 },
     }
 )
 
@@ -38,13 +48,13 @@ SetSharedLootTable("icey2_skull_pile_mining",
 SetSharedLootTable("icey2_skull_pile_final",
     {
         { "icey2_blood_metal", 1.00 },
-        { "wagpunk_bits",      1.00 },
-        { "wagpunk_bits",      1.00 },
-        { "wagpunk_bits",      1.00 },
-        { "wagpunk_bits",      0.67 },
+        { "wagpunk_bits",      0.50 },
+        { "wagpunk_bits",      0.25 },
+        { "wagpunk_bits",      0.25 },
+        { "wagpunk_bits",      0.10 },
         { "transistor",        0.50 },
-        { "trinket_6",         0.50 },
-        { "blueprint",         0.50 },
+        { "trinket_6",         0.25 },
+        { "blueprint",         0.25 },
         { "rocks",             0.12 },
         { "log",               0.12 },
         { "boards",            0.06 },
@@ -52,7 +62,7 @@ SetSharedLootTable("icey2_skull_pile_final",
     }
 )
 
-local function ResetLottRequiredCount(inst)
+local function ResetLootRequiredCount(inst)
     inst.loot_required_count = math.random(2)
 end
 
@@ -109,7 +119,7 @@ local function OnWork(inst, worker, workleft)
     -- if inst.loot_required_count <= 0 then
     --     inst.components.lootdropper:SetChanceLootTable("icey2_skull_pile_mining")
     --     inst.components.lootdropper:DropLoot(loot_pt)
-    --     ResetLottRequiredCount(inst)
+    --     ResetLootRequiredCount(inst)
     -- end
 end
 
@@ -206,7 +216,7 @@ local function fn()
     inst.AnimState:SetMultColour(colour, colour, colour, 1)
 
     MakeHauntableWork(inst)
-    ResetLottRequiredCount(inst)
+    ResetLootRequiredCount(inst)
     CheckAnim(inst)
     EnableGhostFX(inst, true)
 

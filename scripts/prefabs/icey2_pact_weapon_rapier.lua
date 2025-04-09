@@ -48,7 +48,7 @@ local function SpellFn(inst, doer, pos)
         inst.components.rechargeable:Discharge(15)
     else
         local level = inst.components.icey2_upgradable:GetLevel()
-        inst.components.rechargeable:Discharge(math.max(0.1, 5 - level))
+        inst.components.rechargeable:Discharge(math.max(0.1, 10 - level * 1.5))
     end
 end
 
