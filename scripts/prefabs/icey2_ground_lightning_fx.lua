@@ -15,6 +15,7 @@ local function fn()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddNetwork()
 
     inst.AnimState:SetBuild("moonstorm_groundlight")
     inst.AnimState:SetBank("moonstorm_groundlight")

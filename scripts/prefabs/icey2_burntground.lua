@@ -47,7 +47,7 @@ local function fn()
     inst:AddTag("FX")
 
 
-    inst:SetPrefabName("burntground")
+    -- inst:SetPrefabName("burntground")
 
     inst.entity:SetPristine()
 
