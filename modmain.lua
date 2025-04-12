@@ -76,6 +76,8 @@ PrefabFiles = {
 
     "icey2_circle_attack_fx",
     "icey2_ground_lightning_fx",
+    "icey2_ground_slam_vfx",
+    "icey2_burntground",
 }
 ---对比老版本 主要是增加了names图片 人物检查图标 还有人物的手臂修复（增加了上臂）
 -- 人物动画里面有个SWAP_ICON 里面的图片是在检查时候人物头像那里显示用的

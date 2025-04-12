@@ -86,11 +86,13 @@ end
 local function SpellFn(inst, doer, pos)
     doer:PushEvent("icey2_ground_slam", { weapon = inst, target_pos = pos })
 
-    if Icey2Basic.IsWearingArmor(doer) then
-        inst.components.rechargeable:Discharge(15)
-    else
-        inst.components.rechargeable:Discharge(5)
-    end
+    -- if Icey2Basic.IsWearingArmor(doer) then
+    --     inst.components.rechargeable:Discharge(15)
+    -- else
+    --     inst.components.rechargeable:Discharge(5)
+    -- end
+
+    inst.components.rechargeable:Discharge(4)
 end
 
 local function ApplyLevelFn(inst, new_level, old_level)

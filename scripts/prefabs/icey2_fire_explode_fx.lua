@@ -11,11 +11,10 @@ local COLOUR_ENVELOPE_NAME_SMOKE_YELLOW = "icey2_fire_explode_fx_colourenvelope_
 local COLOUR_ENVELOPE_NAME_SMOKE_BLUE = "icey2_fire_explode_fx_colourenvelope_smoke_blue"
 local COLOUR_ENVELOPE_NAME_SMOKE_WHITE = "icey2_fire_explode_fx_colourenvelope_smoke_white"
 
-local SCALE_ENVELOPE_NAME_SMOKE_THIN = "icey2_fire_explode_fx_scaleenvelope_smoke_thin"
-local SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN = "icey2_fire_explode_fx_scaleenvelope_smoke_very_thin"
-
-local SCALE_ENVELOPE_NAME_SMOKE_THIN2 = "icey2_fire_explode_fx_scaleenvelope_smoke_thin2"
-local SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN2 = "icey2_fire_explode_fx_scaleenvelope_smoke_very_thin2"
+local SCALE_ENVELOPE_NAME_SMOKE_1 = "icey2_fire_explode_fx_scaleenvelope_smoke_1"
+local SCALE_ENVELOPE_NAME_SMOKE_2 = "icey2_fire_explode_fx_scaleenvelope_smoke_2"
+local SCALE_ENVELOPE_NAME_SMOKE_3 = "icey2_fire_explode_fx_scaleenvelope_smoke_3"
+local SCALE_ENVELOPE_NAME_SMOKE_4 = "icey2_fire_explode_fx_scaleenvelope_smoke_4"
 
 
 local assets =
@@ -77,7 +76,7 @@ local function InitEnvelope()
 
     local scale_factor = 1.2
     EnvelopeManager:AddVector2Envelope(
-        SCALE_ENVELOPE_NAME_SMOKE_THIN,
+        SCALE_ENVELOPE_NAME_SMOKE_1,
         {
             { 0,   { scale_factor * 0.07, scale_factor } },
             { 0.2, { scale_factor * 0.07, scale_factor } },
@@ -86,9 +85,9 @@ local function InitEnvelope()
     )
 
 
-    scale_factor = 1.0
+    scale_factor = 1
     EnvelopeManager:AddVector2Envelope(
-        SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN,
+        SCALE_ENVELOPE_NAME_SMOKE_2,
         {
             { 0,   { scale_factor * 0.07, scale_factor } },
             { 0.2, { scale_factor * 0.07, scale_factor } },
@@ -98,7 +97,7 @@ local function InitEnvelope()
 
     scale_factor = 1
     EnvelopeManager:AddVector2Envelope(
-        SCALE_ENVELOPE_NAME_SMOKE_THIN2,
+        SCALE_ENVELOPE_NAME_SMOKE_3,
         {
             { 0,   { scale_factor * 0.07, scale_factor } },
             { 0.2, { scale_factor * 0.07, scale_factor } },
@@ -109,7 +108,7 @@ local function InitEnvelope()
 
     scale_factor = 0.6
     EnvelopeManager:AddVector2Envelope(
-        SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN2,
+        SCALE_ENVELOPE_NAME_SMOKE_4,
         {
             { 0,   { scale_factor * 0.07, scale_factor } },
             { 0.2, { scale_factor * 0.07, scale_factor } },
@@ -179,7 +178,7 @@ local function common_vfx_fn()
     effect:SetMaxNumParticles(0, 8)
     effect:SetMaxLifetime(0, MAX_LIFETIME)
     effect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_SMOKE_YELLOW)
-    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN)
+    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_SMOKE_2)
     effect:SetBlendMode(0, BLENDMODE.AlphaBlended)
     effect:EnableBloomPass(0, true)
     effect:SetRadius(0, 1)
@@ -191,7 +190,7 @@ local function common_vfx_fn()
     effect:SetMaxNumParticles(1, 8)
     effect:SetMaxLifetime(1, MAX_LIFETIME)
     effect:SetColourEnvelope(1, COLOUR_ENVELOPE_NAME_SMOKE_RED)
-    effect:SetScaleEnvelope(1, SCALE_ENVELOPE_NAME_SMOKE_THIN)
+    effect:SetScaleEnvelope(1, SCALE_ENVELOPE_NAME_SMOKE_1)
     effect:SetBlendMode(1, BLENDMODE.AlphaBlended)
     effect:EnableBloomPass(1, true)
     effect:SetRadius(1, 1)
@@ -247,20 +246,20 @@ local function explode_blue_vfx_fn()
     local effect = inst.VFXEffect
 
     effect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME_SMOKE_WHITE)
-    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_SMOKE_VERY_THIN2)
+    effect:SetScaleEnvelope(0, SCALE_ENVELOPE_NAME_SMOKE_4)
     effect:SetBlendMode(0, BLENDMODE.AlphaAdditive)
     effect:SetMaxNumParticles(0, 16)
     effect:SetSortOrder(0, 2)
 
     effect:SetColourEnvelope(1, COLOUR_ENVELOPE_NAME_SMOKE_BLUE)
-    effect:SetScaleEnvelope(1, SCALE_ENVELOPE_NAME_SMOKE_THIN2)
+    effect:SetScaleEnvelope(1, SCALE_ENVELOPE_NAME_SMOKE_3)
     effect:SetBlendMode(1, BLENDMODE.AlphaAdditive)
     effect:SetMaxNumParticles(0, 16)
     effect:SetSortOrder(1, 2)
 
     -----------------------------------------------------
     local norm_sphere_emitter = CreateSphereEmitter(1)
-    local num_to_emit = 2
+    local num_to_emit = 1
     EmitterManager:AddEmitter(inst, nil, function()
         local parent = inst.entity:GetParent()
         if parent and inst._can_emit:value() and num_to_emit > 0 then
@@ -279,8 +278,6 @@ local function explode_blue_vfx_fn()
 
     return inst
 end
-
-
 
 local function explode_fx_fn()
     local inst = CreateEntity()

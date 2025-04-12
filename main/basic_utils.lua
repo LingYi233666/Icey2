@@ -11,6 +11,28 @@ function Icey2Basic.IsWearingArmor(inst)
     return false
 end
 
+function Icey2Basic.GetEquippedArmors(inst)
+    local ret = {}
+    for k, v in pairs(inst.components.inventory.equipslots) do
+        if (v.components.armor ~= nil or v.components.resistance ~= nil) then
+            table.insert(ret, v)
+        end
+    end
+
+    return ret
+end
+
+function Icey2Basic.GetEquippedHeavyArmors(inst)
+    local ret = {}
+    for k, v in pairs(inst.components.inventory.equipslots) do
+        if (v.components.armor ~= nil or v.components.resistance ~= nil) and v:HasTag("heavyarmor") then
+            table.insert(ret, v)
+        end
+    end
+
+    return ret
+end
+
 function Icey2Basic.GetUnarmouredMovementAnim(inst, state)
     local hands = nil
 

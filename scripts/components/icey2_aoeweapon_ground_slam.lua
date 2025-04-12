@@ -64,6 +64,10 @@ function Icey2AOEWeapon_GroundSlam:DoAreaAttack(attacker, pos)
 
     local possible_targets = self:SearchPossibleTargets(attacker, pos)
 
+    local num_heavy_armors = #(Icey2Basic.GetEquippedHeavyArmors(attacker))
+
+    self.inst.components.icey2_spdamage_force:AddBonus(self.inst, num_heavy_armors * 34, "Icey2AOEWeapon_GroundSlam")
+
     for _, v in pairs(possible_targets) do
         if v.components.workable
             and v.components.workable:CanBeWorked()
@@ -73,6 +77,8 @@ function Icey2AOEWeapon_GroundSlam:DoAreaAttack(attacker, pos)
             self:OnHit(attacker, v)
         end
     end
+
+    self.inst.components.icey2_spdamage_force:RemoveBonus(self.inst, "Icey2AOEWeapon_GroundSlam")
 end
 
 function Icey2AOEWeapon_GroundSlam:TossNearbyItems(attacker, pos)
@@ -118,8 +124,20 @@ function Icey2AOEWeapon_GroundSlam:IgniteNearbyThings(attacker, pos, delay)
     end
 end
 
-function Icey2AOEWeapon_GroundSlam:SpawnFX(pos)
-    SpawnAt("icey2_superjump_land_fx2", pos)
+function Icey2AOEWeapon_GroundSlam:SpawnFX(doer, pos)
+    local fx1 = SpawnAt("icey2_superjump_land_fx2", pos)
+
+    local vfx = doer:SpawnChild("icey2_ground_slam_vfx")
+    vfx:DoTaskInTime(FRAMES, function()
+        vfx._can_emit:set(true)
+    end)
+
+    local s = 1.5
+    local burntground = SpawnAt("icey2_burntground", pos, { s, s, s })
+    burntground.AnimState:SetMultColour(1, 1, 1, 0.66)
+    burntground:FadeOut(5, GetRandomMinMax(5, 8))
+    -- burntground.persists = false
+    -- burntground:DoTaskInTime(GetRandomMinMax(5, 7), BurntGroundFadeOut)
 
     local step = 360 / self.num_ground_lightning
     local deg_start = math.random() * 360

@@ -1620,11 +1620,16 @@ AddStategraphState("wilson",
                     weapon.components.icey2_aoeweapon_ground_slam:DoAreaAttack(inst)
                     weapon.components.icey2_aoeweapon_ground_slam:TossNearbyItems(inst)
                     weapon.components.icey2_aoeweapon_ground_slam:IgniteNearbyThings(inst, inst:GetPosition(), 0.33)
-                    weapon.components.icey2_aoeweapon_ground_slam:SpawnFX(inst:GetPosition())
+                    weapon.components.icey2_aoeweapon_ground_slam:SpawnFX(inst, inst:GetPosition())
                 end
 
                 ShakeAllCameras(CAMERASHAKE.VERTICAL, .7, .015, .8, inst, 20)
                 inst.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_hammer/hit_ground")
+
+                if Icey2Basic.IsWearingArmor(inst) then
+                    inst.sg:GoToState("slip_fall")
+                    -- inst.AnimState:SetTime(10 * FRAMES)
+                end
             end),
         },
 

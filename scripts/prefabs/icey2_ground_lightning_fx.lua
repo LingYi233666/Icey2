@@ -3,7 +3,8 @@ local assets =
     Asset("ANIM", "anim/moonstorm_groundlight.zip"),
 }
 
-local SCALE_FACTOR = 2.5
+-- local SCALE_FACTOR = 2.5
+local SCALE_FACTOR = 1.8
 local anim_options = {
     { anim = "strike",  speed = 1 * SCALE_FACTOR,   disappear_time = 9 * FRAMES },
     { anim = "strike2", speed = 1.3 * SCALE_FACTOR, disappear_time = 20 * FRAMES },
