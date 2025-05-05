@@ -117,7 +117,8 @@ local function fn()
     local theta = 120 * DEGREES
     local phi = 75 * DEGREES
     local sphere_emitter = Icey2Math.CustomSphereEmitter(0.1, 0.3, 0, theta, -phi, phi)
-    local num_to_emit = 16
+
+    inst.emitted = false
 
     EmitterManager:AddEmitter(inst, nil, function()
         local parent = inst.entity:GetParent()
@@ -125,29 +126,38 @@ local function fn()
             return
         end
 
-        local facing = parent.AnimState:GetCurrentFacing()
+        if inst.emitted then
+            return
+        end
 
-        local axis_x = Icey2Basic.GetFaceVector(parent)
-        local axis_y = Vector3(0, 1, 0)
-        local axis_z = axis_y:Cross(axis_x)
 
-        while num_to_emit > 0 do
-            local x, y, z = sphere_emitter()
-            local pos = axis_x * x + axis_y * y + axis_z * z
-            local vel = pos:GetNormalized() * GetRandomMinMax(0.1, 0.2)
+        local time_alive = inst:GetTimeAlive()
+        if time_alive > 1 * FRAMES and time_alive < 3 * FRAMES then
+            local facing = parent.AnimState:GetCurrentFacing()
 
-            if facing == FACING_DOWN then
-                pos.y = pos.y + 1
-            elseif facing == FACING_LEFT or facing == FACING_RIGHT then
-                pos.y = pos.y + 0.7
-                pos = pos + axis_x * 0.6
-            else
-                pos.y = pos.y + 0.33
-                pos = pos + axis_x
+            local axis_x = Icey2Basic.GetFaceVector(parent)
+            local axis_y = Vector3(0, 1, 0)
+            local axis_z = axis_y:Cross(axis_x)
+
+            for i = 1, 16 do
+                local x, y, z = sphere_emitter()
+                local pos = axis_x * x + axis_y * y + axis_z * z
+                local vel = pos:GetNormalized() * GetRandomMinMax(0.1, 0.2)
+
+                if facing == FACING_DOWN then
+                    pos.y = pos.y + 1
+                elseif facing == FACING_LEFT or facing == FACING_RIGHT then
+                    pos.y = pos.y + 0.7
+                    pos = pos + axis_x * 0.6
+                else
+                    pos.y = pos.y + 0.33
+                    pos = pos + axis_x
+                end
+
+                emit_shard_fn(effect, pos, vel)
+
+                inst.emitted = true
             end
-
-            emit_shard_fn(effect, pos, vel)
-            num_to_emit = num_to_emit - 1
         end
     end)
 

@@ -95,7 +95,7 @@ local Icey2SkillParry = Class(Icey2SkillBase_Active, function(self, inst)
                 -- Spawn shield break shards
                 local shard_fx = inst:SpawnChild("icey2_shield_break_shard_vfx")
                 -- shard_fx.Transform:SetPosition(1, 0, 0)
-                shard_fx:DoTaskInTime(0, shard_fx.Remove)
+                shard_fx:DoTaskInTime(4 * FRAMES, shard_fx.Remove)
 
                 local fx = inst:SpawnChild("icey2_shield_break_fx")
 
