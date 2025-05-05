@@ -36,7 +36,7 @@ local MODIFIED_SPEECH = {
         BACKPACK = "You're right, but Don't Starve is a grid-based inventory management game.",
         BEARDHAIR = "I can't grow such a magnificent beard!",
         BEARGER = "It's looking for honey.",
-        BISHOP = "Have you seen 'The Shawshank Redemption'?",
+        BISHOP = "Have you seen 'The Mechanic'?",
         BUSHHAT = "Not as practical as a cardboard box.",
 
         -- CATCOON = "小猫，你可以吃素食堡。",
@@ -71,6 +71,9 @@ local MODIFIED_SPEECH = {
 
         KNIGHT = "Mechanical Mark Shaw.",
         KNIGHT_NIGHTMARE = "A very old mechanical Mark Shaw, or just Old Mark Shaw.",
+        KOALEFANT_SUMMER = "Sad Elephant Smash.",                       -- "Sad Elephant Smash" is a phrase from a Bilibili Don't Starve streamer.
+        KOALEFANT_WINTER = "Old grandpa! I'm here to stomp your back!", -- From "Peas Funny Story: Stepping on Backs".
+        KOALEFANT_CARCASS = "Elephant! Elephant!!!",                    -- From the quotes of Changshu Arno.
 
         LEAFYMEATBURGER = "Tastes better than the leftover burgers in Mi City's cafeteria.",
         LIGHTNING_ROD =
@@ -139,7 +142,7 @@ local MODIFIED_SPEECH = {
             GENERIC = "Spiders everywhere! Open fire!",
             SLEEPING = "Looks kinda cute when it's sleeping.",
         },
-
+        STALKER_ATRIUM = "Ancient fuel weaving.", -- From an early awkward machine translation of "Ancient Fuelweaver" in Don't Starve Together.
 
         TOADSTOOL =
         {
