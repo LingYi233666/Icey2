@@ -153,10 +153,14 @@ end
 
 function Icey2SkillParry:StartParry()
     self.parry_start_time = GetTime()
+    self.inst.replica.icey2_skill_parry:SetIsParrying(true)
 
-    self.rotate_task = self.inst:DoPeriodicTask(0, function()
+    if TUNING.ICEY2_PARRY_DIRECTION ~= 2 then
         self.inst:ForceFacePoint(self.inst.components.icey2_control_key_helper:GetMousePosition())
-    end)
+        self.rotate_task = self.inst:DoPeriodicTask(0, function()
+            self.inst:ForceFacePoint(self.inst.components.icey2_control_key_helper:GetMousePosition())
+        end)
+    end
 
     self.inst.AnimState:Show("ARM_carry")
     self.inst.AnimState:Hide("ARM_normal")
@@ -218,6 +222,7 @@ function Icey2SkillParry:StopParry()
 
     self.parry_history = {}
     self.parry_start_time = nil
+    self.inst.replica.icey2_skill_parry:SetIsParrying(false)
 end
 
 function Icey2SkillParry:IsParrying()

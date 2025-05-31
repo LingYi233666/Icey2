@@ -1,7 +1,7 @@
 name = "艾希：地狱归来" ---mod名字
 description = "一个有趣的人物模组。" --mod描述
 author = "灵衣女王的鬼铠" --作者
-version = "1.0.13" -- mod版本 上传mod需要两次的版本不一样
+version = "1.0.14" -- mod版本 上传mod需要两次的版本不一样
 
 forumthread = ""
 
@@ -43,6 +43,17 @@ configuration_options = {
         },
         default = 1,
     },
+
+    {
+        name = "parry_direction",
+        label = "格挡时角色朝向",
+        options =
+        {
+            { description = "鼠标所指方向", data = 1 },
+            { description = "艾希面朝方向", data = 2 },
+        },
+        default = 1,
+    },
 } --mod设置
 
 
@@ -59,4 +70,8 @@ else
     configuration_options[2].label = "Dodge direction"
     configuration_options[2].options[1].description = "Cursor direction"
     configuration_options[2].options[2].description = "Facing direction"
+
+    configuration_options[3].label = "Parry direction"
+    configuration_options[3].options[1].description = "Cursor direction"
+    configuration_options[3].options[2].description = "Facing direction"
 end

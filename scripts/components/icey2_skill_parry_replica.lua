@@ -5,6 +5,10 @@ local Icey2SkillParry = Class(function(self, inst)
 
     if not TheNet:IsDedicated() then
         inst:ListenForEvent("Icey2SkillParry._is_parrying", function()
+            if TUNING.ICEY2_PARRY_DIRECTION == 2 then
+                return
+            end
+
             if self:IsParrying() and not self.task then
                 self.task = inst:DoPeriodicTask(0, function()
                     inst:ForceFacePoint(TheInput:GetWorldPosition())
