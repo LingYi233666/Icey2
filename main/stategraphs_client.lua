@@ -990,3 +990,40 @@ AddStategraphState("wilson_client", State {
         inst.entity:SetIsPredictingMovement(true)
     end,
 })
+
+
+AddStategraphState("wilson_client", State {
+    name = "icey2_dodge_riding",
+    tags = { "busy", "nointerrupt", "icey2_dodge" },
+
+    onenter = function(inst, data)
+        inst.AnimState:PlayAnimation("run_pre")
+        inst.AnimState:PushAnimation("run_loop", true)
+
+        if data and data.pos then
+            inst:ForceFacePoint(data.pos)
+        end
+
+        inst.sg:SetTimeout(20 * FRAMES)
+    end,
+
+    onupdate = function(inst)
+        if inst.sg.statemem.update then
+            inst.Physics:SetMotorVel(30, 0, 0)
+        end
+    end,
+
+    timeline = {
+        TimeEvent(4 * FRAMES, function(inst)
+            -- inst.sg.statemem.update = true
+        end),
+    },
+
+    ontimeout = function(inst)
+        inst.sg.statemem.update = false
+        -- inst.Physics:Stop()
+
+        inst.AnimState:PlayAnimation("run_pst")
+        inst.sg:GoToState("idle", true)
+    end,
+})

@@ -301,7 +301,7 @@ AddStategraphState("wilson", State {
 
 AddStategraphState("wilson", State {
     name = "icey2_dodge_riding",
-    tags = { "busy", "nopredict", "nointerrupt", "icey2_dodge" },
+    tags = { "busy", "pausepredict", "nointerrupt", "icey2_dodge" },
 
     onenter = function(inst, data)
         inst.AnimState:PlayAnimation("run_pre")
@@ -310,7 +310,14 @@ AddStategraphState("wilson", State {
         inst.sg.statemem.update = false
         inst.sg.statemem.last_step_time = GetTime()
 
+        if inst.components.playercontroller ~= nil then
+            inst.components.playercontroller:Enable(false)
+        end
         inst.components.icey2_skill_dodge:OnDodgeStart(data.pos)
+
+        SendModRPCToClient(CLIENT_MOD_RPC["icey2_rpc"]["goto_state_icey2_dodge_riding"], inst.userid, data.pos.x,
+            data.pos.y,
+            data.pos.z)
 
         inst.sg:SetTimeout(20 * FRAMES)
     end,
@@ -352,8 +359,10 @@ AddStategraphState("wilson", State {
         if not inst.sg.statemem.dodge_stop then
             inst.components.icey2_skill_dodge:OnDodgeStop()
         end
+        inst.components.playercontroller:Enable(true)
     end
 })
+
 -----------------------------------------------------------------------------
 -- skill: parry
 AddStategraphState("wilson", State {

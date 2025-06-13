@@ -108,3 +108,19 @@ AddClientModRPCHandler("icey2_rpc", "play_install_dodge_charge_chip_anim", funct
         ThePlayer.HUD.controls.secondary_status.icey2_skill_shield_metrics:PlayChipInstallAnim()
     end
 end)
+
+AddClientModRPCHandler("icey2_rpc", "force_face_point", function(x, y, z)
+    if ThePlayer and ThePlayer:IsValid() then
+        ThePlayer:ForceFacePoint(x, y, z)
+    end
+end)
+
+AddClientModRPCHandler("icey2_rpc", "goto_state_icey2_dodge_riding", function(x, y, z)
+    if ThePlayer
+        and ThePlayer:IsValid()
+        and ThePlayer.sg
+        and ThePlayer.sg.sg
+        and ThePlayer.sg.sg.name == "wilson_client" then
+        ThePlayer.sg:GoToState("icey2_dodge_riding", { pos = Vector3(x, y, z) })
+    end
+end)
