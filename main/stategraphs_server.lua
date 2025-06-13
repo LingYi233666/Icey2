@@ -238,7 +238,7 @@ AddStategraphPostInit("wilson", function(sg)
     local old_knockback = sg.events["knockback"].fn
 
     sg.events["knockback"].fn = function(inst, data, ...)
-        if inst.sg.currentstate.name == "icey2_dodge" and inst.components.health:IsInvincible() then
+        if inst.sg:HasStateTag("icey2_dodge") and inst.components.health:IsInvincible() then
             return
         end
 
@@ -251,14 +251,13 @@ end)
 -- Skill: dodge
 AddStategraphState("wilson", State {
     name = "icey2_dodge",
-    tags = { "busy", "nopredict", "nointerrupt" },
+    tags = { "busy", "nopredict", "nointerrupt", "icey2_dodge" },
 
     onenter = function(inst, data)
-        -- inst.AnimState:PlayAnimation("atk_leap_pre")
-
         local equip = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 
         if equip then
+            -- inst.AnimState:PlayAnimation("atk_leap_pre")
             inst.AnimState:PlayAnimation("atk_leap_lag")
         else
             inst.AnimState:PlayAnimation("icey2_speedrun_pre")
@@ -300,6 +299,61 @@ AddStategraphState("wilson", State {
     end
 })
 
+AddStategraphState("wilson", State {
+    name = "icey2_dodge_riding",
+    tags = { "busy", "nopredict", "nointerrupt", "icey2_dodge" },
+
+    onenter = function(inst, data)
+        inst.AnimState:PlayAnimation("run_pre")
+        inst.AnimState:PushAnimation("run_loop", true)
+
+        inst.sg.statemem.update = false
+        inst.sg.statemem.last_step_time = GetTime()
+
+        inst.components.icey2_skill_dodge:OnDodgeStart(data.pos)
+
+        inst.sg:SetTimeout(20 * FRAMES)
+    end,
+
+    onupdate = function(inst)
+        if inst.sg.statemem.update then
+            inst.components.icey2_skill_dodge:OnDodging()
+
+            if GetTime() - inst.sg.statemem.last_step_time >= 2 * FRAMES then
+                PlayFootstep(inst)
+                inst.SoundEmitter:PlaySound("dontstarve/beefalo/walk", nil, 0.5)
+                inst.sg.statemem.last_step_time = GetTime()
+            end
+        end
+    end,
+
+    timeline = {
+        TimeEvent(2 * FRAMES, function(inst)
+            PlayFootstep(inst)
+            inst.SoundEmitter:PlaySound("dontstarve/beefalo/walk", nil, 0.5)
+        end),
+
+        TimeEvent(4 * FRAMES, function(inst)
+            inst.sg.statemem.update = true
+        end),
+    },
+
+    ontimeout = function(inst)
+        inst.sg.statemem.update = false
+
+        inst.components.icey2_skill_dodge:OnDodgeStop()
+        inst.sg.statemem.dodge_stop = true
+
+        inst.AnimState:PlayAnimation("run_pst")
+        inst.sg:GoToState("idle", true)
+    end,
+
+    onexit = function(inst)
+        if not inst.sg.statemem.dodge_stop then
+            inst.components.icey2_skill_dodge:OnDodgeStop()
+        end
+    end
+})
 -----------------------------------------------------------------------------
 -- skill: parry
 AddStategraphState("wilson", State {

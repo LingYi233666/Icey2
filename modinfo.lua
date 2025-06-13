@@ -1,7 +1,7 @@
 name = "艾希：地狱归来" ---mod名字
 description = "一个有趣的人物模组。" --mod描述
 author = "灵衣女王的鬼铠" --作者
-version = "1.0.14" -- mod版本 上传mod需要两次的版本不一样
+version = "1.0.15" -- mod版本 上传mod需要两次的版本不一样
 
 forumthread = ""
 
@@ -19,6 +19,7 @@ icon = "modicon.tex"
 
 server_filter_tags = { --服务器标签
     "character",
+    "server",
 }
 
 configuration_options = {

@@ -5,6 +5,7 @@ local Icey2SkillDodge = Class(Icey2SkillBase_Active, function(self, inst)
 
     ------------------------------------------
     self.can_cast_while_busy = true
+    self.can_cast_while_riding = true
     self.costs.hunger = 1
     self.cooldown = 0.1
 
@@ -12,6 +13,7 @@ local Icey2SkillDodge = Class(Icey2SkillBase_Active, function(self, inst)
 
     self.search_dist = 5
     self.dodge_speed = 40
+    self.dodge_speed_riding = 30
 
     self.max_dodge_charge = 1
     self.dodge_charge = 1
@@ -126,7 +128,7 @@ local function ForceStopHeavyLifting(inst)
 end
 
 function Icey2SkillDodge:OnDodgeStart(target_pos)
-    ForceStopHeavyLifting(self.inst)
+    local is_riding = self:_IsRiding()
 
     self.start_pos = self.inst:GetPosition()
     self.start_platform = self.inst:GetCurrentPlatform()
@@ -134,32 +136,40 @@ function Icey2SkillDodge:OnDodgeStart(target_pos)
     self.inst.components.locomotor:Stop()
 
     self.inst:ForceFacePoint(target_pos)
-    self.inst.Physics:SetMotorVelOverride(self.dodge_speed, 0, 0)
 
-    self.inst.components.health:SetInvincible(true)
+    if is_riding then
+        self.inst.SoundEmitter:PlaySound("dontstarve/beefalo/yell")
+    else
+        ForceStopHeavyLifting(self.inst)
 
-    self.inst.AnimState:SetMultColour(0 / 255, 229 / 255, 232 / 255, 0.3)
+        self.inst.Physics:SetMotorVelOverride(self.dodge_speed, 0, 0)
 
-    -- icey_speedrun
-    local fx1 = self.inst:SpawnChild("icey2_dodge_vfx")
-    local equip = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-    if equip == nil then
-        fx1._offset2_y:set(0.5)
-    end
-    self.dodge_fx = { fx1 }
+        self.inst.components.health:SetInvincible(true)
 
-    if not Icey2Basic.IsWearingArmor(self.inst) and self:HasSuitableWeapon() then
-        local enemies = self:SearchCreaturesAutoToAttack()
-        if #enemies > 0 then
-            self:CounterBack(enemies[1])
+        self.inst.AnimState:SetMultColour(0 / 255, 229 / 255, 232 / 255, 0.3)
+
+        -- icey_speedrun
+        local fx1 = self.inst:SpawnChild("icey2_dodge_vfx")
+        local equip = self.inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+        if equip == nil then
+            fx1._offset2_y:set(0.5)
         end
-    end
+        self.dodge_fx = { fx1 }
 
-    self.inst.SoundEmitter:PlaySound("icey2_sfx/skill/dodge/dodge")
+        if not Icey2Basic.IsWearingArmor(self.inst) and self:HasSuitableWeapon() then
+            local enemies = self:SearchCreaturesAutoToAttack()
+            if #enemies > 0 then
+                self:CounterBack(enemies[1])
+            end
+        end
+
+        self.inst.SoundEmitter:PlaySound("icey2_sfx/skill/dodge/dodge")
+    end
 end
 
 function Icey2SkillDodge:OnDodging()
-    self.inst.Physics:SetMotorVelOverride(self.dodge_speed, 0, 0)
+    local is_riding = self:_IsRiding()
+    self.inst.Physics:SetMotorVelOverride(is_riding and self.dodge_speed_riding or self.dodge_speed, 0, 0)
 end
 
 function Icey2SkillDodge:OnDodgeStop()
@@ -207,6 +217,7 @@ function Icey2SkillDodge:OnDodgeStop()
         print("is over water:", self.inst.components.drownable:IsOverWater())
         print("current sg:", self.inst.sg.currentstate.name)
     end
+
     self.start_pos = nil
     self.start_platform = nil
 
@@ -237,7 +248,9 @@ function Icey2SkillDodge:Cast(x, y, z, target)
     if self.dodge_charge < self.max_dodge_charge then
         self:StartRecharge(0.5)
     end
-    self.inst.sg:GoToState("icey2_dodge", { pos = Vector3(x, y, z) })
+
+
+    self.inst.sg:GoToState(self:_IsRiding() and "icey2_dodge_riding" or "icey2_dodge", { pos = Vector3(x, y, z) })
 end
 
 function Icey2SkillDodge:OnSave()
