@@ -994,7 +994,7 @@ AddStategraphState("wilson_client", State {
 
 AddStategraphState("wilson_client", State {
     name = "icey2_dodge_riding",
-    tags = { "busy", "nointerrupt", "icey2_dodge" },
+    tags = { "busy", "nointerrupt" },
 
     onenter = function(inst, data)
         inst.AnimState:PlayAnimation("run_pre")

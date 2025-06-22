@@ -233,25 +233,12 @@ end)
 --     end
 -- end)
 
--- knockback
-AddStategraphPostInit("wilson", function(sg)
-    local old_knockback = sg.events["knockback"].fn
-
-    sg.events["knockback"].fn = function(inst, data, ...)
-        if inst.sg:HasStateTag("icey2_dodge") and inst.components.health:IsInvincible() then
-            return
-        end
-
-        return old_knockback(inst, data, ...)
-    end
-end)
-
 
 -----------------------------------------------------------------------------
 -- Skill: dodge
 AddStategraphState("wilson", State {
     name = "icey2_dodge",
-    tags = { "busy", "nopredict", "nointerrupt", "icey2_dodge" },
+    tags = { "busy", "nopredict", "nointerrupt", "noattack", "iframeskeepaggro" },
 
     onenter = function(inst, data)
         local equip = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
@@ -301,7 +288,7 @@ AddStategraphState("wilson", State {
 
 AddStategraphState("wilson", State {
     name = "icey2_dodge_riding",
-    tags = { "busy", "pausepredict", "nointerrupt", "icey2_dodge" },
+    tags = { "busy", "pausepredict", "nointerrupt" },
 
     onenter = function(inst, data)
         inst.AnimState:PlayAnimation("run_pre")
