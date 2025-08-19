@@ -165,7 +165,6 @@ AddStategraphPostInit("wilson", function(sg)
         eat_SG.onenter = function(inst, data, ...)
             old_onenter(inst, data, ...)
 
-
             local feed
             local bufferedaction = inst:GetBufferedAction()
             if data and data.feed then
@@ -175,6 +174,9 @@ AddStategraphPostInit("wilson", function(sg)
             end
 
             if feed and feed:HasTag("blood_metal") then
+                if inst.SoundEmitter:PlayingSound("eating") then
+                    inst.SoundEmitter:KillSound("eating")
+                end
                 inst.SoundEmitter:PlaySound("dontstarve/wilson/eat", "eating")
                 inst.SoundEmitter:PlaySound("icey2_sfx/prefabs/blood_metal/eat_loop", "electric")
 
@@ -192,6 +194,9 @@ AddStategraphPostInit("wilson", function(sg)
 
         eat_SG.onexit = function(inst, ...)
             old_onexit(inst, ...)
+            if inst.SoundEmitter:PlayingSound("eating") then
+                inst.SoundEmitter:KillSound("eating")
+            end
             inst.SoundEmitter:KillSound("electric")
 
             if inst.sg.statemem.elec_vfx and inst.sg.statemem.elec_vfx:IsValid() then
