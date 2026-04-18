@@ -47,9 +47,12 @@ local Icey2SkillShieldMetrics = Class(Widget, function(self, owner)
     local y_delta = 25
     for i = 1, 5 do
         local chip = self:AddChild(UIAnim())
-        chip:GetAnimState():SetBank("status_wx")
-        chip:GetAnimState():SetBuild("status_wx")
+        chip:GetAnimState():SetBank("status_wx_chest")
+        chip:GetAnimState():SetBuild("status_wx_chest")
         chip:GetAnimState():PlayAnimation("chip_idle")
+        -- chip:GetAnimState():PlayAnimation("minichip_idle")
+        chip:GetAnimState():Hide("focus")
+        -- chip:GetAnimState():Hide("glow")
         chip:SetPosition(chip_x, chip_y)
         chip:SetScale(0.6)
         chip:MoveToBack()
@@ -200,8 +203,16 @@ function Icey2SkillShieldMetrics:SetNumChips(val)
     for i = 1, #self.chips do
         if i <= val then
             self.chips[i]:GetAnimState():Show("plug_on")
+            self.chips[i]:GetAnimState():Show("glow")
+
+            -- self.chips[i]:GetAnimState():Show("plug_on")
+            -- self.chips[i]:GetAnimState():Show("glow")
         else
             self.chips[i]:GetAnimState():Hide("plug_on")
+            self.chips[i]:GetAnimState():Hide("glow")
+
+            -- self.chips[i]:GetAnimState():Hide("plug_on")
+            -- self.chips[i]:GetAnimState():Hide("glow")
         end
 
         self.chips[i]:SetTooltip(STRINGS.ICEY2_UI.SHIELD_METRICS.DODGE_CHARGE:format(self.num_chips, self.max_num_chips))
@@ -217,6 +228,8 @@ function Icey2SkillShieldMetrics:SetMaxNumChips(val)
             if not is_init and not self.chips[i].shown then
                 self.chips[i]:GetAnimState():PlayAnimation("plug")
                 self.chips[i]:GetAnimState():PushAnimation("chip_idle", false)
+                -- self.chips[i]:GetAnimState():PlayAnimation("minichip_plug")
+                -- self.chips[i]:GetAnimState():PushAnimation("minichip_idle", false)
                 should_play_sound = true
             end
             self.chips[i]:Show()
