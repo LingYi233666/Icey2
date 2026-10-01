@@ -60,7 +60,8 @@ local Icey2SkillBattleFocus = Class(Icey2SkillBase_Passive, function(self, inst)
         end
 
         if Icey2Basic.IsWearingArmor(inst) then
-            addition = 0
+            -- addition = 0
+            addition = addition / 3.0
         end
 
         addition = addition * self.increasemultipliers:Get()

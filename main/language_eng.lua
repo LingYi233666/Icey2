@@ -212,13 +212,13 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         FORCE_SHIELD = {
             TITLE = "Force Field Shield",
             DESC =
-            "Your Force Field Shield is as effective as any armor. When you are not equipped with armor or a shield, the Force Field Shield helps you absorb an equal amount of damage. You can increase the shield's capacity by crafting Energy Canisters, up to a maximum of 250 points.\nThe current shield value and capacity can be viewed in the top right corner.",
+            "Your Force Field Shield is as effective as any armor. When you are attacked, the Force Field Shield helps you absorb an equal amount of damage. You can increase the shield's capacity by crafting Energy Canisters, up to a maximum of 250 points.\nThe current shield value and capacity can be viewed in the top right corner.",
         },
 
         BATTLE_FOCUS = {
             TITLE = "Battle Focus",
             DESC =
-            "When you are not equipped with any armor or shield, unarmed attacks, counterattacks during flash dashes, or normal melee attacks with energy weapons will gradually put you into a state of battle focus, increasing force field damage, fear resistance, and movement speed. In this state, you can tear essence from the enemy's life to restore shield or health.\nTaking damage will interrupt the battle focus effect.",
+            "Unarmed attacks, counterattacks during flash dashes, or normal melee attacks with energy weapons will gradually put you into a state of battle focus, increasing force field damage, fear resistance, and movement speed. In this state, you can tear essence from the enemy's life to restore shield or health.\nTaking damage will interrupt the battle focus effect.",
         },
 
         PHANTOM_SWORD = {
@@ -232,7 +232,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
             DESC =
                 "Consumes a small amount of electricity and one dodge charge to dash in the " ..
                 dodge_direction_str ..
-                ". You will not take damage during the dash. At the start of the dash, you will automatically use afterimages to launch a counterattack against enemies attacking you.\nThe number of dodge charges can be viewed in the upper right corner. You can increase the upper limit of dodge charges by crafting various dodge charge chips, but each dodge chip can only be installed once. Using this method, the dodge charge limit can be increased to a maximum of 4 charges.\nIn addition, if you are equipped with any type of armor or shield, you will not be able to use Flash Dash."
+                ". You will not take damage during the dash. At the start of the dash, you will automatically use afterimages to launch a counterattack against enemies attacking you.\nThe number of dodge charges can be viewed in the upper right corner. You can increase the upper limit of dodge charges by crafting various dodge charge chips, but each dodge chip can only be installed once. Using this method, the dodge charge limit can be increased to a maximum of 4 charges.\nIn addition, if you are in a slowed state, you will not be able to use Flash Dash."
         },
 
         SUMMON_PACT_WEAPON = {
@@ -369,7 +369,7 @@ STRINGS.ICEY2_UI.SKILL_TAB = {
         PARRY = {
             TITLE = "Energy Shield",
             DESC =
-            "Concentrate all the energy output of the force field shield in your hand to form a solid shield that can absorb frontal attacks (you must have at least one free hand to hold up this shield). Enemies hitting the shield will be tormented by electric shock and force field damage.\nWhen you are not equipped with any armor or other shield, if you block an attack shortly after raising this shield, and you have mastered the “Battle Focus” skill, you will immediately enter the battle focus state.",
+            "Concentrate all the energy output of the force field shield in your hand to form a solid shield that can absorb frontal attacks (you must have at least one free hand to hold up this shield). Enemies hitting the shield will be tormented by electric shock and force field damage.\nIf you block an attack shortly after raising this shield, and you have mastered the “Battle Focus” skill, you will immediately enter the battle focus state.",
         },
 
         UNKNOWN = {

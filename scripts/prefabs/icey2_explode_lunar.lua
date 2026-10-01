@@ -48,8 +48,9 @@ local function fn()
 
     inst.persists = false
 
-
-    inst.SoundEmitter:PlaySound("dontstarve/common/blackpowder_explo")
+    inst:DoTaskInTime(0, function()
+        inst.SoundEmitter:PlaySound("dontstarve/common/blackpowder_explo")
+    end)
 
     inst:ListenForEvent("animover", inst.Remove)
 

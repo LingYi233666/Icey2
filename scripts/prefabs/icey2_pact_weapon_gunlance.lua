@@ -80,19 +80,22 @@ local function OnAttackMelee(inst, attacker, target)
     fx:FaceAwayFromPoint(attacker:GetPosition(), true)
     fx:SpawnChild("icey2_melee_hit_vfx")
 
-    if Icey2Basic.IsWearingArmor(attacker) then
-        return
-    end
+    -- if Icey2Basic.IsWearingArmor(attacker) then
+    --     return
+    -- end
 
     attacker.SoundEmitter:PlaySound("icey2_sfx/skill/new_pact_weapon_gunlance/melee_hit", nil, 0.3)
 
     local level = inst.components.icey2_upgradable:GetLevel()
+    local battle_focus_percent = attacker.components.icey2_skill_battle_focus and
+        attacker.components.icey2_skill_battle_focus:GetPercent() or 0.0
+
     local ball_prefabs = {
         { "icey2_supply_ball_shield", 1 },
         { "icey2_supply_ball_shield_small",
             -- math.random(1, 4) + math.max(0, level - 1)
             -- math.random(1, 4)
-            math.random(0, 2)
+            math.random(0, 2) + math.random(0, battle_focus_percent * 4)
         },
     }
 

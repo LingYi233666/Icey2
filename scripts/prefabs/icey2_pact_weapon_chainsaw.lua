@@ -83,7 +83,11 @@ local function OnEquip(inst, owner)
                 rand_value = math.max(rand_value, math.random())
             end
 
-            if Icey2Basic.IsWearingArmor(owner) or math.max(0.5, data.damage / 100) > rand_value then
+            -- if Icey2Basic.IsWearingArmor(owner) or math.max(0.5, data.damage / 100) > rand_value then
+            --     inst.components.icey2_aoeweapon_launch_chainsaw:Return()
+            --     inst.components.rechargeable:Discharge(1)
+            -- end
+            if math.max(0.5, data.damage / 100) > rand_value then
                 inst.components.icey2_aoeweapon_launch_chainsaw:Return()
                 inst.components.rechargeable:Discharge(1)
             end

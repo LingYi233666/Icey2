@@ -38,7 +38,7 @@ local Icey2MainMenu = Class(Screen, function(self, owner)
 
     self.bg = self.root:AddChild(TEMPLATES.RectangleWindow(self.bg_width, self.bg_height))
     self.bg.top:Hide()
-    self.bg:SetPosition(0, -50)
+    -- self.bg:SetPosition(0, -50)
 
     -- self.close_button = self.bg:AddChild(ImageButton("images/global_redux.xml", "close.tex"))
     -- self.close_button:SetOnClick(function() TheFrontEnd:PopScreen(self) end)

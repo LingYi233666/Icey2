@@ -44,12 +44,15 @@ local function SpellFn(inst, doer, pos)
         target_pos = pos,
     })
 
-    if Icey2Basic.IsWearingArmor(doer) then
-        inst.components.rechargeable:Discharge(15)
-    else
-        local level = inst.components.icey2_upgradable:GetLevel()
-        inst.components.rechargeable:Discharge(math.max(0.1, 10 - level * 1.5))
-    end
+    -- if Icey2Basic.IsWearingArmor(doer) then
+    --     inst.components.rechargeable:Discharge(15)
+    -- else
+    --     local level = inst.components.icey2_upgradable:GetLevel()
+    --     inst.components.rechargeable:Discharge(math.max(0.1, 10 - level * 1.5))
+    -- end
+
+    local level = inst.components.icey2_upgradable:GetLevel()
+    inst.components.rechargeable:Discharge(math.max(0.1, 10 - level * 1.5))
 end
 
 local function ApplyLevelFn(inst, new_level, old_level)

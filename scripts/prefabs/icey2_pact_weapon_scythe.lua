@@ -146,16 +146,30 @@ local function HarvestPickable(inst, ent, doer)
 
     local level = inst.components.icey2_upgradable:GetLevel()
 
-    if level < 1 then
-        local success, loot = ent.components.pickable:Pick(TheWorld)
+    -- if level < 1 then
+    --     local success, loot = ent.components.pickable:Pick(TheWorld)
 
-        if loot ~= nil then
+    --     if loot ~= nil then
+    --         for i, item in ipairs(loot) do
+    --             Launch(item, doer, 1.5)
+    --         end
+    --     end
+    -- else
+    --     local success, loot = ent.components.pickable:Pick(doer)
+    -- end
+
+    local success, loot = ent.components.pickable:Pick(TheWorld)
+
+    if loot ~= nil then
+        if doer and doer:IsValid() and doer.components.inventory and level >= 1 then
+            for i, item in ipairs(loot) do
+                doer.components.inventory:GiveItem(item, nil, ent:GetPosition())
+            end
+        else
             for i, item in ipairs(loot) do
                 Launch(item, doer, 1.5)
             end
         end
-    else
-        local success, loot = ent.components.pickable:Pick(doer)
     end
 end
 
@@ -340,11 +354,13 @@ local function SpellFn(inst, doer, pos)
         inst:EnableComplexProjectile(true)
         inst.components.complexprojectile:Launch(pos, doer)
 
-        if Icey2Basic.IsWearingArmor(doer) then
-            inst.components.rechargeable:Discharge(10)
-        else
-            inst.components.rechargeable:Discharge(1)
-        end
+        -- if Icey2Basic.IsWearingArmor(doer) then
+        --     inst.components.rechargeable:Discharge(10)
+        -- else
+        --     inst.components.rechargeable:Discharge(1)
+        -- end
+
+        inst.components.rechargeable:Discharge(1)
     end
 end
 

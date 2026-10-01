@@ -93,9 +93,9 @@ function Icey2SkillShield:RedirectDamageToShield(amount, overtime, cause,
         return amount
     end
 
-    if Icey2Basic.IsWearingArmor(self.inst) then
-        return amount
-    end
+    -- if Icey2Basic.IsWearingArmor(self.inst) then
+    --     return amount
+    -- end
 
     -- if self.inst.sg:HasStateTag("preparrying") or self.inst.sg:HasStateTag("parrying") then
     --     return amount

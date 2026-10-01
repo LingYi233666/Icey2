@@ -159,7 +159,8 @@ local function ParryCallback(inst, data)
     if inst.components.icey2_skill_battle_focus
         and inst.components.icey2_skill_battle_focus:IsEnabled()
         and data.is_good_parry
-        and not Icey2Basic.IsWearingArmor(inst) then
+    -- and not Icey2Basic.IsWearingArmor(inst)
+    then
         inst.components.icey2_skill_battle_focus:RefreshAttackTime()
         inst.components.icey2_skill_battle_focus:DoDelta(100)
     end

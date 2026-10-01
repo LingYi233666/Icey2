@@ -4,9 +4,10 @@ local Icey2SkillDodge = Class(Icey2SkillBase_Active, function(self, inst)
     Icey2SkillBase_Active._ctor(self, inst)
 
     ------------------------------------------
+    self.can_cast_while_wearing_armor = true
     self.can_cast_while_busy = true
     self.can_cast_while_riding = true
-    self.costs.hunger = 1
+    self.costs.hunger = 3
     self.cooldown = 0.1
 
     ------------------------------------------
@@ -138,7 +139,24 @@ function Icey2SkillDodge:OnDodgeStart(target_pos)
     self.inst:ForceFacePoint(target_pos)
 
     if is_riding then
-        self.inst.SoundEmitter:PlaySound("dontstarve/beefalo/yell")
+        local bucked = false
+        local mount = self.inst.components.rider:GetMount()
+        if mount
+            and mount:IsValid()
+            and mount.components.rideable
+            and mount.components.domesticatable then
+            mount.components.domesticatable:DeltaObedience(-0.1)
+
+            local cur_obedience = mount.components.domesticatable:GetObedience()
+            if math.random() < (1.0 - cur_obedience) then
+                mount.components.rideable:Buck()
+                bucked = true
+            end
+        end
+
+        if not bucked then
+            self.inst.SoundEmitter:PlaySound("dontstarve/beefalo/yell")
+        end
     else
         ForceStopHeavyLifting(self.inst)
 
@@ -156,7 +174,8 @@ function Icey2SkillDodge:OnDodgeStart(target_pos)
         end
         self.dodge_fx = { fx1 }
 
-        if not Icey2Basic.IsWearingArmor(self.inst) and self:HasSuitableWeapon() then
+        -- if not Icey2Basic.IsWearingArmor(self.inst) and self:HasSuitableWeapon() then
+        if self:HasSuitableWeapon() then
             local enemies = self:SearchCreaturesAutoToAttack()
             if #enemies > 0 then
                 self:CounterBack(enemies[1])
@@ -232,6 +251,16 @@ function Icey2SkillDodge:CanCast(x, y, z, target)
 
     if self.dodge_charge < 1 then
         return false, "NOT_ENOUGH_DODGE_CHARGE"
+    end
+
+    local run_speed = self.inst.components.locomotor:GetRunSpeed()
+    if run_speed < 5.9 then
+        return false, "RUN_SPEED_TOO_SLOW"
+    end
+
+    local playercontroller_enabled, _ = self.inst.components.playercontroller:IsEnabled()
+    if not playercontroller_enabled then
+        return false, "PLAYER_CONTROLLER_NOT_ENABLED"
     end
 
     return true
